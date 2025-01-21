@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ dependencies {
     transitive = false
   }
   api project.deps.cloning
-  api project.deps.jdom
   api project.deps.springWeb
   implementation project.deps.slf4jApi
   implementation project.deps.felix

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class InternalRolesControllerV3Test implements SecurityServiceTrait, ControllerT
         def gocdRoleConfig = new RoleConfig("gocd-role")
         def pluginRoleConfig = new PluginRoleConfig('foo', 'ldap')
         expectedRoles = new RolesConfig([gocdRoleConfig, pluginRoleConfig])
-        configRepo = ConfigRepoConfig.createConfigRepoConfig(git("https://foo.git", "master"), "json-config-repo-plugin", "repo-1");
+        configRepo = ConfigRepoConfig.createConfigRepoConfig(git("https://foo.git", "master"), "json-config-repo-plugin", "repo-1")
         envNames = List.of("env1", "env2")
         def elasticProfile1 = new ElasticProfile("elastic_profile1", "cluster_profile")
         def elasticProfile2 = new ElasticProfile("elastic_profile2", "cluster_profile")

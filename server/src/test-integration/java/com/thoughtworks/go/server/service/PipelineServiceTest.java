@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public class PipelineServiceTest {
         materialRepository = mock(MaterialRepository.class);
         TestTransactionSynchronizationManager mockTransactionSynchronizationManager = new TestTransactionSynchronizationManager();
         TransactionTemplate mockTransactionTemplate = new TestTransactionTemplate(mockTransactionSynchronizationManager);
-        service = new PipelineService(pipelineDao, mock(StageService.class), mock(PipelineLockService.class), pipelineTimeline, materialRepository, mockTransactionTemplate, systemEnvironment, null,
+        service = new PipelineService(pipelineDao, mock(StageService.class), mock(PipelineLockService.class), pipelineTimeline, materialRepository, mockTransactionTemplate, systemEnvironment,
                 materialConfigConverter);
         first = oneModifiedFile("1");
         third = oneModifiedFile("3");
@@ -145,7 +145,7 @@ public class PipelineServiceTest {
     private Pipeline stubPipelineSaveForStatusListener(StageStatusListener stageStatusListener, JobStatusListener jobStatusListener) {
         StageDao stageDao = mock(StageDao.class);
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
-        when(serverHealthService.logs()).thenReturn(new ServerHealthStates());
+        when(serverHealthService.logsSorted()).thenReturn(new ServerHealthStates());
         JobInstanceService jobInstanceService = new JobInstanceService(mock(JobInstanceDao.class), mock(JobResultTopic.class), mock(JobStatusCache.class),
                 actualTransactionTemplate, transactionSynchronizationManager, null, null, goConfigService, null, serverHealthService, jobStatusListener);
 
@@ -157,7 +157,7 @@ public class PipelineServiceTest {
 
         stageService.addStageStatusListener(stageStatusListener);
 
-        service = new PipelineService(pipelineDao, stageService, mock(PipelineLockService.class), pipelineTimeline, materialRepository, actualTransactionTemplate, systemEnvironment, null, materialConfigConverter);
+        service = new PipelineService(pipelineDao, stageService, mock(PipelineLockService.class), pipelineTimeline, materialRepository, actualTransactionTemplate, systemEnvironment, materialConfigConverter);
         Pipeline pipeline = PipelineMother.pipeline("cruise", savedStage);
         when(pipelineDao.save(pipeline)).thenReturn(pipeline);
         when(materialRepository.findMaterialRevisionsForPipeline(9L)).thenReturn(MaterialRevisions.EMPTY);

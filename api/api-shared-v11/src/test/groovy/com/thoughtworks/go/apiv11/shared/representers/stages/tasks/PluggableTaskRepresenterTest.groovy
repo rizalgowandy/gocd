@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class PluggableTaskRepresenterTest implements TaskRepresenterTrait {
     task.config().add(simpleProperty)
     task.config().add(secureProperty)
     def taskPreference = new TaskPreference(task)
-    PluggableTaskConfigStore.store().setPreferenceFor("curl", taskPreference);
+    PluggableTaskConfigStore.store().setPreferenceFor("curl", taskPreference)
   }
 
   def existingTask() {

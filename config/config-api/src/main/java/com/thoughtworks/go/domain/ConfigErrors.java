@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class ConfigErrors extends HashMap<String, List<String>> implements Seria
     }
 
     public List<String> getAll() {
-        ArrayList<String> allErrors = new ArrayList<>();
+        List<String> allErrors = new ArrayList<>();
         for (List<String> errorOnAnAttribute : values()) {
             allErrors.addAll(errorOnAnAttribute);
         }

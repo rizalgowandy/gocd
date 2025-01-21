@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class AgentBootstrapperArgs {
     }
 
     public Map<String, String> toProperties() {
-        HashMap<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(SERVER_URL, serverUrl.toString());
         properties.put(SSL_VERIFICATION_MODE, sslVerificationMode.name());
 

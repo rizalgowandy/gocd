@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
 import static com.thoughtworks.go.domain.packagerepository.ConfigurationPropertyMother.create
 import static com.thoughtworks.go.plugin.access.artifact.ArtifactExtensionConstants.REQUEST_FETCH_ARTIFACT
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.ARTIFACT_EXTENSION
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.assertj.core.api.Assertions.assertThat
 import static org.mockito.ArgumentMatchers.eq
 import static org.mockito.Mockito.when

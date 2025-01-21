@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.thoughtworks.go.config;
 
 import com.thoughtworks.go.config.policy.*;
 import com.thoughtworks.go.config.validation.NameTypeValidator;
-import com.thoughtworks.go.domain.ConfigErrors;
 
 import java.util.*;
 
@@ -92,10 +91,6 @@ public interface Role extends Validatable, PolicyAware {
             users.add(CaseInsensitiveString.str(roleUser.getName()));
         }
         return users;
-    }
-
-    default List<ConfigErrors> getAllErrors() {
-        return ErrorCollector.getAllErrors(this);
     }
 
     boolean hasErrors();

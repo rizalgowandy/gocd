@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class EnvironmentVariableWithOriginWidget extends EnvironmentVariableWidget {
     const environmentVariable = vnode.attrs.environmentVariable as EnvironmentVariableWithOrigin;
     return <div>
       Cannot edit this environment variable as it is defined in config repository:&nbsp;
-      <Link target="_blank" href={SparkRoutes.ConfigRepoViewPath(environmentVariable.origin().id())}>{environmentVariable.origin().id()}</Link>
+      <Link href={SparkRoutes.ConfigRepoViewPath(environmentVariable.origin().id())}>{environmentVariable.origin().id()}</Link>
     </div>;
   }
 }

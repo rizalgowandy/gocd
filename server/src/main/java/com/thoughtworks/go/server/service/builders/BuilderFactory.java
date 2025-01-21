@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class BuilderFactory {
     }
 
     public List<Builder> buildersForTasks(Pipeline pipeline, List<Task> tasks, UpstreamPipelineResolver resolver) {
-        ArrayList<Builder> builders = new ArrayList<>();
+        List<Builder> builders = new ArrayList<>();
         for (Task task : tasks) {
             builders.add(builderFor(task, pipeline, resolver));
         }

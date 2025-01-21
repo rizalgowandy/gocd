@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,14 @@ import java.util.Map;
 
 import static com.thoughtworks.go.plugin.access.common.settings.PluginSettingsConstants.REQUEST_NOTIFY_PLUGIN_SETTINGS_CHANGE;
 import static com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse.SUCCESS_RESPONSE_CODE;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AbstractExtensionTest {
+
+    private static final List<String> goSupportedVersions = List.of("1.0", "2.0");
 
     private AbstractExtension extension;
     @Mock(strictness = Mock.Strictness.LENIENT)
@@ -49,7 +50,6 @@ public class AbstractExtensionTest {
     ExtensionsRegistry extensionsRegistry;
 
     private String extensionName;
-    private static List<String> goSupportedVersions = List.of("1.0", "2.0");
     private String pluginId;
 
     private static class TestExtension extends AbstractExtension {
@@ -75,7 +75,7 @@ public class AbstractExtensionTest {
     }
 
     @Test
-    public void shouldNotifySettingsChangeForPluginWhichSupportsNotification() throws Exception {
+    public void shouldNotifySettingsChangeForPluginWhichSupportsNotification() {
         String supportedVersion = "2.0";
         Map<String, String> settings = Map.of("foo", "bar");
         ArgumentCaptor<GoPluginApiRequest> requestArgumentCaptor = ArgumentCaptor.forClass(GoPluginApiRequest.class);
@@ -91,7 +91,7 @@ public class AbstractExtensionTest {
     }
 
     @Test
-    public void shouldIgnoreSettingsChangeNotificationIfPluginDoesNotSupportsNotification() throws Exception {
+    public void shouldIgnoreSettingsChangeNotificationIfPluginDoesNotSupportsNotification() {
         String supportedVersion = "1.0";
         Map<String, String> settings = Map.of("foo", "bar");
 
@@ -104,9 +104,9 @@ public class AbstractExtensionTest {
     }
 
     private void assertRequest(GoPluginApiRequest goPluginApiRequest, String extensionName, String version, String requestName, String requestBody) {
-        assertThat(goPluginApiRequest.extension(), is(extensionName));
-        assertThat(goPluginApiRequest.extensionVersion(), is(version));
-        assertThat(goPluginApiRequest.requestName(), is(requestName));
+        assertThat(goPluginApiRequest.extension()).isEqualTo(extensionName);
+        assertThat(goPluginApiRequest.extensionVersion()).isEqualTo(version);
+        assertThat(goPluginApiRequest.requestName()).isEqualTo(requestName);
         assertThatJson(requestBody).isEqualTo(goPluginApiRequest.requestBody());
     }
 }

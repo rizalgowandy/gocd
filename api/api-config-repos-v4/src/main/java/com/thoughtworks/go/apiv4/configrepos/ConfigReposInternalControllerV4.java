@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,14 +104,14 @@ public class ConfigReposInternalControllerV4 extends AbstractMaterialTestControl
             return notModified(res);
         }
         Map<String, List<String>> autoSuggestions = new HashMap<>();
-        ArrayList<String> pipelineNames = new ArrayList<>();
-        ArrayList<String> pipelineGroupNames = new ArrayList<>();
+        List<String> pipelineNames = new ArrayList<>();
+        List<String> pipelineGroupNames = new ArrayList<>();
 
         List<String> envNames = environmentConfigService.getEnvironmentNames();
         List<PipelineConfigs> groupsForUser = pipelineConfigsService.getGroupsForUser(currentUserLoginName().toString());
         groupsForUser.forEach((grp) -> {
             pipelineGroupNames.add(grp.getGroup());
-            pipelineNames.addAll(grp.getPipelines().stream().map((pipelineConfig) -> pipelineConfig.name().toString()).collect(toList()));
+            pipelineNames.addAll(grp.getPipelines().stream().map((pipelineConfig) -> pipelineConfig.name().toString()).toList());
         });
 
         autoSuggestions.put("environment", envNames);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class DependencyMaterialAutocompleteControllerV1Test implements SecurityServiceT
     }
 
     private StageConfig stage(String name) {
-      return new StageConfig(ident(name), null);
+      return new StageConfig(ident(name), null)
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,9 @@ import static org.apache.commons.lang3.StringUtils.join;
 public class AgentInstances implements Iterable<AgentInstance> {
     private SystemEnvironment systemEnvironment;
 
-    private Map<String, AgentInstance> uuidToAgentInstanceMap = new ConcurrentHashMap<>();
+    private final Map<String, AgentInstance> uuidToAgentInstanceMap = new ConcurrentHashMap<>();
 
-    private AgentStatusChangeListener agentStatusChangeListener;
+    private final AgentStatusChangeListener agentStatusChangeListener;
 
     public AgentInstances(AgentStatusChangeListener listener) {
         this.agentStatusChangeListener = listener;
@@ -124,9 +124,6 @@ public class AgentInstances implements Iterable<AgentInstance> {
         return currentInstances().iterator();
     }
 
-    public boolean isEmpty() {
-        return uuidToAgentInstanceMap.isEmpty();
-    }
 
     public Integer size() {
         return uuidToAgentInstanceMap.size();

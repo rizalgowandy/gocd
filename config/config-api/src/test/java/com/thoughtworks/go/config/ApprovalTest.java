@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -399,8 +399,8 @@ public class ApprovalTest {
         return group;
     }
 
-    private HashMap nameMap(final String name) {
-        HashMap nameMap = new HashMap();
+    private Map nameMap(final String name) {
+        Map nameMap = new HashMap();
         nameMap.put("name", name);
         return nameMap;
     }

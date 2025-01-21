@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ public class PathBasedArtifactsLocator implements ArtifactLocator {
 
     public PathBasedArtifactsLocator(File artifactsRoot) {
         this.artifactsRoot = artifactsRoot;
-    }
-
-    @Override
-    public File findArtifact(LocatableEntity identifier, String artifactPath) {
-        return new File(jobFolder(identifier), artifactPath);
     }
 
     private File jobFolder(LocatableEntity identifier) {

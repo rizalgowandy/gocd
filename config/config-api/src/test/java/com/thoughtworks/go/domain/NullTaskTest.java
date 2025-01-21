@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,14 @@
  */
 package com.thoughtworks.go.domain;
 
-import com.thoughtworks.go.config.ValidationContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class NullTaskTest {
-    private ValidationContext validationContext;
-
     @Test
     public void shouldNotAllowSettingOfConfigAttributes() throws Exception {
         Task task = new NullTask();
@@ -34,24 +30,24 @@ public class NullTaskTest {
             task.setConfigAttributes(new HashMap());
             fail("should have failed, as configuration of kill-all task is not allowed");
         } catch (UnsupportedOperationException e) {
-            assertThat(e.getMessage(), is("Not a configurable task"));
+            assertThat(e.getMessage()).isEqualTo("Not a configurable task");
         }
     }
 
     @Test
     public void validateShouldReturnNoErrors() throws Exception {
         Task task = new NullTask();
-        task.validate(validationContext);
-        assertThat(task.errors().isEmpty(), is(true));
+        task.validate(null);
+        assertThat(task.errors().isEmpty()).isTrue();
     }
 
     @Test
     public void shouldKnowItsType() {
-        assertThat(new NullTask().getTaskType(), is("null"));
+        assertThat(new NullTask().getTaskType()).isEqualTo("null");
     }
 
     @Test
     public void shouldReturnEmptyPropertiesForDisplay() {
-        assertThat(new NullTask().getPropertiesForDisplay().isEmpty(), is(true));
+        assertThat(new NullTask().getPropertiesForDisplay().isEmpty()).isTrue();
     }
 }

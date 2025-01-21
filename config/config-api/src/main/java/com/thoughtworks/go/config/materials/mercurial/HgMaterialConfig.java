@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,6 @@ public class HgMaterialConfig extends ScmMaterialConfig implements ParamsAttribu
         if (isNotBlank(branch)) {
             parameters.put("branch", branch);
         }
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        parameters.put("url", url);
     }
 
     @Override
@@ -133,11 +128,6 @@ public class HgMaterialConfig extends ScmMaterialConfig implements ParamsAttribu
         if (isNotBlank(this.branch) && hasBranchInUrl()) {
             errors().add(URL, "Ambiguous branch, must be provided either in URL or as an attribute.");
         }
-    }
-
-    @Override
-    protected String getLocation() {
-        return this.url.forDisplay();
     }
 
     @Override

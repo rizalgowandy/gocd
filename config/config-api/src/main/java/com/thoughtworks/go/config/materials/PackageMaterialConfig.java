@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,12 +82,6 @@ public class PackageMaterialConfig extends AbstractMaterialConfig {
     @Override
     protected void appendCriteria(Map<String, Object> parameters) {
         parameters.put("fingerprint", getFingerprint());
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        parameters.put("repositoryName", this.getPackageDefinition().getRepository().getName());
-        parameters.put("packageName", this.getPackageDefinition().getName());
     }
 
     @Override

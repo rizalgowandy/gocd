@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.apache.tools.ant.filters.FixCrLfFilter
 
 private File destFile(String url) {
-  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(new URL(url).path).name}")
+  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(URI.create(url).toURL().path).name}")
 }
 
 task downloadWindowsJreChecksum(type: DownloadFile) {
@@ -37,15 +37,15 @@ task downloadWindowsJre(type: DownloadFile) {
 
 def configureWindowsFilesystem(Task windowsInstallerTask, InstallerType installerType, Zip genericZipTask, File buildRoot) {
   windowsInstallerTask.with {
-    group project.name
-    description "Build the ${installerType.baseName} windows (exe) installer"
+    group = project.name
+    description = "Build the ${installerType.baseName} windows (exe) installer"
 
     dependsOn downloadWindowsJre
     dependsOn genericZipTask
 
     doFirst {
       project.delete(buildRoot)
-      project.mkdir(project.file("${project.buildDir}/distributions/win"))
+      project.mkdir(project.file("${project.layout.buildDirectory.get()}/distributions/win"))
 
       def genericZipTree = zipTree(genericZipTask.archiveFile)
 
@@ -104,7 +104,7 @@ def configureWindowsFilesystem(Task windowsInstallerTask, InstallerType installe
   }
 }
 
-def executeNSIS(InstallerType installerType, File buildRoot, File destDir) {
+def executeNSIS(ExecOperations execOperations, InstallerType installerType, File buildRoot, File destDir) {
 
   project.mkdir(destDir)
 
@@ -141,7 +141,7 @@ def executeNSIS(InstallerType installerType, File buildRoot, File destDir) {
 
   cmdArgs += ["-V4"] // verbose
 
-  project.exec { ExecSpec execSpec ->
+  execOperations.exec { ExecSpec execSpec ->
     commandLine = (["makensis"] + cmdArgs + [project.file("windows/${installerType.baseName}.nsi").path])
 
     standardOutput = System.out
@@ -153,15 +153,16 @@ def executeNSIS(InstallerType installerType, File buildRoot, File destDir) {
 
 task agentWindows64bitExe { DefaultTask thisTask ->
   def installerType = InstallerType.agent
-  def buildRoot = project.file("${project.buildDir.path}/${installerType.baseName}/win/BUILD_ROOT")
-  def destDir = project.file("${project.buildDir}/distributions/win")
+  def buildRoot = project.file("${project.layout.buildDirectory.get()}/${installerType.baseName}/win/BUILD_ROOT")
+  def destDir = project.file("${project.layout.buildDirectory.get()}/distributions/win")
   outputs.dir(destDir)
 
   configureWindowsFilesystem(thisTask, installerType, agentGenericZip, buildRoot)
 
+  def injected = project.objects.newInstance(InjectedExecOps)
   doLast {
     project.copy { from('go-agent/win/ServerURL.ini') into(buildRoot) }
-    executeNSIS(installerType, buildRoot, destDir)
+    executeNSIS(injected.execOps, installerType, buildRoot, destDir)
   }
 
   finalizedBy(project.tasks.create("${thisTask.name}Metadata", InstallerMetadataTask.class) {
@@ -174,14 +175,15 @@ task agentWindows64bitExe { DefaultTask thisTask ->
 
 task serverWindows64bitExe { DefaultTask thisTask ->
   def installerType = InstallerType.server
-  def buildRoot = project.file("${project.buildDir.path}/${installerType.baseName}/win/BUILD_ROOT")
-  def destDir = project.file("${project.buildDir}/distributions/win")
+  def buildRoot = project.file("${project.layout.buildDirectory.get()}/${installerType.baseName}/win/BUILD_ROOT")
+  def destDir = project.file("${project.layout.buildDirectory.get()}/distributions/win")
   outputs.dir(destDir)
 
   configureWindowsFilesystem(thisTask, installerType, serverGenericZip, buildRoot)
 
+  def injected = project.objects.newInstance(InjectedExecOps)
   doLast {
-    executeNSIS(installerType, buildRoot, destDir)
+    executeNSIS(injected.execOps, installerType, buildRoot, destDir)
   }
 
   finalizedBy(project.tasks.create("${thisTask.name}Metadata", InstallerMetadataTask.class) {

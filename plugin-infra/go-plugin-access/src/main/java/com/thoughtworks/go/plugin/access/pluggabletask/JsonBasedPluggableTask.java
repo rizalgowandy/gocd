@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class JsonBasedPluggableTask implements Task {
     private PluginRequestHelper pluginRequestHelper;
-    private HashMap<String, JsonBasedTaskExtensionHandler> handlerMap;
+    private Map<String, JsonBasedTaskExtensionHandler> handlerMap;
     private String pluginId;
 
     public JsonBasedPluggableTask(String pluginId, PluginRequestHelper pluginRequestHelper, HashMap<String, JsonBasedTaskExtensionHandler> handlerMap) {

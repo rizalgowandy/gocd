@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.thoughtworks.go.spark.Routes;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PackageDefinitionRepresenter {
     public static void toJSON(OutputWriter outputWriter, PackageDefinition packageDefinition) {
@@ -43,7 +44,7 @@ public class PackageDefinitionRepresenter {
                 ConfigurationPropertyRepresenter.toJSON(configWriter, packageDefinition.getConfiguration()));
         if (!packageDefinition.errors().isEmpty()) {
             outputWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 new ErrorGetter(errorMapping).toJSON(errorWriter, packageDefinition);
             });
         }

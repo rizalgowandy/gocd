@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,5 @@ public class SPAAuthenticationHelper extends AbstractAuthenticationHelper {
     @Override
     protected HaltException renderForbiddenResponse(String message) {
         return halt(403, HtmlErrorPage.errorPage(403, message));
-    }
-
-    public HaltException renderNotFoundResponse(String message) {
-        return halt(404, HtmlErrorPage.errorPage(404, message));
     }
 }

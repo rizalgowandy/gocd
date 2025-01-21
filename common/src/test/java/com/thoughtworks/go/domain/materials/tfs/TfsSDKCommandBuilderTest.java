@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TfsSDKCommandBuilderTest {
@@ -59,7 +58,7 @@ public class TfsSDKCommandBuilderTest {
         } catch (Exception e) {
             //Do not worry about load class failing. We're only asserting that load class is invoked with the right FQN for TFSSDKCommand
         }
-        assertThat(invoked, is(true));
-        assertThat(className, is("com.thoughtworks.go.tfssdk.TfsSDKCommandTCLAdapter"));
+        assertThat(invoked).isTrue();
+        assertThat(className).isEqualTo("com.thoughtworks.go.tfssdk.TfsSDKCommandTCLAdapter");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import com.thoughtworks.go.util.CachedDigestUtils;
 import com.thoughtworks.go.util.SystemEnvironment;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +29,6 @@ public class ServerSubprocessExecutionContextTest {
         GoConfigService goConfigService = mock(GoConfigService.class);
         when(goConfigService.getServerId()).thenReturn("my-server-id");
         ServerSubprocessExecutionContext serverSubprocessExecutionContext = new ServerSubprocessExecutionContext(goConfigService, new SystemEnvironment());
-        assertThat(serverSubprocessExecutionContext.getProcessNamespace("fingerprint"), is(CachedDigestUtils.sha256Hex("my-server-id" + "fingerprint")));
+        assertThat(serverSubprocessExecutionContext.getProcessNamespace("fingerprint")).isEqualTo(CachedDigestUtils.sha256Hex("my-server-id" + "fingerprint"));
     }
 }

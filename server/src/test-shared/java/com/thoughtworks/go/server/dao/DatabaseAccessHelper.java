@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,7 @@ import java.util.*;
 import static com.thoughtworks.go.domain.JobResult.Failed;
 import static com.thoughtworks.go.domain.PersistentObject.NOT_PERSISTED;
 import static com.thoughtworks.go.helper.ModificationsMother.modifyOneFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("TestOnlyProblems") // Workaround for IntelliJ thinking this place is production rather than test code
 @Component
@@ -417,7 +415,7 @@ public class DatabaseAccessHelper extends HibernateDaoSupport {
     }
 
     private MaterialRevision filterUnsaved(MaterialRevision materialRevision) {
-        ArrayList<Modification> unsavedModifications = new ArrayList<>();
+        List<Modification> unsavedModifications = new ArrayList<>();
         for (Modification modification : materialRevision.getModifications()) {
             if (!modification.hasId()) {
                 unsavedModifications.add(modification);
@@ -446,11 +444,11 @@ public class DatabaseAccessHelper extends HibernateDaoSupport {
     }
 
     static void assertNotInserted(long instanceId) {
-        assertThat("Already thinks it's inserted", instanceId, is(NOT_PERSISTED));
+        assertThat(instanceId).isEqualTo(NOT_PERSISTED);
     }
 
     static void assertIsInserted(long instanceId) {
-        assertThat("Not inserted", instanceId, is(not(NOT_PERSISTED)));
+        assertThat(instanceId).isNotEqualTo(NOT_PERSISTED);
     }
 
     public Pipeline schedulePipeline(PipelineConfig pipelineConfig, Clock clock) {

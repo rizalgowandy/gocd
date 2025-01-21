@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class PerforceMaterialRepresenterTest implements MaterialRepresenterTrait {
 
   def existingMaterialWithErrors() {
     def p4Config = p4('', '', '', false, '', new GoCipher(), new CaseInsensitiveString(''), true, null, false, '/dest/')
-    def materialConfigs = new MaterialConfigs(p4Config);
+    def materialConfigs = new MaterialConfigs(p4Config)
     materialConfigs.validateTree(PipelineConfigSaveValidationContext.forChain(true, "group", new BasicCruiseConfig(), new PipelineConfig()))
     return materialConfigs.first()
   }

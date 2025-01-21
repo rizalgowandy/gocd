@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ public abstract class BuildTask extends AbstractTask implements CommandTask {
 
     @Override
     public List<TaskProperty> getPropertiesForDisplay() {
-        ArrayList<TaskProperty> taskProperties = new ArrayList<>();
+        List<TaskProperty> taskProperties = new ArrayList<>();
         if (!StringUtils.isBlank(buildFile)) {
             taskProperties.add(new TaskProperty("Build File", buildFile));
         }

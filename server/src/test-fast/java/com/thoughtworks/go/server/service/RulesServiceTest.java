@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(gitMaterial))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pipeline 'up42' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pipeline 'up42' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -147,8 +147,8 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(gitMaterial))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessageContaining("Pipeline 'up42' is referring to none-existent secret config 'secret_config_id'.")
-                    .hasMessageContaining("Pipeline 'up43' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessageContaining("Pipeline 'up42' is referring to non-existent secret config 'secret_config_id'.")
+                    .hasMessageContaining("Pipeline 'up43' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -189,7 +189,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(gitMaterial))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pipeline 'up42' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pipeline 'up42' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -205,6 +205,14 @@ class RulesServiceTest {
             when(goConfigService.pipelinesWithMaterial(gitMaterial.getFingerprint())).thenReturn(List.of(new CaseInsensitiveString("up42")));
             when(goConfigService.findGroupByPipeline(any())).thenReturn(defaultGroup);
             when(goConfigService.findPipelineByName(new CaseInsensitiveString("up42"))).thenReturn(up42);
+
+            assertThat(rulesService.validateSecretConfigReferences(gitMaterial)).isEqualTo(true);
+        }
+
+        @Test
+        void shouldNotErrorOutOnScmMaterialUsedOnlyForConfigRepo() {
+            GitMaterial gitMaterial = new GitMaterial("http://example.com");
+            gitMaterial.setPassword("{{SECRET:[secret_config_id][password]}}");
 
             assertThat(rulesService.validateSecretConfigReferences(gitMaterial)).isEqualTo(true);
         }
@@ -268,7 +276,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -298,7 +306,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -318,7 +326,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' is referring to none-existent secret config 'secret_config_id'.\nPluggable SCM 'scm-name' is referring to none-existent secret config 'unknown_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' is referring to non-existent secret config 'secret_config_id'.\nPluggable SCM 'scm-name' is referring to non-existent secret config 'unknown_id'.");
         }
     }
 
@@ -368,7 +376,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(scm))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -393,7 +401,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(scm))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -411,7 +419,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(scm))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Pluggable SCM 'scm-name' does not have permission to refer to secrets using secret config 'secret_config_id'.\nPluggable SCM 'scm-name' is referring to none-existent secret config 'unknown_id'.");
+                    .hasMessage("Pluggable SCM 'scm-name' does not have permission to refer to secrets using secret config 'secret_config_id'.\nPluggable SCM 'scm-name' is referring to non-existent secret config 'unknown_id'.");
         }
     }
 
@@ -455,7 +463,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Material 'repo-name' is referring to none-existent secret config 'unknown_id'.");
+                    .hasMessage("Package Material 'repo-name' is referring to non-existent secret config 'unknown_id'.");
         }
 
         @Test
@@ -475,7 +483,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Material 'repo-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Package Material 'repo-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -491,7 +499,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(material))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Material 'repo-name' does not have permission to refer to secrets using secret config 'secret_config_id'.\nPackage Material 'repo-name' is referring to none-existent secret config 'unknown_id'.");
+                    .hasMessage("Package Material 'repo-name' does not have permission to refer to secrets using secret config 'secret_config_id'.\nPackage Material 'repo-name' is referring to non-existent secret config 'unknown_id'.");
         }
     }
 
@@ -580,7 +588,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(buildAssigment))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Job: 'job1' in Pipeline: 'up42' and Pipeline Group: 'some_group' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Job: 'job1' in Pipeline: 'up42' and Pipeline Group: 'some_group' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         private BuildAssignment createAssignment(EnvironmentVariableContext environmentVariableContext, JobIdentifier identifier) {
@@ -642,7 +650,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(environmentConfig))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Environment 'dev' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Environment 'dev' is referring to non-existent secret config 'secret_config_id'.");
         }
     }
 
@@ -689,7 +697,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(repository))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Repository 'repo-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Package Repository 'repo-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -712,7 +720,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(repository))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Repository 'repo-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Package Repository 'repo-name' is referring to non-existent secret config 'secret_config_id'.");
         }
     }
 
@@ -765,7 +773,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(repository))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Package Repository 'repo-name' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Package Repository 'repo-name' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -826,7 +834,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(clusterProfile))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Cluster Profile 'cluster-id' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Cluster Profile 'cluster-id' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test
@@ -885,7 +893,7 @@ class RulesServiceTest {
 
             assertThatCode(() -> rulesService.validateSecretConfigReferences(elasticProfile))
                     .isInstanceOf(RulesViolationException.class)
-                    .hasMessage("Cluster Profile 'cluster-profile-id' is referring to none-existent secret config 'secret_config_id'.");
+                    .hasMessage("Cluster Profile 'cluster-profile-id' is referring to non-existent secret config 'secret_config_id'.");
         }
 
         @Test

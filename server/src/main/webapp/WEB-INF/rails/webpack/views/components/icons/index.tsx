@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class Icon extends MithrilViewComponent<Attrs> {
         <i title={title}
            data-test-id={vnode.attrs["data-test-id"] ? vnode.attrs["data-test-id"] : `${this.title}-icon`}
            data-test-disabled-element={vnode.attrs.disabled}
-           class={classnames({[styles.enabled]: !vnode.attrs.disabled}, this.name, {[styles.disabled]: vnode.attrs.disabled})}
+           class={classnames({[styles.enabled]: vnode.attrs.onclick && !vnode.attrs.disabled}, this.name, {[styles.disabled]: vnode.attrs.onclick && vnode.attrs.disabled})}
            aria-describedby={vnode.attrs.describedBy}
            {...vnode.attrs}
            onclick={vnode.attrs.disabled ? undefined : vnode.attrs.onclick}/>

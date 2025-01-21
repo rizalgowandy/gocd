@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,42 @@
  */
 package com.thoughtworks.go.plugin.api.response;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ResultTest {
     @Test
-    public void shouldCreateResponseWithErrorMessages() throws Exception {
+    public void shouldCreateResponseWithErrorMessages() {
         Result result = new Result().withErrorMessages("Error 1", "Error 2");
-        MatcherAssert.assertThat(result.isSuccessful(), is(false));
-        MatcherAssert.assertThat(result.getMessages(), contains("Error 1", "Error 2"));
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(result.getMessages()).contains("Error 1", "Error 2");
     }
 
     @Test
-    public void shouldDefaultResponseAsSuccess() throws Exception {
+    public void shouldDefaultResponseAsSuccess() {
         Result result = new Result();
-        MatcherAssert.assertThat(result.isSuccessful(), is(true));
+        assertThat(result.isSuccessful()).isTrue();
     }
 
     @Test
-    public void shouldResponseWithSuccessMessages() throws Exception {
+    public void shouldResponseWithSuccessMessages() {
         Result result = new Result().withSuccessMessages("Success", "Pass");
-        MatcherAssert.assertThat(result.isSuccessful(), is(true));
-        MatcherAssert.assertThat(result.getMessages(), contains("Success","Pass"));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(result.getMessages()).contains("Success","Pass");
     }
 
     @Test
-    public void shouldReturnMessagesForDisplay() throws Exception {
+    public void shouldReturnMessagesForDisplay() {
         Result result = new Result().withSuccessMessages("Success", "Pass", "Firstpass");
         String messagesForDisplay = result.getMessagesForDisplay();
-        MatcherAssert.assertThat(messagesForDisplay, is("Success\nPass\nFirstpass"));
+        assertThat(messagesForDisplay).isEqualTo("Success\nPass\nFirstpass");
     }
 
     @Test
-    public void shouldReturnMessagesForDisplayWithEmptyMessages() throws Exception {
+    public void shouldReturnMessagesForDisplayWithEmptyMessages() {
         Result result = new Result().withSuccessMessages();
         String messagesForDisplay = result.getMessagesForDisplay();
-        MatcherAssert.assertThat(messagesForDisplay, is(""));
+        assertThat(messagesForDisplay).isEqualTo("");
     }
 }

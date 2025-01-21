@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +64,7 @@ public class PipelineStagesFeedServiceTest {
 
         FeedEntries feedEntries = pipelineStagesFeedResolver.feedBefore(user, 100L, operationResult);
 
-        assertThat(feedEntries, is(nullValue()));
+        assertThat(feedEntries).isNull();
         verifyThatUserIsUnauthorized();
         verifyNoMoreInteractions(stageService);
     }
@@ -77,14 +75,14 @@ public class PipelineStagesFeedServiceTest {
 
         FeedEntries feedEntries = pipelineStagesFeedResolver.feed(user, operationResult);
 
-        assertThat(feedEntries, is(nullValue()));
+        assertThat(feedEntries).isNull();
         verifyThatUserIsUnauthorized();
         verifyNoMoreInteractions(stageService);
     }
 
     private void verifyThatUserIsUnauthorized() {
-        assertThat(operationResult.isSuccessful(), is(false));
-        assertThat(operationResult.httpCode(), is(403));//verify we are unauthorized
+        assertThat(operationResult.isSuccessful()).isFalse();
+        assertThat(operationResult.httpCode()).isEqualTo(403);//verify we are unauthorized
 
         operationResult.message();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,11 +71,6 @@ public class TfsMaterialConfig extends ScmMaterialConfig implements ParamsAttrib
     }
 
     @Override
-    protected String getLocation() {
-        return url == null ? null : url.forDisplay();
-    }
-
-    @Override
     public String getUriForDisplay() {
         return this.url.forDisplay();
     }
@@ -99,11 +94,6 @@ public class TfsMaterialConfig extends ScmMaterialConfig implements ParamsAttrib
         parameters.put(ScmMaterialConfig.USERNAME, userName);
         parameters.put(DOMAIN, domain);
         parameters.put(PROJECT_PATH, projectPath);
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        appendCriteria(parameters);
     }
 
     @Override

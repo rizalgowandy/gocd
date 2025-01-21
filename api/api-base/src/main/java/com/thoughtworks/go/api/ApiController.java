@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,14 +60,6 @@ public abstract class ApiController implements ControllerMethods, SparkControlle
     protected void setContentType(Request req, Response res) {
         res.raw().setCharacterEncoding("utf-8");
         res.type(mimeType);
-    }
-
-    protected void setEncryptedContentType(Request req, Response res) {
-        res.type("application/octet-stream");
-    }
-
-    protected String messageJson(Exception ex) {
-        return messageJson(ex.getMessage());
     }
 
     protected String messageJson(String message) {

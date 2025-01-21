@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class Capabilities {
     }
 
     private List<com.thoughtworks.go.plugin.domain.analytics.SupportedAnalytics> supportedAnalytics() {
-        ArrayList<com.thoughtworks.go.plugin.domain.analytics.SupportedAnalytics> list = new ArrayList<>();
+        List<com.thoughtworks.go.plugin.domain.analytics.SupportedAnalytics> list = new ArrayList<>();
 
         if (this.supportedAnalytics != null) {
             for (SupportedAnalytics analytics : this.supportedAnalytics) {

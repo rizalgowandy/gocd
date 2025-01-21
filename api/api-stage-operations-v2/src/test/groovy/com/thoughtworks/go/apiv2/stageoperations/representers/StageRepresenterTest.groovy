@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import com.thoughtworks.go.domain.*
 import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class StageRepresenterTest {
   @Test
@@ -40,7 +40,7 @@ class StageRepresenterTest {
 
   def getJobInstance() {
     def jobInstance = new JobInstance("job")
-    jobInstance.setId(1);
+    jobInstance.setId(1)
     jobInstance.setState(JobState.Assigned)
     jobInstance.setResult(JobResult.Unknown)
     jobInstance.setAgentUuid("uuid")

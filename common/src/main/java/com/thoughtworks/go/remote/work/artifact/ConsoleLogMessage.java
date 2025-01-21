@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package com.thoughtworks.go.remote.work.artifact;
 import com.google.gson.Gson;
 
 public class ConsoleLogMessage {
+    private static final Gson GSON = new Gson();
+    @SuppressWarnings("unused")
     private String message;
+    @SuppressWarnings("unused")
     private LogLevel logLevel;
 
     public String getMessage() {
@@ -30,7 +33,7 @@ public class ConsoleLogMessage {
     }
 
     public static ConsoleLogMessage fromJSON(String json) {
-        return new Gson().fromJson(json, ConsoleLogMessage.class);
+        return GSON.fromJson(json, ConsoleLogMessage.class);
     }
 
     enum LogLevel {

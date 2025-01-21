@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when
 @MockitoSettings(strictness = Strictness.LENIENT)
 class InternalAgentControllerV1Test implements ControllerTrait<InternalAgentControllerV1> {
   @Mock
-  BuildRepositoryMessageProducer buildRepositoryMessageProducer;
+  BuildRepositoryMessageProducer buildRepositoryMessageProducer
 
 
   @Override

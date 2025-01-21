@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,14 @@ import com.thoughtworks.go.plugin.api.task.TaskConfig;
 import com.thoughtworks.go.plugin.api.task.TaskExecutionContext;
 import com.thoughtworks.go.plugin.api.task.TaskExecutor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class JsonBasedTaskExecutor implements TaskExecutor {
     private String pluginId;
     private PluginRequestHelper pluginRequestHelper;
-    private HashMap<String, JsonBasedTaskExtensionHandler> handlerMap;
+    private Map<String, JsonBasedTaskExtensionHandler> handlerMap;
 
-    public JsonBasedTaskExecutor(String pluginId, PluginRequestHelper pluginRequestHelper, HashMap<String, JsonBasedTaskExtensionHandler> handlerMap) {
+    public JsonBasedTaskExecutor(String pluginId, PluginRequestHelper pluginRequestHelper, Map<String, JsonBasedTaskExtensionHandler> handlerMap) {
         this.pluginId = pluginId;
         this.pluginRequestHelper = pluginRequestHelper;
         this.handlerMap = handlerMap;

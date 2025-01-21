@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -360,7 +360,7 @@ public class FanInGraph {
     }
 
     private StageIdFaninScmMaterialPair getSmallestScmRevision(Collection<StageIdFaninScmMaterialPair> scmWithDiffVersions) {
-        ArrayList<StageIdFaninScmMaterialPair> materialPairList = new ArrayList<>(scmWithDiffVersions);
+        List<StageIdFaninScmMaterialPair> materialPairList = new ArrayList<>(scmWithDiffVersions);
         materialPairList.sort((pair1, pair2) -> {
             final PipelineTimelineEntry.Revision rev1 = pair1.faninScmMaterial.revision;
             final PipelineTimelineEntry.Revision rev2 = pair2.faninScmMaterial.revision;

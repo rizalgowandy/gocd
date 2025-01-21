@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.thoughtworks.go.plugin.api;
 /**
  * An abstract implementation GoPlugin which will take care of GoApplicationAccessor initialization.
  */
+@SuppressWarnings("unused") // Part of plugin API used by some plugins
 public abstract class AbstractGoPlugin implements GoPlugin {
 
     protected GoApplicationAccessor goApplicationAccessor;

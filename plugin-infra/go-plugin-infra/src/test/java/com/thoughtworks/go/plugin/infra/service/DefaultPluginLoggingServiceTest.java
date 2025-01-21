@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +52,7 @@ class DefaultPluginLoggingServiceTest {
         loggingService.debug(pluginId, "some-logger-name", "message");
 
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("plugin." + pluginId);
-        ArrayList<Appender<ILoggingEvent>> appenders = new ArrayList<>();
+        List<Appender<ILoggingEvent>> appenders = new ArrayList<>();
         logger.iteratorForAppenders().forEachRemaining(appenders::add);
 
         String loggingDirectory = loggingService.getCurrentLogDirectory();

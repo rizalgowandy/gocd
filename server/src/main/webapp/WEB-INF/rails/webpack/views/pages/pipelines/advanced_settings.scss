@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:color";
 @import "../../global/common";
 @import "../../../views/components/forms/forms";
 
@@ -24,17 +25,18 @@
   border-top: 1px solid $line-color;
 
   .summary {
+    line-height: 25px;
+    cursor: pointer;
+    outline: none;
+    font-weight: 600;
+
     @include icon-before(
       $type: $fa-var-chevron-right,
       $color: $text-color,
       $size: 16px,
       $line-height: 25px,
-      $margin: 0 5px);
-
-    line-height: 25px;
-    cursor: pointer;
-    outline: none;
-    font-weight: 600;
+      $margin: 0 5px
+    );
   }
 
   .details {
@@ -62,7 +64,7 @@
     cursor: not-allowed;
 
     &::before {
-      color: lighten($text-color, 50%);
+      color: color.adjust($text-color, $lightness: 50%);
     }
   }
 }

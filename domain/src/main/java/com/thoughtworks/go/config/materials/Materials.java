@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class Materials extends BaseCollection<Material> {
     }
 
     private List<String> allowedFolders() {
-        ArrayList<String> allowed = new ArrayList<>();
+        List<String> allowed = new ArrayList<>();
         for (Material material : this) {
             if (!StringUtils.isBlank(material.getFolder())) {
                 allowed.add(material.getFolder());

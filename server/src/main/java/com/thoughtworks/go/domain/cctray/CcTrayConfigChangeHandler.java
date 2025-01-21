@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class CcTrayConfigChangeHandler {
     }
 
     public void call(PipelineConfig pipelineConfig) {
-        ArrayList<ProjectStatus> projectStatuses = new ArrayList<>();
+        List<ProjectStatus> projectStatuses = new ArrayList<>();
         final Permissions permissions = pipelinePermissionsAuthority.permissionsForPipeline(pipelineConfig.name());
         Users usersWithViewPermissionsOfThisPipeline = viewersOrNoOne(permissions);
         updateProjectStatusForPipeline(usersWithViewPermissionsOfThisPipeline, pipelineConfig, projectStatuses);

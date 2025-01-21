@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleOptionsTest {
 
@@ -37,21 +37,21 @@ public class ScheduleOptionsTest {
 
     @Test
     public void shouldReturnEnvironmentVariablesConfig() {
-        HashMap<String, String> variables = new HashMap<>();
+        Map<String, String> variables = new HashMap<>();
         variables.put("name", "value");
         variables.put("foo", "bar");
         ScheduleOptions scheduleOptions = new ScheduleOptions(new HashMap<>(), variables, new HashMap<>());
-        assertThat(scheduleOptions.getVariables().size(), is(2));
-        assertThat(scheduleOptions.getVariables(), hasItems(new EnvironmentVariableConfig("name","value"), new EnvironmentVariableConfig("foo","bar")));
+        assertThat(scheduleOptions.getVariables().size()).isEqualTo(2);
+        assertThat(scheduleOptions.getVariables()).contains(new EnvironmentVariableConfig("name","value"), new EnvironmentVariableConfig("foo","bar"));
     }
 
     @Test
     public void shouldReturnSecureEnvironmentVariablesConfig() throws CryptoException {
         String plainText = "secure_value";
-        HashMap<String, String> secureVariables = new HashMap<>();
+        Map<String, String> secureVariables = new HashMap<>();
         secureVariables.put("secure_name", plainText);
         ScheduleOptions scheduleOptions = new ScheduleOptions(goCipher, new HashMap<>(), new HashMap<>(), secureVariables);
-        assertThat(scheduleOptions.getVariables().size(), is(1));
-        assertThat(scheduleOptions.getVariables(), hasItem(new EnvironmentVariableConfig(goCipher, "secure_name", plainText, true)));
+        assertThat(scheduleOptions.getVariables().size()).isEqualTo(1);
+        assertThat(scheduleOptions.getVariables()).contains(new EnvironmentVariableConfig(goCipher, "secure_name", plainText, true));
     }
 }

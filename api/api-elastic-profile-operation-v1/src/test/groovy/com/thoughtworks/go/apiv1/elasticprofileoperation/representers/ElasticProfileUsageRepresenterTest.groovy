@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.thoughtworks.go.apiv1.elasticprofileoperation.representers
 import com.thoughtworks.go.domain.ElasticProfileUsage
 import org.junit.jupiter.api.Test
 
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class ElasticProfileUsageRepresenterTest {
 

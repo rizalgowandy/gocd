@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,8 +69,8 @@ class DatabaseMigratorH2Test {
                 .contains("BUILDS");
     }
 
-    private ArrayList<String> tableList() throws SQLException {
-        ArrayList<String> tables = new ArrayList<>();
+    private List<String> tableList() throws SQLException {
+        List<String> tables = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'PUBLIC' and table_type='TABLE';");

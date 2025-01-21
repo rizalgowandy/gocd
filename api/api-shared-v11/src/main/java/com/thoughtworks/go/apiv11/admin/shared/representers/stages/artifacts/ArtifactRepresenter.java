@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import com.thoughtworks.go.config.*;
 import com.thoughtworks.go.config.exceptions.UnprocessableEntityException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ArtifactRepresenter {
 
     public static void toJSON(OutputWriter jsonWriter, ArtifactTypeConfig artifactConfig) {
         if (!artifactConfig.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 errorMapping.put("src", "source");
                 errorMapping.put("dest", "destination");
                 errorMapping.put("id", "artifact_id");

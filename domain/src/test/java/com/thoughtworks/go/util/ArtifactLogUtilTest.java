@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package com.thoughtworks.go.util;
 import org.junit.jupiter.api.Test;
 
 import static com.thoughtworks.go.util.ArtifactLogUtil.isConsoleOutput;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArtifactLogUtilTest {
     @Test
     public void shouldIdentifyConsoleLog() {
-        assertThat(isConsoleOutput("cruise-output/console.log"), is(true));
+        assertThat(isConsoleOutput("cruise-output/console.log")).isTrue();
     }
 
     @Test
     public void shouldNotIdentifyAnyOtherArtifactAsConsoleLog() {
-        assertThat(isConsoleOutput("artifact"), is(false));
+        assertThat(isConsoleOutput("artifact")).isFalse();
     }
 }

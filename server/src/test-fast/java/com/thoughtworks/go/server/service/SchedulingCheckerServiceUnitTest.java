@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -286,7 +286,7 @@ public class SchedulingCheckerServiceUnitTest {
     }
 
     private void assertFor(List<SchedulingChecker> checkerList, Class typeOfScheduleChecker) {
-        ArrayList<SchedulingChecker> containerForAllCheckers = new ArrayList<>();
+        List<SchedulingChecker> containerForAllCheckers = new ArrayList<>();
         flatten(checkerList, containerForAllCheckers);
         for (Object o : containerForAllCheckers) {
             if (o.getClass().equals(typeOfScheduleChecker)) {
@@ -297,7 +297,7 @@ public class SchedulingCheckerServiceUnitTest {
         fail("could not find " + typeOfScheduleChecker);
     }
 
-    private void flatten(List<SchedulingChecker> value, ArrayList<SchedulingChecker> containerForAllCheckers) {
+    private void flatten(List<SchedulingChecker> value, List<SchedulingChecker> containerForAllCheckers) {
         for (SchedulingChecker checker : value) {
             if (checker instanceof CompositeChecker) {
                 List<SchedulingChecker> schedulingCheckers = List.of(((CompositeChecker) checker).getCheckers());

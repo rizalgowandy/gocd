@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ class P4MaterialConfigTest {
     void shouldNotSetUseTicketsIfNotInConfigAttributesMap() {
         P4MaterialConfig p4MaterialConfig = p4("", "");
 
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put(P4MaterialConfig.USE_TICKETS, "true");
         p4MaterialConfig.setConfigAttributes(map);
         assertThat(p4MaterialConfig.getUseTickets()).isTrue();

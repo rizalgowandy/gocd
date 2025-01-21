@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class GoConfigMigratorIntegrationTest {
     private SessionFactory sessionFactory;
     @Autowired
     private DatabaseAccessHelper dbHelper;
-    private ArrayList<Exception> exceptions;
+    private List<Exception> exceptions;
 
     @BeforeEach
     public void setUp(@TempDir File temporaryFolder, ResetCipher resetCipher) throws Exception {
@@ -182,7 +182,7 @@ public class GoConfigMigratorIntegrationTest {
         try {
             loadConfigFileWithContent(ConfigFileFixture.MINIMAL);
             loadConfigFileWithContent("<cruise></cruise>");
-            ServerHealthStates states = serverHealthService.logs();
+            ServerHealthStates states = serverHealthService.logsSorted();
             assertThat(states.size()).isEqualTo(1);
             assertThat(states.get(0).getDescription()).contains("Go encountered an invalid configuration file while starting up. The invalid configuration file has been renamed to &lsquo;");
             assertThat(states.get(0).getDescription()).contains("&rsquo; and a new configuration file has been automatically created using the last good configuration.");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,9 +119,9 @@ class PipelineSqlMapDaoTest {
     @Test
     void shouldGetLatestRevisionFromOrderedLists() {
         PipelineSqlMapDao pipelineSqlMapDao = new PipelineSqlMapDao(null, null, null, null, null, null, null, new SystemEnvironment(), mock(GoConfigDao.class), mock(Database.class), timeProvider);
-        ArrayList list1 = new ArrayList();
-        ArrayList list2 = new ArrayList();
-        assertThat(pipelineSqlMapDao.getLatestRevisionFromOrderedLists(list1, list2)).isEqualTo(null);
+        List list1 = new ArrayList();
+        List list2 = new ArrayList();
+        assertThat(pipelineSqlMapDao.getLatestRevisionFromOrderedLists(list1, list2)).isNull();
         Modification modification1 = new Modification(MOD_USER, MOD_COMMENT, EMAIL_ADDRESS,
                 YESTERDAY_CHECKIN, ModificationsMother.nextRevision());
         list1.add(modification1);

@@ -66,12 +66,12 @@
   },
   "jquery-ui": {
     "moduleName": "jquery-ui",
-    "moduleVersion": "1.13.2",
+    "moduleVersion": "1.14.1",
     "moduleUrls": [
       "https://github.com/jquery/jquery-ui"
     ],
     "filenames": [
-      "jquery-ui-1.13.2.js"
+      "jquery-ui-1.14.1.js"
     ],
     "moduleLicenses": [
       {
@@ -181,6 +181,20 @@
     "moduleVersion": "0.4.3",
     "moduleUrls": [
       "https://github.com/yanatan16/nanoajax"
+    ],
+    "moduleLicenses": [
+      {
+        "moduleLicense": "MIT",
+        "moduleLicenseUrl": "https://spdx.org/licenses/MIT.html"
+      }
+    ]
+  },
+  "glide.js": {
+    "moduleName": "glide.js",
+    "moduleVersion": "3.6.1",
+    "moduleUrls": [
+      "https://github.com/glidejs/glide",
+      "https://glidejs.com/"
     ],
     "moduleLicenses": [
       {

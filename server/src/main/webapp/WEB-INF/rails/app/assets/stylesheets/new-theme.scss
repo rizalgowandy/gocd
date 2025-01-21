@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 // new theme for old pages in go.cd app
+@use "sass:color";
 @import "../new_stylesheets/shared/go-variables";
 @import "../new_stylesheets/shared/mixins";
 @import "../new_stylesheets/shared/common";
@@ -48,10 +49,10 @@ ul {
 .row {
   margin-left: auto;
   margin-right: auto;
+  max-width: 100%;
 
   @include clearfix;
 
-  max-width: 100%;
 }
 
 .column,
@@ -344,8 +345,8 @@ h1.entity_title {
 
 // css arrows
 
-$arrow-border-color: lighten(#000, 75%);
-$arrow-border-active-color: lighten(#000, 50%);
+$arrow-border-color: color.adjust(#000, $lightness: 75%);
+$arrow-border-active-color: color.adjust(#000, $lightness: 50%);
 
 .arrow {
   display: inline-block;
@@ -755,7 +756,7 @@ a.primary_link_as_button,
   border: 1px solid $go-primary;
 
   &:hover {
-    background-color: darken($go-primary, 4%) !important;
+    background-color: color.adjust($go-primary, $lightness: -4%) !important;
     background-image: none;
     font-size: rem-calc(13px);
   }
@@ -903,21 +904,21 @@ a.link_as_button.disabled:hover {
   }
 
   &.Passed {
-    @include icon-before($passed-icon, $margin: 0);
-
     color: $passed;
+
+    @include icon-before($passed-icon, $margin: 0);
   }
 
   &.Failed {
-    @include icon-before($failed-icon, $margin: 0);
-
     color: $failed;
+
+    @include icon-before($failed-icon, $margin: 0);
   }
 
   &.Cancelled {
-    @include icon-before($cancelled-icon, $margin: 0);
-
     color: $building;
+
+    @include icon-before($cancelled-icon, $margin: 0);
   }
 }
 
@@ -1151,7 +1152,7 @@ form#notification_form fieldset {
   min-width: 75px;
 
   &:hover {
-    color: darken($go-primary, 4%);
+    color: color.adjust($go-primary, $lightness: -4%);
   }
 }
 

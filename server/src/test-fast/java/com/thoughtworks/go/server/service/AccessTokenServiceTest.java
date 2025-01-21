@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ class AccessTokenServiceTest {
     }
 
     @Test
-    void shouldMakeACallToSQLDaoForAccessTokenCreation() throws Exception {
-        String longerDescription = RandomStringUtils.randomAlphanumeric(1024).toUpperCase();
+    void shouldMakeACallToSQLDaoForAccessTokenCreation() {
+        String longerDescription = RandomStringUtils.insecure().nextAlphanumeric(1024).toUpperCase();
         accessTokenService.create(longerDescription, username, authConfigId);
 
         assertThat(result.isSuccessful()).isTrue();

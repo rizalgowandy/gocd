@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
@@ -52,7 +53,7 @@ class ClusterProfilesChangedPluginNotifierTest {
     private ClusterProfile newClusterProfile;
     private String pluginId;
     private ClusterProfile oldClusterProfile;
-    private ArrayList<ConfigurationProperty> properties;
+    private List<ConfigurationProperty> properties;
 
     @BeforeEach
     void setUp() {

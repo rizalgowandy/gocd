@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.thoughtworks.go.config.pluggabletask.PluggableTask;
 import com.thoughtworks.go.domain.Task;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class TaskRepresenter {
@@ -36,7 +37,7 @@ public class TaskRepresenter {
     public static void toJSON(OutputWriter jsonWriter, Task task) {
         if (!task.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 errorMapping.put("buildFile", "build_file");
                 errorMapping.put("onCancelConfig", "on_cancel");
                 errorMapping.put("runIf", "run_if");

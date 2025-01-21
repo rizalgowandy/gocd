@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -59,7 +58,7 @@ public class GoConfigPluginServiceTest {
     @Test
     public void shouldAskExtensionForPluginImplementationWhenPluginIdSpecified() throws Exception {
         PartialConfigProvider plugin = service.partialConfigProviderFor("plugin-id");
-        assertThat(plugin instanceof ConfigRepoPlugin,is(true));
+        assertThat(plugin instanceof ConfigRepoPlugin).isTrue();
         CRParseResult loaded = ((ConfigRepoPlugin) plugin).parseDirectory(new File("dir"), mock(Collection.class));
         assertSame(environments, parseResult.getEnvironments());
         assertSame(pipelines, parseResult.getPipelines());

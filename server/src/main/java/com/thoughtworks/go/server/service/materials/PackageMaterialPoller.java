@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class PackageMaterialPoller implements MaterialPoller<PackageMaterial> {
     }
 
     private Map<String, String> getCommentParameters(PackageRevision packageRevision) {
-        HashMap<String, String> commentParametersMap = new HashMap<>();
+        Map<String, String> commentParametersMap = new HashMap<>();
         commentParametersMap.put("TYPE", "PACKAGE_MATERIAL");
         commentParametersMap.put("TRACKBACK_URL", packageRevision.getTrackbackUrl());
         commentParametersMap.put("COMMENT", packageRevision.getRevisionComment());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
@@ -125,10 +123,10 @@ public class GoCacheIntegrationTest {
                 });
             }
         });
-        assertThat(valueInCleanTxn[0], is("bar"));
-        assertThat(valueInDirtyTxn[0], is(nullValue()));
-        assertThat(valueInAfterCommit[0], is("bar"));
-        assertThat(valueInAfterCompletion[0], is("bar"));
+        assertThat(valueInCleanTxn[0]).isEqualTo("bar");
+        assertThat(valueInDirtyTxn[0]).isNull();
+        assertThat(valueInAfterCommit[0]).isEqualTo("bar");
+        assertThat(valueInAfterCompletion[0]).isEqualTo("bar");
     }
 
 }

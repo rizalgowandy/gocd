@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,7 +174,7 @@ class ConfigConverterTest {
 
     @Test
     void shouldMigratePluggableTask() {
-        ArrayList<CRConfigurationProperty> configs = new ArrayList<>();
+        List<CRConfigurationProperty> configs = new ArrayList<>();
         configs.add(new CRConfigurationProperty("k", "m", null));
         CRPluggableTask pluggableTask = new CRPluggableTask(CRRunIf.any, null,
                 new CRPluginConfiguration("myplugin", "1"), configs);

@@ -1,5 +1,5 @@
 #
-# Copyright 2024 Thoughtworks, Inc.
+# Copyright Thoughtworks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 require_relative "boot"
 
+require "logger" # workaround for https://github.com/ruby-concurrency/concurrent-ruby/issues/1077 since https://github.com/rails/rails/pull/54264 wont be backported to Rails 6.1 as it is EOL.
 require "rails"
 require "active_model/railtie"
 require "action_controller/railtie"

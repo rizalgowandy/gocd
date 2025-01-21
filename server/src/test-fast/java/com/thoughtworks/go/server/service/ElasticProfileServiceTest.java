@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class ElasticProfileServiceTest {
         cruiseConfig.setElasticConfig(elasticConfig);
         when(goConfigService.getConfigForEditing()).thenReturn(cruiseConfig);
 
-        HashMap<String, ElasticProfile> expectedMap = new HashMap<>();
+        Map<String, ElasticProfile> expectedMap = new HashMap<>();
         expectedMap.put("ecs", elasticProfile);
         Map<String, ElasticProfile> elasticProfiles = elasticProfileService.listAll();
         assertThat(elasticProfiles).hasSize(1);

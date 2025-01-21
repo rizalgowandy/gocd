@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,7 +253,7 @@ class FelixGoPluginOSGiFrameworkTest {
     }
 
     private void registerServicesWithSamePluginID(String pluginID, String extensionType, SomeInterface... someInterfaces) throws InvalidSyntaxException {
-        ArrayList<ServiceReference<SomeInterface>> references = new ArrayList<>();
+        List<ServiceReference<SomeInterface>> references = new ArrayList<>();
 
         for (SomeInterface someInterface : someInterfaces) {
             ServiceReference<SomeInterface> reference = mock(ServiceReference.class);

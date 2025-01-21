@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ public class PipelineHistoryJsonPresentationModel implements JsonAware {
     }
 
     @Override
-    public Map toJson() {
+    public Map<String, Object> toJson() {
         Map<String, Object> json = new LinkedHashMap<>();
         String pipelineName = str(pipelineConfig.name());
         json.put("pipelineName", pipelineName);

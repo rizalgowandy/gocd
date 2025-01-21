@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  */
 package com.thoughtworks.go.api.mocks
 
-import net.javacrumbs.jsonunit.fluent.JsonFluentAssert
 import org.springframework.mock.web.MockHttpServletResponse
 
 import static com.thoughtworks.go.api.base.JsonUtils.toArrayString
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class MockHttpServletResponseAssert extends com.thoughtworks.go.http.mocks.MockHttpServletResponseAssert<MockHttpServletResponseAssert> {
 
@@ -32,7 +32,7 @@ class MockHttpServletResponseAssert extends com.thoughtworks.go.http.mocks.MockH
   }
 
   MockHttpServletResponseAssert hasBodyWithJson(String expectedJson) {
-    JsonFluentAssert.assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
+    assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
     return this
   }
 
@@ -40,7 +40,7 @@ class MockHttpServletResponseAssert extends com.thoughtworks.go.http.mocks.MockH
   MockHttpServletResponseAssert hasBodyWithJsonObject(Class representer, Object... representerArgs) {
     def expectedJson = toObjectString({ representer.toJSON(it, *representerArgs) })
 
-    JsonFluentAssert.assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
+    assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
     return this
   }
 
@@ -48,7 +48,7 @@ class MockHttpServletResponseAssert extends com.thoughtworks.go.http.mocks.MockH
   MockHttpServletResponseAssert hasBodyWithJsonArray(Class representer, Object... representerArgs) {
     def expectedJson = toArrayString({ representer.toJSON(it, *representerArgs) })
 
-    JsonFluentAssert.assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
+    assertThatJson(actual.getContentAsString()).isEqualTo(expectedJson)
     return this
   }
 

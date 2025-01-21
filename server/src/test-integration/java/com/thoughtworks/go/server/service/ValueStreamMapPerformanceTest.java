@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import com.thoughtworks.go.server.service.result.DefaultLocalizedOperationResult
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import com.thoughtworks.go.server.transaction.TransactionTemplate;
 import com.thoughtworks.go.util.GoConfigFileHelper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,8 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -96,14 +94,14 @@ public class ValueStreamMapPerformanceTest {
     public void shouldTestVSMForNPipelines() throws Exception {
         final int numberOfDownstreamPipelines = 5;
         final CruiseConfig cruiseConfig = setupVSM(numberOfDownstreamPipelines);
-        ArrayList<Thread> ts = new ArrayList<>();
+        List<Thread> ts = new ArrayList<>();
         int numberOfParallelRequests = 10;
         for (int i = 0; i < numberOfParallelRequests; i++) {
             final int finalI = i;
             Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(5000);
-                    doRun(numberOfDownstreamPipelines, cruiseConfig, "Thread" + finalI);
+                    doRun(numberOfDownstreamPipelines, cruiseConfig);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -138,22 +136,22 @@ public class ValueStreamMapPerformanceTest {
         DefaultLocalizedOperationResult result = new DefaultLocalizedOperationResult();
         ValueStreamMapPresentationModel presentationModel = valueStreamMapService.getValueStreamMap(new CaseInsensitiveString("current"), 1, Username.ANONYMOUS, result);
         long timeTaken = (System.currentTimeMillis() - start) / 1000;
-        assertThat(String.format("VSM took %ds. Should have been generated in 30s.", timeTaken), timeTaken, Matchers.lessThan(30L));
+        assertThat(timeTaken).isLessThan(30L);
 
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(presentationModel.getNodesAtEachLevel().size(), is(14));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(presentationModel.getNodesAtEachLevel().size()).isEqualTo(14);
     }
 
-    private void doRun(int numberOfDownstreamPipelines, CruiseConfig cruiseConfig, String threadName) throws InterruptedException {
+    private void doRun(int numberOfDownstreamPipelines, CruiseConfig cruiseConfig) throws InterruptedException {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         for (PipelineConfig pipelineConfig : cruiseConfig.allPipelines()) {
             ValueStreamMapPresentationModel map = valueStreamMapService.getValueStreamMap(pipelineConfig.name(), 1, Username.ANONYMOUS, result);
-            assertThat(getAllNodes(map).size(), is(numberOfDownstreamPipelines + 2));
+            assertThat(getAllNodes(map).size()).isEqualTo(numberOfDownstreamPipelines + 2);
         }
     }
 
     private List<Node> getAllNodes(ValueStreamMapPresentationModel presentationModel) {
-        ArrayList<Node> nodes = new ArrayList<>();
+        List<Node> nodes = new ArrayList<>();
         List<List<Node>> nodesAtEachLevel = presentationModel.getNodesAtEachLevel();
         for (List<Node> nodesAtLevel : nodesAtEachLevel) {
             nodes.addAll(nodesAtLevel);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,8 @@ public class ConsoleResult {
         return StringUtils.join(forDisplay(error), "\n");
     }
 
-    private ArrayList<String> forDisplay(List<String> from) {
-        ArrayList<String> forDisplay = new ArrayList<>();
+    private List<String> forDisplay(List<String> from) {
+        List<String> forDisplay = new ArrayList<>();
         for (String line : from) {
             forDisplay.add(replaceSecretInfo(line));
         }

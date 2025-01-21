@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,11 +198,11 @@ public class ElasticAgentPluginService {
             }
         }
 
-        ArrayList<JobPlan> jobsThatRequireAgent = new ArrayList<>();
+        List<JobPlan> jobsThatRequireAgent = new ArrayList<>();
         jobsThatRequireAgent.addAll(Sets.difference(new HashSet<>(newPlan), new HashSet<>(old)));
         jobsThatRequireAgent.addAll(starvingJobs);
 
-        List<JobPlan> plansThatRequireElasticAgent = jobsThatRequireAgent.stream().filter(isElasticAgent()).collect(toList());
+        List<JobPlan> plansThatRequireElasticAgent = jobsThatRequireAgent.stream().filter(isElasticAgent()).toList();
 //      messageTimeToLive is lesser than the starvation threshold to ensure there are no duplicate create agent message
         long messageTimeToLive = goConfigService.elasticJobStarvationThreshold() - 10000;
 

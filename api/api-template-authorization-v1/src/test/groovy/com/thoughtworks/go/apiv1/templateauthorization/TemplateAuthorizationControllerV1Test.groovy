@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ import static org.mockito.Mockito.*
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TemplateAuthorizationControllerV1Test implements SecurityServiceTrait, ControllerTrait<TemplateAuthorizationControllerV1> {
   @Mock
-  EntityHashingService entityHashingService;
+  EntityHashingService entityHashingService
 
   @Mock
-  TemplateConfigService templateConfigService;
+  TemplateConfigService templateConfigService
 
 
   @Override

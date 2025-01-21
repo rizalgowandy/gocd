@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package com.thoughtworks.go.presentation.pipelinehistory;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PreparingToScheduleInstanceTest {
 
@@ -31,13 +29,13 @@ public class PreparingToScheduleInstanceTest {
 
         PipelineInstanceModel pipeline = PipelineInstanceModel.createPreparingToSchedule("pipeline-name", stages);
 
-        assertThat(pipeline.getPipelineStatusMessage(), Matchers.is("Preparing to schedule (0/2)"));
+        assertThat(pipeline.getPipelineStatusMessage()).isEqualTo(("Preparing to schedule (0/2)"));
     }
 
 
     @Test
     public void shouldNotReturnNullForScheduledDate() {
         PipelineInstanceModel pipeline = PipelineInstanceModel.createPreparingToSchedule("pipeline-name", new StageInstanceModels());
-        assertThat(pipeline.getScheduledDate(), is(not(nullValue())));
+        assertThat(pipeline.getScheduledDate()).isNotNull();
     }
 }

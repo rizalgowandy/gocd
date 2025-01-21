@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -60,7 +59,7 @@ public class AgentBootstrapperTest {
         final AgentBootstrapper bootstrapper = new AgentBootstrapper() {
             @Override
             void waitForRelaunchTime() {
-                assertThat(waitTimeBeforeRelaunch, is(0));
+                assertThat(waitTimeBeforeRelaunch).isEqualTo(0);
                 reLaunchWaitIsCalled[0] = true;
                 super.waitForRelaunchTime();
             }
@@ -103,7 +102,7 @@ public class AgentBootstrapperTest {
         } catch (Exception e) {
             fail("should not have propagated exception thrown while creating launcher");
         }
-        assertThat(reLaunchWaitIsCalled[0], is(true));
+        assertThat(reLaunchWaitIsCalled[0]).isTrue();
     }
 
 
@@ -136,7 +135,7 @@ public class AgentBootstrapperTest {
         } catch (Exception e) {
             fail("should not have propagated exception thrown while invoking the launcher");
         }
-        assertThat(destroyCalled[0], is(true));
+        assertThat(destroyCalled[0]).isTrue();
     }
 
     @Test
@@ -206,7 +205,7 @@ public class AgentBootstrapperTest {
                                 incrementCount(descriptorContext);
                                 incrementCount(expectedContext);
                                 Integer expectedCount = (Integer) expectedContext.get(COUNT);
-                                assertThat(descriptorContext.get(COUNT), is(expectedCount));
+                                assertThat(descriptorContext.get(COUNT)).isEqualTo(expectedCount);
                                 if (expectedCount > 3) {
                                     ((AgentBootstrapper) descriptor.getBootstrapper()).stopLooping();
                                 }

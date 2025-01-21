@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
 import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,22 +233,12 @@ public class AuthorizationMessageConverterV2 implements AuthorizationMessageConv
         }.getType());
     }
 
-    @Override
-    public String authenticateUserRequestBody(String username, List<SecurityAuthConfig> authConfigs, List<PluginRoleConfig> roleConfigs) {
-        Map<String, Object> requestMap = new HashMap<>();
-
-        requestMap.put("username", username);
-        requestMap.put("auth_configs", getAuthConfigs(authConfigs));
-        requestMap.put("role_configs", getRoleConfigs(roleConfigs));
-        return GSON.toJson(requestMap);
-    }
-
     private AuthenticationResponse createAuthResponse(String responseBody) {
         return AuthenticationResponseDTO.fromJSON(responseBody).toDomainModel();
     }
 
     private String getTemplateFromResponse(String responseBody, String message) {
-        String template = (String) new Gson().fromJson(responseBody, Map.class).get("template");
+        String template = (String) GSON.fromJson(responseBody, Map.class).get("template");
         if (StringUtils.isBlank(template)) {
             throw new RuntimeException(message);
         }

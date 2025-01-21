@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import com.thoughtworks.go.util.Clock;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,13 +31,13 @@ public class TimeStampBasedCounterTest {
         Clock clock = mock(Clock.class);
         when(clock.currentTimeMillis()).thenReturn(1000L);
         TimeStampBasedCounter timeStampBasedCounter = new TimeStampBasedCounter(clock);
-        assertThat(timeStampBasedCounter.getNext(), is(1001L));
-        assertThat(timeStampBasedCounter.getNext(), is(1002L));
+        assertThat(timeStampBasedCounter.getNext()).isEqualTo(1001L);
+        assertThat(timeStampBasedCounter.getNext()).isEqualTo(1002L);
     }
 
     @Test
     public void shouldAllow() throws InterruptedException {
-        ArrayList<Thread> list = new ArrayList<>();
+        List<Thread> list = new ArrayList<>();
         Clock clock = mock(Clock.class);
         when(clock.currentTimeMillis()).thenReturn(0L);
         TimeStampBasedCounter provider = new TimeStampBasedCounter(clock);

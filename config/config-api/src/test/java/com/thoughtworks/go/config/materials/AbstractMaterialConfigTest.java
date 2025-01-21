@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,11 +158,6 @@ class AbstractMaterialConfigTest {
         @Override
         protected void appendCriteria(Map<String, Object> parameters) {
             parameters.put("foo", bar);
-        }
-
-        @Override
-        protected void appendAttributes(Map<String, Object> parameters) {
-            parameters.put("baz", quux);
         }
 
         @Override

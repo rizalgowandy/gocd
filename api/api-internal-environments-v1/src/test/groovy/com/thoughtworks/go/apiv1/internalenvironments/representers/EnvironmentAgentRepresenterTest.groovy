@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.mockito.quality.Strictness
 
 import static com.thoughtworks.go.CurrentGoCDVersion.apiDocsUrl
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.mockito.Mockito.when
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -61,7 +61,7 @@ class EnvironmentAgentRepresenterTest {
 
   @Test
   void 'should represent agent with config repo origin'() {
-    def origin = new RepoConfigOrigin(ConfigRepoConfig.createConfigRepoConfig(MaterialConfigsMother.git("foo.git"), "json-plugon", "repo1"), "revision1");
+    def origin = new RepoConfigOrigin(ConfigRepoConfig.createConfigRepoConfig(MaterialConfigsMother.git("foo.git"), "json-plugon", "repo1"), "revision1")
     def agent = new EnvironmentAgentConfig("agent-1")
     when(environmentConfig.isLocal()).thenReturn(false)
     when(environmentConfig.originForAgent(agent.uuid)).thenReturn(Optional.of(origin))

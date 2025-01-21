@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class CcTrayStageStatusChangeHandler {
     }
 
     public List<ProjectStatus> statusesOfStageAndItsJobsFor(Stage stage) {
-        ArrayList<ProjectStatus> statuses = new ArrayList<>();
+        List<ProjectStatus> statuses = new ArrayList<>();
 
         String projectName = stage.getIdentifier().ccProjectName();
         Set<String> breakers = breakersCalculator.calculateFor(stage);

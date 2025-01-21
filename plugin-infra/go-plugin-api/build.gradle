@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ dependencies {
   api project(path: ':plugin-infra:go-plugin-api-internal', configuration: 'runtimeElements')
   testImplementation project.deps.junit5Api
   testRuntimeOnly project.deps.junit5Engine
-  testImplementation project.deps.hamcrest
   testImplementation project.deps.mockitoCore
   testImplementation project(path: ':test:test-utils', configuration: 'runtimeElements')
 }
@@ -47,7 +46,7 @@ javadoc {
     windowTitle = 'GoCD Plugin API'
     docTitle = 'GoCD Plugin API'
     header = 'GoCD Plugin API'
-    bottom = "Copyright &copy; ${Calendar.getInstance().get(Calendar.YEAR).toString()} Thoughtworks, Inc. GoCD Version: ${project.version}"
+    bottom = "Copyright &copy; Thoughtworks, Inc. GoCD Version: ${project.version}"
   }
 }
 
@@ -56,10 +55,23 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
+assemble.dependsOn sourcesJar, javadocJar
+
 publishing {
   publications {
-    maven(MavenPublication) {
+    mavenJava(MavenPublication) {
+      groupId = 'cd.go.plugin'
       from components.java
+
+      // Clear the dependencyManagement and compileOnly dependencies
+      pom.withXml {
+        asNode().dependencyManagement.replaceNode {}
+        asNode().dependencies.replaceNode {}
+      }
     }
   }
+}
+
+tasks.withType(GenerateModuleMetadata) {
+  enabled = false
 }

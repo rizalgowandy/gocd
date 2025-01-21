@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,17 @@ import com.thoughtworks.go.config.ExecTask;
 import com.thoughtworks.go.config.pluggabletask.PluggableTask;
 import com.thoughtworks.go.config.registry.ConfigElementImplementationRegistry;
 import com.thoughtworks.go.domain.Task;
+import com.thoughtworks.go.util.XmlUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -129,7 +127,7 @@ public class UniqueOnCancelValidatorTest {
             UniqueOnCancelValidator validator = new UniqueOnCancelValidator();
             validator.validate(elementFor(content), registry);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Task [exec] should not contain more than 1 oncancel task"));
+            assertThat(e.getMessage()).isEqualTo("Task [exec] should not contain more than 1 oncancel task");
         }
     }
 
@@ -247,7 +245,7 @@ public class UniqueOnCancelValidatorTest {
             UniqueOnCancelValidator validator = new UniqueOnCancelValidator();
             validator.validate(elementFor(content), registry);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Task [task] should not contain more than 1 oncancel task"));
+            assertThat(e.getMessage()).isEqualTo("Task [task] should not contain more than 1 oncancel task");
         }
     }
 
@@ -258,7 +256,6 @@ public class UniqueOnCancelValidatorTest {
     }
 
     private Element elementFor(String content) throws JDOMException, IOException {
-        SAXBuilder builder = new SAXBuilder();
-        return builder.build(new ByteArrayInputStream(content.getBytes())).getRootElement();
+        return XmlUtils.buildXmlDocument(content).getRootElement();
     }
 }

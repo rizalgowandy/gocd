@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class ConfigInfoProvider implements ServerInfoProvider {
         return json;
     }
 
-    private LinkedHashMap<String, Object> securityInformation() {
+    private Map<String, Object> securityInformation() {
         final LinkedHashMap<String, Object> security = new LinkedHashMap<>();
         final List<Map<String, Object>> pluginsConfigured = new ArrayList<>();
         security.put("Plugins", pluginsConfigured);

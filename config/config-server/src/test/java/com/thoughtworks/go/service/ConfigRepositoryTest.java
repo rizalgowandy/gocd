@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.thoughtworks.go.domain.GoConfigRevision;
 import com.thoughtworks.go.helper.ConfigFileFixture;
 import com.thoughtworks.go.util.SystemEnvironment;
 import com.thoughtworks.go.util.TimeProvider;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -40,8 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.when;
 public class ConfigRepositoryTest {
     private ConfigRepository configRepo;
     private SystemEnvironment systemEnvironment;
+    private Git configRepoRawGit;
 
     @BeforeEach
     public void setUp(@TempDir File configRepoDir) throws IOException {
@@ -58,11 +59,12 @@ public class ConfigRepositoryTest {
         when(systemEnvironment.get(SystemEnvironment.GO_CONFIG_REPO_PERIODIC_GC)).thenReturn(true);
         configRepo = new ConfigRepository(systemEnvironment);
         configRepo.initialize();
+        configRepoRawGit = configRepo.git();
     }
 
     @AfterEach
     public void tearDown() throws Exception {
-        configRepo.git().close();
+        configRepoRawGit.close();
         configRepo.getGitRepo().close();
     }
 
@@ -70,8 +72,8 @@ public class ConfigRepositoryTest {
     public void shouldBeAbleToCheckin() throws Exception {
         configRepo.checkin(new GoConfigRevision("v1", "md5-v1", "user-name", "100.3.9", new TimeProvider()));
         configRepo.checkin(new GoConfigRevision("v1 v2", "md5-v2", "user-name", "100.9.8", new TimeProvider()));
-        assertThat(configRepo.getRevision("md5-v1").getContent(), is("v1"));
-        assertThat(configRepo.getRevision("md5-v2").getContent(), is("v1 v2"));
+        assertThat(configRepo.getRevision("md5-v1").getContent()).isEqualTo("v1");
+        assertThat(configRepo.getRevision("md5-v2").getContent()).isEqualTo("v1 v2");
     }
 
     @Test
@@ -80,8 +82,8 @@ public class ConfigRepositoryTest {
             configRepo = new ConfigRepository(systemEnvironment);
             configRepo.initialize();
             configRepo.checkin(new GoConfigRevision("v1", "md5-v1", "user-name", "100.3.9", new TimeProvider()));
-            assertThat(configRepo.getRevision("md5-v1").getContent(), is("v1"));
-            assertThat(configRepo.getCurrentRevCommit().getRawGpgSignature(), nullValue());
+            assertThat(configRepo.getRevision("md5-v1").getContent()).isEqualTo("v1");
+            assertThat(configRepo.getCurrentRevCommit().getRawGpgSignature()).isNull();
         }
     }
 
@@ -110,16 +112,16 @@ public class ConfigRepositoryTest {
 
         GoConfigRevisions goConfigRevisions = configRepo.getCommits(3, 0);
 
-        assertThat(goConfigRevisions.size(), is(3));
-        assertThat(goConfigRevisions.get(0).getContent(), is(nullValue()));
-        assertThat(goConfigRevisions.get(0).getMd5(), is("md5-v4"));
-        assertThat(goConfigRevisions.get(1).getMd5(), is("md5-v3"));
-        assertThat(goConfigRevisions.get(2).getMd5(), is("md5-v2"));
+        assertThat(goConfigRevisions.size()).isEqualTo(3);
+        assertThat(goConfigRevisions.get(0).getContent()).isNull();
+        assertThat(goConfigRevisions.get(0).getMd5()).isEqualTo("md5-v4");
+        assertThat(goConfigRevisions.get(1).getMd5()).isEqualTo("md5-v3");
+        assertThat(goConfigRevisions.get(2).getMd5()).isEqualTo("md5-v2");
 
         goConfigRevisions = configRepo.getCommits(3, 3);
 
-        assertThat(goConfigRevisions.size(), is(1));
-        assertThat(goConfigRevisions.get(0).getMd5(), is("md5-v1"));
+        assertThat(goConfigRevisions.size()).isEqualTo(1);
+        assertThat(goConfigRevisions.get(0).getMd5()).isEqualTo("md5-v1");
     }
 
     @Test
@@ -129,7 +131,7 @@ public class ConfigRepositoryTest {
             configRepo.getRevision("some-random-revision");
             fail("should have failed as revision does not exist");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("There is no config version corresponding to md5: 'some-random-revision'"));
+            assertThat(e.getMessage()).isEqualTo("There is no config version corresponding to md5: 'some-random-revision'");
         }
     }
 
@@ -137,12 +139,12 @@ public class ConfigRepositoryTest {
     public void shouldUnderstandRevision_current_asLatestRevision() throws Exception {
         configRepo.checkin(new GoConfigRevision("v1", "md5-v1", "user-name", "100.3.9", new TimeProvider()));
         configRepo.checkin(new GoConfigRevision("v1 v2", "md5-v2", "user-name", "100.9.8", new TimeProvider()));
-        assertThat(configRepo.getRevision("current").getMd5(), is("md5-v2"));
+        assertThat(configRepo.getRevision("current").getMd5()).isEqualTo("md5-v2");
     }
 
     @Test
     public void shouldReturnNullWhenThereAreNoCheckIns() throws Exception {
-        assertThat(configRepo.getRevision("current"), is(nullValue()));
+        assertThat(configRepo.getRevision("current")).isNull();
     }
 
     @Test
@@ -155,7 +157,7 @@ public class ConfigRepositoryTest {
             size++;
             commitIterator.next();
         }
-        assertThat(size, is(1));
+        assertThat(size).isEqualTo(1);
     }
 
     @Test
@@ -167,8 +169,8 @@ public class ConfigRepositoryTest {
         String configChangesLine1 = "-<cruise schemaVersion='33'>";
         String configChangesLine2 = "+<cruise schemaVersion='60'>";
         String actual = configRepo.findDiffBetweenTwoRevisions(latestCommit, previousCommit);
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine2));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine2);
     }
 
     @Test
@@ -179,8 +181,8 @@ public class ConfigRepositoryTest {
         String configChangesLine1 = "-<cruise schemaVersion='33'>";
         String configChangesLine2 = "+<cruise schemaVersion='55'>";
         String actual = configRepo.findDiffBetweenTwoRevisions(configRepo.getRevCommitForMd5("md5-3"), configRepo.getRevCommitForMd5("md5-1"));
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine2));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine2);
     }
 
     @Test
@@ -189,7 +191,7 @@ public class ConfigRepositoryTest {
         RevCommit firstCommit = configRepo.revisions().iterator().next();
         String actual = configRepo.findDiffBetweenTwoRevisions(firstCommit, null);
 
-        assertThat(actual, is(nullValue()));
+        assertThat(actual).isNull();
     }
 
     @Test
@@ -204,12 +206,12 @@ public class ConfigRepositoryTest {
 
         String actual = configRepo.configChangesFor("md5-2", "md5-1");
 
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine2));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine2);
 
         actual = configRepo.configChangesFor("md5-3", "md5-1");
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine3));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine3);
     }
 
     @Test
@@ -229,12 +231,12 @@ public class ConfigRepositoryTest {
 
         String actual = configRepo.configChangesForCommits(secondCommitSHA, firstCommitSHA);
 
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine2));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine2);
 
         actual = configRepo.configChangesForCommits(thirdCommitSHA, firstCommitSHA);
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine3));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine3);
     }
 
     @Test
@@ -245,10 +247,10 @@ public class ConfigRepositoryTest {
         String configChangesLine1 = "-<cruise schemaVersion='33'>";
         String configChangesLine2 = "+<cruise schemaVersion='60'>";
         String actual = configRepo.configChangesFor("md5-2", "md5-1");
-        assertThat(actual, containsString(configChangesLine1));
-        assertThat(actual, containsString(configChangesLine2));
-        assertThat(actual, not(containsString("--- a/cruise-config.xml")));
-        assertThat(actual, not(containsString("+++ b/cruise-config.xml")));
+        assertThat(actual).contains(configChangesLine1);
+        assertThat(actual).contains(configChangesLine2);
+        assertThat(actual).doesNotContain("--- a/cruise-config.xml");
+        assertThat(actual).doesNotContain("+++ b/cruise-config.xml");
     }
 
     @Test
@@ -258,13 +260,13 @@ public class ConfigRepositoryTest {
             configRepo.configChangesFor("md5-1", "md5-not-found");
             fail("Should have failed");
         } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("There is no config version corresponding to md5: 'md5-not-found'"));
+            assertThat(e.getMessage()).isEqualTo("There is no config version corresponding to md5: 'md5-not-found'");
         }
         try {
             configRepo.configChangesFor("md5-not-found", "md5-1");
             fail("Should have failed");
         } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("There is no config version corresponding to md5: 'md5-not-found'"));
+            assertThat(e.getMessage()).isEqualTo("There is no config version corresponding to md5: 'md5-not-found'");
         }
     }
 
@@ -274,8 +276,8 @@ public class ConfigRepositoryTest {
         RevCommit revCommit = configRepo.getCurrentRevCommit();
         configRepo.createBranch("branch1", revCommit);
         Ref branch = getBranch("branch1");
-        assertThat(branch, is(notNullValue()));
-        assertThat(branch.getObjectId(), is(revCommit.getId()));
+        assertThat(branch).isNotNull();
+        assertThat(branch.getObjectId()).isEqualTo(revCommit.getId());
     }
 
     @Test
@@ -290,9 +292,9 @@ public class ConfigRepositoryTest {
         GoConfigRevision configRevision = new GoConfigRevision(newConfigXML, "md5", "user", "version", new TimeProvider());
         RevCommit branchRevCommit = configRepo.checkinToBranch(branchName, configRevision);
 
-        assertThat(branchRevCommit, is(notNullValue()));
-        assertThat(getLatestConfigAt(branchName), is(newConfigXML));
-        assertThat(configRepo.getCurrentRevCommit(), is(revCommitOnMaster));
+        assertThat(branchRevCommit).isNotNull();
+        assertThat(getLatestConfigAt(branchName)).isEqualTo(newConfigXML);
+        assertThat(configRepo.getCurrentRevCommit()).isEqualTo(revCommitOnMaster);
     }
 
     @Test
@@ -305,7 +307,7 @@ public class ConfigRepositoryTest {
         configRepo.checkin(goConfigRevision(changeOnMaster, "md5-2"));
 
         String mergedConfig = configRepo.getConfigMergedWithLatestRevision(goConfigRevision(changeOnBranch, "md5-3"), oldMd5);
-        assertThat(mergedConfig, is("1st\nsecond\nthird\n"));
+        assertThat(mergedConfig).isEqualTo("1st\nsecond\nthird\n");
     }
 
     @Test
@@ -320,13 +322,13 @@ public class ConfigRepositoryTest {
             configRepo.getConfigMergedWithLatestRevision(goConfigRevision(latestUpdate, "md5-3"), "md5-1");
             fail("should have bombed for merge conflict");
         } catch (ConfigMergeException e) {
-            assertThat(e.getMessage(), is(ConfigFileHasChangedException.CONFIG_CHANGED_PLEASE_REFRESH));
+            assertThat(e.getMessage()).isEqualTo(ConfigFileHasChangedException.CONFIG_CHANGED_PLEASE_REFRESH);
         }
 
         List<Ref> branches = getAllBranches();
-        assertThat(branches.size(), is(1));
-        assertThat(branches.get(0).getName().endsWith("master"), is(true));
-        assertThat(configRepo.getCurrentRevCommit(), is(currentRevCommitOnMaster));
+        assertThat(branches.size()).isEqualTo(1);
+        assertThat(branches.get(0).getName().endsWith("master")).isTrue();
+        assertThat(configRepo.getCurrentRevCommit()).isEqualTo(currentRevCommitOnMaster);
     }
 
     @Test
@@ -340,11 +342,11 @@ public class ConfigRepositoryTest {
 
         String mergedConfig = configRepo.getConfigMergedWithLatestRevision(goConfigRevision(latestUpdate, "md5-3"), "md5-1");
 
-        assertThat(mergedConfig, is("1st\nsecond\nthird\n"));
+        assertThat(mergedConfig).isEqualTo("1st\nsecond\nthird\n");
         List<Ref> branches = getAllBranches();
-        assertThat(branches.size(), is(1));
-        assertThat(branches.get(0).getName().endsWith("master"), is(true));
-        assertThat(configRepo.getCurrentRevCommit(), is(currentRevCommitOnMaster));
+        assertThat(branches.size()).isEqualTo(1);
+        assertThat(branches.get(0).getName().endsWith("master")).isTrue();
+        assertThat(configRepo.getCurrentRevCommit()).isEqualTo(currentRevCommitOnMaster);
     }
 
     @Test
@@ -352,41 +354,41 @@ public class ConfigRepositoryTest {
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
         configRepo.createBranch(ConfigRepository.BRANCH_AT_HEAD, configRepo.getCurrentRevCommit());
         configRepo.createBranch(ConfigRepository.BRANCH_AT_REVISION, configRepo.getCurrentRevCommit());
-        configRepo.git().checkout().setName(ConfigRepository.BRANCH_AT_REVISION).call();
-        assertThat(configRepo.git().getRepository().getBranch(), is(ConfigRepository.BRANCH_AT_REVISION));
-        assertThat(configRepo.git().branchList().call().size(), is(3));
+        configRepoRawGit.checkout().setName(ConfigRepository.BRANCH_AT_REVISION).call();
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo(ConfigRepository.BRANCH_AT_REVISION);
+        assertThat(configRepoRawGit.branchList().call().size()).isEqualTo(3);
         configRepo.cleanAndResetToMaster();
-        assertThat(configRepo.git().getRepository().getBranch(), is("master"));
-        assertThat(configRepo.git().branchList().call().size(), is(1));
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo("master");
+        assertThat(configRepoRawGit.branchList().call().size()).isEqualTo(1);
     }
 
     @Test
     public void shouldCleanAndResetToMasterDuringInitialization() throws Exception {
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
         configRepo.createBranch(ConfigRepository.BRANCH_AT_REVISION, configRepo.getCurrentRevCommit());
-        configRepo.git().checkout().setName(ConfigRepository.BRANCH_AT_REVISION).call();
-        assertThat(configRepo.git().getRepository().getBranch(), is(ConfigRepository.BRANCH_AT_REVISION));
+        configRepoRawGit.checkout().setName(ConfigRepository.BRANCH_AT_REVISION).call();
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo(ConfigRepository.BRANCH_AT_REVISION);
 
         new ConfigRepository(systemEnvironment).initialize();
 
-        assertThat(configRepo.git().getRepository().getBranch(), is("master"));
-        assertThat(configRepo.git().branchList().call().size(), is(1));
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo("master");
+        assertThat(configRepoRawGit.branchList().call().size()).isEqualTo(1);
     }
 
     @Test
     void shouldCleanButIgnoreMasterResetIfRepoExistsButNoMasterBranch() throws Exception {
         // Start with an empty repo
-        assertThat(configRepo.git().getRepository().getDirectory().exists(), is(true));
+        assertThat(configRepoRawGit.getRepository().getDirectory().exists()).isTrue();
 
         ConfigRepository configRepository = new ConfigRepository(systemEnvironment);
         configRepository.initialize();
 
-        assertThat(configRepo.git().getRepository().getBranch(), is("master"));
-        assertThat(configRepo.git().branchList().call(), hasSize(0));
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo("master");
+        assertThat(configRepoRawGit.branchList().call()).hasSize(0);
 
         // Ensure we can still use the config repo
         configRepository.checkin(goConfigRevision("v1", "md5-1"));
-        assertThat(configRepo.git().branchList().call(), hasSize(1));
+        assertThat(configRepoRawGit.branchList().call()).hasSize(1);
     }
 
     @Test
@@ -399,35 +401,35 @@ public class ConfigRepositoryTest {
         configRepo.checkin(goConfigRevision(changeOnMaster, "md5-2"));
 
         configRepo.getConfigMergedWithLatestRevision(goConfigRevision(changeOnBranch, "md5-3"), oldMd5);
-        assertThat(configRepo.git().getRepository().getBranch(), is("master"));
-        assertThat(configRepo.git().branchList().call().size(), is(1));
+        assertThat(configRepoRawGit.getRepository().getBranch()).isEqualTo("master");
+        assertThat(configRepoRawGit.branchList().call().size()).isEqualTo(1);
     }
 
     @Test
     public void shouldPerformGC() throws Exception {
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
-        Long numberOfLooseObjects = (Long) configRepo.git().gc().getStatistics().get("sizeOfLooseObjects");
-        assertThat(numberOfLooseObjects > 0L, is(true));
+        Long numberOfLooseObjects = (Long) configRepoRawGit.gc().getStatistics().get("sizeOfLooseObjects");
+        assertThat(numberOfLooseObjects > 0L).isTrue();
         configRepo.garbageCollect();
-        numberOfLooseObjects = (Long) configRepo.git().gc().getStatistics().get("sizeOfLooseObjects");
-        assertThat(numberOfLooseObjects, is(0L));
+        numberOfLooseObjects = (Long) configRepoRawGit.gc().getStatistics().get("sizeOfLooseObjects");
+        assertThat(numberOfLooseObjects).isEqualTo(0L);
     }
 
     @Test
     public void shouldNotPerformGCWhenPeriodicGCIsTurnedOff() throws Exception {
         when(systemEnvironment.get(SystemEnvironment.GO_CONFIG_REPO_PERIODIC_GC)).thenReturn(false);
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
-        Long numberOfLooseObjectsOld = (Long) configRepo.git().gc().getStatistics().get("sizeOfLooseObjects");
+        Long numberOfLooseObjectsOld = (Long) configRepoRawGit.gc().getStatistics().get("sizeOfLooseObjects");
         configRepo.garbageCollect();
-        Long numberOfLooseObjectsNow = (Long) configRepo.git().gc().getStatistics().get("sizeOfLooseObjects");
-        assertThat(numberOfLooseObjectsNow, is(numberOfLooseObjectsOld));
+        Long numberOfLooseObjectsNow = (Long) configRepoRawGit.gc().getStatistics().get("sizeOfLooseObjects");
+        assertThat(numberOfLooseObjectsNow).isEqualTo(numberOfLooseObjectsOld);
     }
 
     @Test
     public void shouldGetLooseObjectCount() throws Exception {
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
-        Long numberOfLooseObjects = (Long) configRepo.git().gc().getStatistics().get("numberOfLooseObjects");
-        assertThat(configRepo.getLooseObjectCount(), is(numberOfLooseObjects));
+        Long numberOfLooseObjects = (Long) configRepoRawGit.gc().getStatistics().get("numberOfLooseObjects");
+        assertThat(configRepo.getLooseObjectCount()).isEqualTo(numberOfLooseObjects);
     }
 
 
@@ -435,7 +437,7 @@ public class ConfigRepositoryTest {
     public void shouldReturnNumberOfCommitsOnMaster() throws Exception {
         configRepo.checkin(goConfigRevision("v1", "md5-1"));
         configRepo.checkin(goConfigRevision("v2", "md5-2"));
-        assertThat(configRepo.commitCountOnMaster(), is(2L));
+        assertThat(configRepo.commitCountOnMaster()).isEqualTo(2L);
     }
 
     private GoConfigRevision goConfigRevision(String fileContent, String md5) {
@@ -443,16 +445,16 @@ public class ConfigRepositoryTest {
     }
 
     private String getLatestConfigAt(String branchName) throws GitAPIException {
-        configRepo.git().checkout().setName(branchName).call();
+        configRepoRawGit.checkout().setName(branchName).call();
 
         String content = configRepo.getCurrentRevision().getContent();
 
-        configRepo.git().checkout().setName("master").call();
+        configRepoRawGit.checkout().setName("master").call();
 
         return content;
     }
 
-    Ref getBranch(String branchName) throws GitAPIException {
+    Ref getBranch(@SuppressWarnings("SameParameterValue") String branchName) throws GitAPIException {
         List<Ref> branches = getAllBranches();
         for (Ref branch : branches) {
             if (branch.getName().endsWith(branchName)) {
@@ -463,6 +465,6 @@ public class ConfigRepositoryTest {
     }
 
     private List<Ref> getAllBranches() throws GitAPIException {
-        return configRepo.git().branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+        return configRepoRawGit.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
     }
 }

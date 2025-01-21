@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ dependencies {
   implementation project(path: ':domain', configuration: 'runtimeElements')
   implementation project(path: ':base', configuration: 'runtimeElements')
   implementation project(path: ':config:config-api', configuration: 'runtimeElements')
-  api project.deps.jolt
-  api project.deps.joltJsonUtils
+  implementation project.deps.jolt
+  implementation project.deps.joltJsonUtils
   api project.deps.commonsCollections4
   implementation project.deps.commonsCodec
   implementation project.deps.gson
@@ -39,7 +39,6 @@ dependencies {
   compileOnly project.deps.jetBrainsAnnotations
 
   testImplementation localGroovy()
-  testImplementation project.deps.jsonUnit
   testImplementation project(path: ':test:test-utils', configuration: 'runtimeElements')
   testImplementation project(path: ':domain', configuration: 'testOutput')
   testImplementation project.deps.junit5Api

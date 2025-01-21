@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,15 @@ import com.thoughtworks.go.domain.materials.ModifiedAction;
 import com.thoughtworks.go.domain.materials.Revision;
 import com.thoughtworks.go.util.DateUtils;
 import com.thoughtworks.go.util.ExceptionUtils;
+import com.thoughtworks.go.util.XmlUtils;
 import com.thoughtworks.go.util.command.ConsoleResult;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
-import java.io.StringReader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class HgModificationSplitter {
@@ -47,22 +44,18 @@ public class HgModificationSplitter {
 
     public List<Modification> modifications() {
         try {
-            SAXBuilder builder = new SAXBuilder();
-            Document document = builder.build(new StringReader(output));
-            return parseDOMTree(document);
+            return parseDOMTree(XmlUtils.buildXmlDocument(output));
         } catch (Exception e) {
             throw ExceptionUtils.bomb("Unable to parse hg log output: " + result.replaceSecretInfo(output), result.smudgedException(e));
         }
     }
 
 
-    private List<Modification> parseDOMTree(Document document) throws ParseException {
+    private List<Modification> parseDOMTree(Document document) {
         List<Modification> modifications = new ArrayList<>();
 
         Element rootElement = document.getRootElement();
-        List logEntries = rootElement.getChildren("changeset");
-        for (Iterator iterator = logEntries.iterator(); iterator.hasNext();) {
-            Element changeset = (Element) iterator.next();
+        for (Element changeset : rootElement.getChildren("changeset")) {
             modifications.add(parseChangeset(changeset));
         }
 
@@ -91,11 +84,9 @@ public class HgModificationSplitter {
     }
 
     private List<File> parseFiles(Element filesElement, String fileType) {
-        List files = filesElement.getChild(fileType).getChildren("file");
         List<File> modifiedFiles = new ArrayList<>();
-        for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-            Element node = (Element) iterator.next();
-            modifiedFiles.add(new File(org.apache.commons.lang3.StringEscapeUtils.unescapeXml(node.getText())));
+        for (Element node : filesElement.getChild(fileType).getChildren("file")) {
+            modifiedFiles.add(new File(StringEscapeUtils.unescapeXml(node.getText())));
         }
         return modifiedFiles;
     }

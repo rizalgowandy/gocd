@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,11 +132,6 @@ public class DependencyMaterialConfig extends AbstractMaterialConfig implements 
     protected void appendCriteria(Map<String, Object> parameters) {
         parameters.put("pipelineName", CaseInsensitiveString.str(pipelineName));
         parameters.put("stageName", CaseInsensitiveString.str(stageName));
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        appendCriteria(parameters);
     }
 
     public CaseInsensitiveString getPipelineName() {

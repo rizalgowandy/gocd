@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.domain;
 
+import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.config.CaseInsensitiveString;
 import com.thoughtworks.go.config.materials.AbstractMaterial;
 import com.thoughtworks.go.domain.materials.Material;
@@ -125,7 +126,7 @@ public abstract class MaterialInstance extends PersistentObject {
 
     public void setAdditionalData(String additionalData) {
         this.additionalData = additionalData;
-        this.additionalDataMap = JsonHelper.safeFromJson(this.additionalData);
+        this.additionalDataMap = JsonHelper.safeFromJson(this.additionalData, TypeToken.getParameterized(Map.class, String.class, String.class).getType());
     }
 
     public Map<String, String> getAdditionalDataMap() {

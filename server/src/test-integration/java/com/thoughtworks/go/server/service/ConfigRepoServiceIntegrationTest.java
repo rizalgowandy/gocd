@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -106,7 +105,7 @@ public class ConfigRepoServiceIntegrationTest {
     public void shouldFindConfigRepoWithSpecifiedId() throws Exception {
         configHelper.enableSecurity();
         goConfigService.getConfigForEditing().getConfigRepos().add(configRepo);
-        assertThat(configRepoService.getConfigRepo(repoId), is(configRepo));
+        assertThat(configRepoService.getConfigRepo(repoId)).isEqualTo(configRepo);
     }
 
     @Test
@@ -119,7 +118,7 @@ public class ConfigRepoServiceIntegrationTest {
     public void shouldFindAllConfigRepos() throws Exception {
         configHelper.enableSecurity();
         goConfigService.getConfigForEditing().getConfigRepos().add(configRepo);
-        assertThat(configRepoService.getConfigRepos(), is(new ConfigReposConfig(configRepo)));
+        assertThat(configRepoService.getConfigRepos()).isEqualTo(new ConfigReposConfig(configRepo));
     }
 
     @Test
@@ -131,19 +130,19 @@ public class ConfigRepoServiceIntegrationTest {
             return cruiseConfig;
         });
 
-        assertThat(configRepoService.getConfigRepo(repoId), is(configRepo));
+        assertThat(configRepoService.getConfigRepo(repoId)).isEqualTo(configRepo);
 
         configRepoService.deleteConfigRepo(repoId, user, result);
 
         assertNull(configRepoService.getConfigRepo(repoId));
-        assertThat(result.toString(), result.isSuccessful(), is(true));
+        assertThat(result.isSuccessful()).describedAs(result.toString()).isTrue();
     }
 
     @Test
     public void shouldCreateSpecifiedConfigRepository() throws Exception {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         configHelper.enableSecurity();
-        configRepoService = new ConfigRepoService(goConfigService, securityService, entityHashingService, configRepoExtension, materialUpdateService, materialConfigConverter);
+        configRepoService = new ConfigRepoService(goConfigService, entityHashingService, configRepoExtension, materialUpdateService, materialConfigConverter);
 
         when(configRepoExtension.canHandlePlugin(any())).thenReturn(true);
 
@@ -151,13 +150,13 @@ public class ConfigRepoServiceIntegrationTest {
 
         configRepoService.createConfigRepo(configRepo, user, result);
 
-        assertThat(configRepoService.getConfigRepo(repoId), is(configRepo));
-        assertThat(result.toString(), result.isSuccessful(), is(true));
+        assertThat(configRepoService.getConfigRepo(repoId)).isEqualTo(configRepo);
+        assertThat(result.isSuccessful()).describedAs(result.toString()).isTrue();
     }
 
     @Test
     public void shouldUpdateSpecifiedConfigRepository() throws Exception {
-        configRepoService = new ConfigRepoService(goConfigService, securityService, entityHashingService, configRepoExtension, materialUpdateService, materialConfigConverter);
+        configRepoService = new ConfigRepoService(goConfigService, entityHashingService, configRepoExtension, materialUpdateService, materialConfigConverter);
 
         when(configRepoExtension.canHandlePlugin(any())).thenReturn(true);
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
@@ -169,14 +168,14 @@ public class ConfigRepoServiceIntegrationTest {
         String newRepoId = "repo-2";
         ConfigRepoConfig toUpdateWith = ConfigRepoConfig.createConfigRepoConfig(git("http://bar.git", "master"), "yaml-plugin", newRepoId);
 
-        assertThat(configRepoService.getConfigRepos().size(), is(1));
-        assertThat(configRepoService.getConfigRepo(repoId), is(configRepo));
+        assertThat(configRepoService.getConfigRepos().size()).isEqualTo(1);
+        assertThat(configRepoService.getConfigRepo(repoId)).isEqualTo(configRepo);
 
         configRepoService.updateConfigRepo(repoId, toUpdateWith, entityHashingService.hashForEntity(configRepo), user, result);
 
-        assertThat(result.toString(), result.isSuccessful(), is(true));
+        assertThat(result.isSuccessful()).describedAs(result.toString()).isTrue();
 
-        assertThat(configRepoService.getConfigRepos().size(), is(1));
-        assertThat(configRepoService.getConfigRepo(newRepoId), is(toUpdateWith));
+        assertThat(configRepoService.getConfigRepos().size()).isEqualTo(1);
+        assertThat(configRepoService.getConfigRepo(newRepoId)).isEqualTo(toUpdateWith);
     }
 }

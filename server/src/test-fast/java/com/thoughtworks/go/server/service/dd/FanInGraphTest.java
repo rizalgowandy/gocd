@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import java.util.List;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
 import static com.thoughtworks.go.helper.MaterialConfigsMother.hg;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FanInGraphTest {
     @Test
@@ -55,7 +54,7 @@ public class FanInGraphTest {
         for (ScmMaterialConfig scmMaterialNode : scmMaterialNodes) {
             scmMaterialUrls.add(scmMaterialNode.getUrl().toString());
         }
-        assertThat(scmMaterialUrls.contains("giturl"), is(true));
-        assertThat(scmMaterialUrls.contains("hgurl"), is(true));
+        assertThat(scmMaterialUrls.contains("giturl")).isTrue();
+        assertThat(scmMaterialUrls.contains("hgurl")).isTrue();
     }
 }

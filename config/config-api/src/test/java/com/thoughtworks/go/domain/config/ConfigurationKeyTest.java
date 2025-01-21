@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@ package com.thoughtworks.go.domain.config;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationKeyTest {
     @Test
     public void shouldCheckForEqualityOfKey() {
         ConfigurationKey configurationKey = new ConfigurationKey(ConfigurationKey.NAME);
-        assertThat(configurationKey, is(new ConfigurationKey(ConfigurationKey.NAME)));
+        assertThat(configurationKey).isEqualTo(new ConfigurationKey(ConfigurationKey.NAME));
     }
 }

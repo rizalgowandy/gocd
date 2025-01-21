@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@ package com.thoughtworks.go.util.comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 public class AlphaAsciiCollectionComparator<T> implements Comparator<Collection<? extends Comparable<T>>> {
-    private AlphaAsciiComparator comparator;
+    private final AlphaAsciiComparator comparator;
 
     public AlphaAsciiCollectionComparator() {
         comparator = new AlphaAsciiComparator();
@@ -35,7 +32,7 @@ public class AlphaAsciiCollectionComparator<T> implements Comparator<Collection<
     }
 
     private String string(Collection<? extends Comparable<T>> other) {
-        ArrayList<Comparable> others = new ArrayList<>(other);
+        List<Comparable> others = new ArrayList<>(other);
         Collections.sort(others);
         return StringUtils.join(others.toArray());
     }

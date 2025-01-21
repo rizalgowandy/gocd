@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TokenManagerTest {
@@ -72,7 +71,7 @@ public class TokenManagerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn(null);
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -85,7 +84,7 @@ public class TokenManagerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn(null);
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -98,7 +97,7 @@ public class TokenManagerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn("token");
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -111,7 +110,7 @@ public class TokenManagerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn("token");
 
-        assertThat(manager.verify(request), is(true));
+        assertThat(manager.verify(request)).isTrue();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();

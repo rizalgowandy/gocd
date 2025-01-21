@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class GoConfigClassWriter {
     }
 
     public List<GoConfigFieldWriter> getAllFields(Object render) {
-        ArrayList<GoConfigFieldWriter> fields = new ArrayList<>();
+        List<GoConfigFieldWriter> fields = new ArrayList<>();
         for (Field declaredField : configCache.getFieldCache().valuesFor(aClass)) {
             try {
                 declaredField.setAccessible(true);

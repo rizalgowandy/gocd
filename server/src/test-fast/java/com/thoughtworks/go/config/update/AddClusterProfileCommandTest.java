@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -80,7 +81,7 @@ class AddClusterProfileCommandTest {
     @Test
     void shouldMakeACallToExtensionToValidateClusterProfile() {
         String pluginId = "plugin-id";
-        HashMap<String, String> configuration = new HashMap<>();
+        Map<String, String> configuration = new HashMap<>();
         command.validateUsingExtension(pluginId, configuration);
 
         verify(extension, times(1)).validateClusterProfile(pluginId, configuration);

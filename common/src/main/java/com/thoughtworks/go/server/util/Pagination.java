@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class Pagination {
         return total;
     }
 
-    public Map toJsonMap() {
+    public Map<String, Object> toJsonMap() {
         Map<String, Object> json = new LinkedHashMap<>();
         json.put("count", total);
         json.put("start", offset);
@@ -166,7 +166,7 @@ public class Pagination {
     }
 
     public List<PageNumber> getPages() {
-        ArrayList<PageNumber> pages = new ArrayList<>();
+        List<PageNumber> pages = new ArrayList<>();
         if (getCurrentPage() > getFirstPage()) {
             pages.add(new PageNumber(getCurrentPage() - 1, "prev"));
         }
@@ -204,7 +204,7 @@ public class Pagination {
         return pages;
     }
 
-    private void addPage(ArrayList<PageNumber> pages, int i) {
+    private void addPage(List<PageNumber> pages, int i) {
         pages.add(new PageNumber(i, i == getCurrentPage()));
     }
 

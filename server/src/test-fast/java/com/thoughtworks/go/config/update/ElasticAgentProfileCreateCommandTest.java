@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,12 @@ import com.thoughtworks.go.helper.GoConfigMother;
 import com.thoughtworks.go.plugin.access.elastic.ElasticAgentExtension;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
-import com.thoughtworks.go.server.service.GoConfigService;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
 public class ElasticAgentProfileCreateCommandTest {
@@ -49,10 +47,10 @@ public class ElasticAgentProfileCreateCommandTest {
     public void shouldAddElasticProfile() throws Exception {
         BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
         ElasticProfile elasticProfile = new ElasticProfile("foo", "prod-cluster");
-        ElasticAgentProfileCreateCommand command = new ElasticAgentProfileCreateCommand(null, elasticProfile, extension, null, null);
+        ElasticAgentProfileCreateCommand command = new ElasticAgentProfileCreateCommand(elasticProfile, extension, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles().find("foo"), equalTo(elasticProfile));
+        assertThat(cruiseConfig.getElasticConfig().getProfiles().find("foo")).isEqualTo(elasticProfile);
     }
 
     @Test
@@ -61,7 +59,7 @@ public class ElasticAgentProfileCreateCommandTest {
         validationResult.addError(new ValidationError("key", "error"));
         when(extension.validate(eq("aws"), anyMap())).thenReturn(validationResult);
         ElasticProfile newProfile = new ElasticProfile("foo", "prod-cluster", new ConfigurationProperty(new ConfigurationKey("key"), new ConfigurationValue("val")));
-        EntityConfigUpdateCommand command = new ElasticAgentProfileCreateCommand(mock(GoConfigService.class), newProfile, extension, null, new HttpLocalizedOperationResult());
+        EntityConfigUpdateCommand command = new ElasticAgentProfileCreateCommand(newProfile, null, new HttpLocalizedOperationResult());
         BasicCruiseConfig cruiseConfig = new BasicCruiseConfig();
 
         assertThatThrownBy(() -> command.isValid(cruiseConfig))
@@ -73,7 +71,7 @@ public class ElasticAgentProfileCreateCommandTest {
     @Test
     public void shouldEncryptSecurePluginProperties() {
         ElasticProfile elasticProfile = mock(ElasticProfile.class);
-        ElasticAgentProfileCreateCommand command = new ElasticAgentProfileCreateCommand(null, elasticProfile, extension, null, null);
+        ElasticAgentProfileCreateCommand command = new ElasticAgentProfileCreateCommand(elasticProfile, extension, null);
 
         BasicCruiseConfig preProcessedConfig = new BasicCruiseConfig();
         command.encrypt(preProcessedConfig);

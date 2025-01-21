@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,8 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElasticAgentProfileDeleteCommandTest {
@@ -45,22 +43,22 @@ public class ElasticAgentProfileDeleteCommandTest {
         ElasticProfile elasticProfile = new ElasticProfile("foo", "prod-cluster");
         cruiseConfig.getElasticConfig().getProfiles().add(elasticProfile);
 
-        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(null, elasticProfile, null, null, null);
+        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(elasticProfile, null, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles(), is(empty()));
+        assertThat(cruiseConfig.getElasticConfig().getProfiles()).isEmpty();
     }
 
     @Test
     public void shouldRaiseExceptionInCaseProfileDoesNotExist() throws Exception {
         ElasticProfile elasticProfile = new ElasticProfile("foo", "prod-cluster");
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles(), is(empty()));
-        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(null, elasticProfile, null, null, new HttpLocalizedOperationResult());
+        assertThat(cruiseConfig.getElasticConfig().getProfiles()).isEmpty();
+        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(elasticProfile, null, new HttpLocalizedOperationResult());
 
         assertThatThrownBy(() -> command.update(cruiseConfig)).isInstanceOf(RecordNotFoundException.class);
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles(), is(empty()));
+        assertThat(cruiseConfig.getElasticConfig().getProfiles()).isEmpty();
     }
 
     @Test
@@ -72,8 +70,8 @@ public class ElasticAgentProfileDeleteCommandTest {
         pipelineConfig.getStages().first().getJobs().first().setElasticProfileId("foo");
         cruiseConfig.addPipeline("all", pipelineConfig);
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles(), is(empty()));
-        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(null, elasticProfile, null, null, new HttpLocalizedOperationResult());
+        assertThat(cruiseConfig.getElasticConfig().getProfiles()).isEmpty();
+        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(elasticProfile, null, new HttpLocalizedOperationResult());
         assertThatThrownBy(() -> command.isValid(cruiseConfig))
                 .isInstanceOf(GoConfigInvalidException.class)
                 .hasMessageContaining("The elastic agent profile 'foo' is being referenced by pipeline(s): JobConfigIdentifier[build-linux:mingle:defaultJob].");
@@ -83,8 +81,8 @@ public class ElasticAgentProfileDeleteCommandTest {
     public void shouldValidateIfProfileIsNotInUseByPipeline() throws Exception {
         ElasticProfile elasticProfile = new ElasticProfile("foo", "prod-cluster");
 
-        assertThat(cruiseConfig.getElasticConfig().getProfiles(), is(empty()));
-        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(null, elasticProfile, null, null, new HttpLocalizedOperationResult());
+        assertThat(cruiseConfig.getElasticConfig().getProfiles()).isEmpty();
+        ElasticAgentProfileDeleteCommand command = new ElasticAgentProfileDeleteCommand(elasticProfile, null, new HttpLocalizedOperationResult());
         assertTrue(command.isValid(cruiseConfig));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,6 @@ public class AgentIdentifier implements Serializable {
 
     public String getUuid() {
         return uuid;
-    }
-
-    public boolean matches(String agentUuid) {
-        return uuid.equals(agentUuid);
     }
 
     @Override

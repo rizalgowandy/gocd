@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,6 @@ public class P4MaterialConfig extends ScmMaterialConfig implements ParamsAttribu
         parameters.put(ScmMaterialConfig.URL, serverAndPort);
         parameters.put(ScmMaterialConfig.USERNAME, userName);
         parameters.put("view", view.getValue());
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        appendCriteria(parameters);
     }
 
     public String getServerAndPort() {
@@ -146,11 +141,6 @@ public class P4MaterialConfig extends ScmMaterialConfig implements ParamsAttribu
         }
 
         validateEncryptedPassword();
-    }
-
-    @Override
-    protected String getLocation() {
-        return getServerAndPort();
     }
 
     @Override

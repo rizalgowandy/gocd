@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.thoughtworks.go.spark.spa;
 
-import com.thoughtworks.go.server.service.support.toggle.FeatureToggleService;
 import com.thoughtworks.go.spark.Routes;
 import com.thoughtworks.go.spark.SparkController;
 import com.thoughtworks.go.spark.spring.SPAAuthenticationHelper;
@@ -31,12 +30,10 @@ import static spark.Spark.*;
 
 public class MaterialsController implements SparkController {
     private final SPAAuthenticationHelper authenticationHelper;
-    private final FeatureToggleService featureToggleService;
     private final TemplateEngine engine;
 
-    public MaterialsController(SPAAuthenticationHelper authenticationHelper, FeatureToggleService featureToggleService, TemplateEngine engine) {
+    public MaterialsController(SPAAuthenticationHelper authenticationHelper, TemplateEngine engine) {
         this.authenticationHelper = authenticationHelper;
-        this.featureToggleService = featureToggleService;
         this.engine = engine;
     }
 

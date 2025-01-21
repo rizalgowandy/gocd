@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 
+@SuppressWarnings("unused")
 public class AgentLauncherImpl implements AgentLauncher {
 
     public static final int UNKNOWN_EXCEPTION_OCCURRED = -273;

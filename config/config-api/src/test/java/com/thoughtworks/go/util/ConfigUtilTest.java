@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class ConfigUtilTest {
     @Test
@@ -33,11 +32,6 @@ public class ConfigUtilTest {
         registry.registerImplementer(Task.class, AntTask.class, ExecTask.class, NantTask.class, RakeTask.class, FetchTask.class, FetchPluggableArtifactTask.class);
 
         List<String> tasks = ConfigUtil.allTasks(registry);
-        assertThat(tasks.size(), is(5));
-        assertThat(tasks, hasItem("ant"));
-        assertThat(tasks, hasItem("exec"));
-        assertThat(tasks, hasItem("nant"));
-        assertThat(tasks, hasItem("rake"));
-        assertThat(tasks, hasItem("fetchartifact"));
+        assertThat(tasks).containsExactlyInAnyOrder("ant", "exec", "nant", "rake", "fetchartifact");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,10 +47,10 @@ public class PatchEnvironmentCommandTest {
     private HttpLocalizedOperationResult result;
     private String actionFailed;
 
-    private ArrayList<String> pipelinesToAdd;
-    private ArrayList<String> pipelinesToRemove;
-    private ArrayList<EnvironmentVariableConfig> envVarsToAdd;
-    private ArrayList<String> envVarsToRemove;
+    private List<String> pipelinesToAdd;
+    private List<String> pipelinesToRemove;
+    private List<EnvironmentVariableConfig> envVarsToAdd;
+    private List<String> envVarsToRemove;
 
     private PipelineConfig pipelineConfig;
 
@@ -139,7 +139,7 @@ public class PatchEnvironmentCommandTest {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.unprocessableEntity(actionFailed + " Environment 'Dev' refers to an unknown pipeline 'invalid-pipeline-name'.");
 
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class PatchEnvironmentCommandTest {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.unprocessableEntity(actionFailed + " Pipeline 'invalid-pipeline-to-remove' does not exist in environment 'Dev'");
 
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class PatchEnvironmentCommandTest {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.unprocessableEntity(actionFailed + " Environment variable with name 'invalid-env-var-to-remove' does not exist in environment 'Dev'");
 
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -205,7 +205,7 @@ public class PatchEnvironmentCommandTest {
         String message = actionFailed + " Pipeline 'remote-pipeline-to-remove' cannot be removed from environment 'Dev' as the association has been defined remotely in [foo/bar.git at revision latest]";
         expectedResult.unprocessableEntity(message);
 
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -235,6 +235,6 @@ public class PatchEnvironmentCommandTest {
         String message = actionFailed + " Environment variable with name 'remote-env-var-to-remove' cannot be removed from environment 'Dev' as the association has been defined remotely in [foo/bar.git at revision latest]";
         expectedResult.unprocessableEntity(message);
 
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

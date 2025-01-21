@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.thoughtworks.go.i18n.LocalizedMessage.entityConfigValidationFailed;
@@ -65,10 +66,6 @@ public class RoleConfigService {
         return getRoles().findByName(new CaseInsensitiveString(name));
     }
 
-    public RolesConfig listAll() {
-        return getRoles();
-    }
-
     protected void update(Username currentUser, Role role, LocalizedOperationResult result, EntityConfigUpdateCommand<Role> command) {
         try {
             goConfigService.updateConfig(command, currentUser);
@@ -92,8 +89,8 @@ public class RoleConfigService {
         return goConfigService.getConfigForEditing().server().security().getRoles();
     }
 
-    public HashMap<Username, RolesConfig> getRolesForUser(List<Username> users) {
-        HashMap<Username, RolesConfig> userToRolesMap = new HashMap<>();
+    public Map<Username, RolesConfig> getRolesForUser(List<Username> users) {
+        Map<Username, RolesConfig> userToRolesMap = new HashMap<>();
 
         getRoles().stream().<Consumer<? super Username>>map(role -> user -> {
             if (role.hasMember(user.getUsername())) {

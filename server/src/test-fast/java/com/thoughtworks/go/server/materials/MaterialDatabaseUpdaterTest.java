@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,24 +73,24 @@ public class MaterialDatabaseUpdaterTest {
             materialDatabaseUpdater.updateMaterial(material);
             fail("should have thrown exception");
         } catch (Exception e) {
-            assertThat(e, is(exception));
+            assertThat(e).isEqualTo(exception);
         }
         verify(healthService).update(error);
     }
 
     @Test
     public void shouldGetCorrectUpdaterForMaterials() {
-        assertThat(materialDatabaseUpdater.updater(MaterialsMother.dependencyMaterial()), is(dependencyMaterialUpdater));
-        assertThat(materialDatabaseUpdater.updater(MaterialsMother.svnMaterial()), is(scmMaterialUpdater));
-        assertThat(materialDatabaseUpdater.updater(MaterialsMother.packageMaterial()), is(packageMaterialUpdater));
-        assertThat(materialDatabaseUpdater.updater(MaterialsMother.pluggableSCMMaterial()), is(pluggableSCMMaterialUpdater));
+        assertThat(materialDatabaseUpdater.updater(MaterialsMother.dependencyMaterial())).isEqualTo(dependencyMaterialUpdater);
+        assertThat(materialDatabaseUpdater.updater(MaterialsMother.svnMaterial())).isEqualTo(scmMaterialUpdater);
+        assertThat(materialDatabaseUpdater.updater(MaterialsMother.packageMaterial())).isEqualTo(packageMaterialUpdater);
+        assertThat(materialDatabaseUpdater.updater(MaterialsMother.pluggableSCMMaterial())).isEqualTo(pluggableSCMMaterialUpdater);
     }
 
     @Test
     public void shouldFailWithAReasonableMessageWhenExceptionMessageIsNull() {
         Material material = new GitMaterial("url", "branch");
         Exception exceptionWithNullMessage = new RuntimeException(null, new RuntimeException("Inner exception has non-null message"));
-        String message = "Modification check failed for material: " + material.getLongDescription() + "\nNo pipelines are affected by this material, perhaps this material is unused.";
+        String message = "Modification check failed for material: " + material.getLongDescription() + "\nNo pipelines affected, may only affect configuration repositories.";
         when(goConfigService.pipelinesWithMaterial(material.config().getFingerprint())).thenReturn(Collections.emptyList());
 
         when(materialRepository.findMaterialInstance(material)).thenThrow(exceptionWithNullMessage);
@@ -100,7 +99,7 @@ public class MaterialDatabaseUpdaterTest {
             materialDatabaseUpdater.updateMaterial(material);
             fail("should have thrown exception");
         } catch (Exception e) {
-            assertThat(e, is(exceptionWithNullMessage));
+            assertThat(e).isEqualTo(exceptionWithNullMessage);
         }
 
         verify(healthService).update(ServerHealthState.errorWithHtml(message, "Unknown error", HealthStateType.general(HealthStateScope.forMaterial(material))));

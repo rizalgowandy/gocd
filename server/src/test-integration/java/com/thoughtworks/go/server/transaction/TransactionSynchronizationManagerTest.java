@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -81,8 +80,8 @@ public class TransactionSynchronizationManagerTest {
                 transactionActivity.add(synchronizationManager.isActualTransactionActive());
             }
         });
-        assertThat(transactionActivity, is(List.of(true)));
-        assertThat(synchronizationManager.isActualTransactionActive(), is(false));
+        assertThat(transactionActivity).isEqualTo(List.of(true));
+        assertThat(synchronizationManager.isActualTransactionActive()).isFalse();
     }
 
     @Test
@@ -94,7 +93,7 @@ public class TransactionSynchronizationManagerTest {
             inBody[0] = synchronizationManager.isTransactionBodyExecuting();
             return null;
         });
-        assertThat(inBody[0], is(true));
-        assertThat(synchronizationManager.isTransactionBodyExecuting(), is(false));
+        assertThat(inBody[0]).isTrue();
+        assertThat(synchronizationManager.isTransactionBodyExecuting()).isFalse();
     }
 }

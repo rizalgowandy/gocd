@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.thoughtworks.go.domain.packagerepository.ConfigurationPropertyMother.create;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,11 +64,11 @@ public class PluggableArtifactConfigTest {
     public void shouldCreatePluggableArtifact() {
         final PluggableArtifactConfig artifactConfig = new PluggableArtifactConfig("Artifact-ID", "Store-ID", create("Foo", false, "Bar"));
 
-        assertThat(artifactConfig.getId(), is("Artifact-ID"));
-        assertThat(artifactConfig.getStoreId(), is("Store-ID"));
-        assertThat(artifactConfig.getArtifactType(), is(ArtifactType.external));
-        assertThat(artifactConfig.getArtifactTypeValue(), is("Pluggable Artifact"));
-        assertThat(artifactConfig.getConfiguration().get(0), is(create("Foo", false, "Bar")));
+        assertThat(artifactConfig.getId()).isEqualTo("Artifact-ID");
+        assertThat(artifactConfig.getStoreId()).isEqualTo("Store-ID");
+        assertThat(artifactConfig.getArtifactType()).isEqualTo(ArtifactType.external);
+        assertThat(artifactConfig.getArtifactTypeValue()).isEqualTo("Pluggable Artifact");
+        assertThat(artifactConfig.getConfiguration().get(0)).isEqualTo(create("Foo", false, "Bar"));
     }
 
     @Test
@@ -87,9 +86,9 @@ public class PluggableArtifactConfigTest {
         artifactConfig.validate(validationContext);
 
         assertTrue(artifactConfig.hasErrors());
-        assertThat(artifactConfig.errors().getAll(), hasSize(1));
-        assertThat(artifactConfig.errors().getAllOn("storeId"), hasSize(1));
-        assertThat(artifactConfig.errors().on("storeId"), is("Artifact store with id `Store-ID` does not exist. Please correct the `storeId` attribute on pipeline `pipe`."));
+        assertThat(artifactConfig.errors().getAll()).hasSize(1);
+        assertThat(artifactConfig.errors().getAllOn("storeId")).hasSize(1);
+        assertThat(artifactConfig.errors().on("storeId")).isEqualTo("Artifact store with id `Store-ID` does not exist. Please correct the `storeId` attribute on pipeline `pipe`.");
     }
 
     @Test
@@ -105,8 +104,8 @@ public class PluggableArtifactConfigTest {
         artifactConfig.validate(validationContext);
         Configuration configuration = artifactConfig.getConfiguration();
 
-        assertThat(configuration.get(0).errors().getAllOn("configurationKey"), is(List.of("Duplicate key 'Foo' found for Pluggable Artifact")));
-        assertThat(configuration.get(1).errors().getAllOn("configurationKey"), is(List.of("Duplicate key 'Foo' found for Pluggable Artifact")));
+        assertThat(configuration.get(0).errors().getAllOn("configurationKey")).isEqualTo(List.of("Duplicate key 'Foo' found for Pluggable Artifact"));
+        assertThat(configuration.get(1).errors().getAllOn("configurationKey")).isEqualTo(List.of("Duplicate key 'Foo' found for Pluggable Artifact"));
     }
 
     @Test
@@ -120,8 +119,8 @@ public class PluggableArtifactConfigTest {
         assertTrue(newConfig.hasErrors());
         assertTrue(existingConfig.hasErrors());
 
-        assertThat(newConfig.errors().on("id"), is("Duplicate pluggable artifacts  with id `Artifact-ID` defined."));
-        assertThat(existingConfig.errors().on("id"), is("Duplicate pluggable artifacts  with id `Artifact-ID` defined."));
+        assertThat(newConfig.errors().on("id")).isEqualTo("Duplicate pluggable artifacts  with id `Artifact-ID` defined.");
+        assertThat(existingConfig.errors().on("id")).isEqualTo("Duplicate pluggable artifacts  with id `Artifact-ID` defined.");
     }
 
     @Test
@@ -135,8 +134,8 @@ public class PluggableArtifactConfigTest {
         assertTrue(newConfig.hasErrors());
         assertTrue(existingConfig.hasErrors());
 
-        assertThat(newConfig.errors().on("id"), is("Duplicate pluggable artifacts  configuration defined."));
-        assertThat(existingConfig.errors().on("id"), is("Duplicate pluggable artifacts  configuration defined."));
+        assertThat(newConfig.errors().on("id")).isEqualTo("Duplicate pluggable artifacts  configuration defined.");
+        assertThat(existingConfig.errors().on("id")).isEqualTo("Duplicate pluggable artifacts  configuration defined.");
     }
 
     @Test
@@ -160,7 +159,7 @@ public class PluggableArtifactConfigTest {
 
         final String actual = config.toJSON();
 
-        assertThat(actual, is("{\"configuration\":{\"Foo\":\"Bar\"},\"id\":\"id1\",\"storeId\":\"Store-ID\"}"));
+        assertThat(actual).isEqualTo("{\"configuration\":{\"Foo\":\"Bar\"},\"id\":\"id1\",\"storeId\":\"Store-ID\"}");
     }
 
     @Test
@@ -171,7 +170,7 @@ public class PluggableArtifactConfigTest {
         final boolean result = artifactConfig.validateTree(ValidationContextMother.validationContext(artifactStores));
 
         assertFalse(result);
-        assertThat(artifactConfig.errors().getAllOn("id"), is(List.of("\"Id\" is required for PluggableArtifact", "Invalid pluggable artifact id name ''. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.")));
+        assertThat(artifactConfig.errors().getAllOn("id")).isEqualTo(List.of("\"Id\" is required for PluggableArtifact", "Invalid pluggable artifact id name ''. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters."));
     }
 
     @Test
@@ -192,7 +191,7 @@ public class PluggableArtifactConfigTest {
         final boolean result = artifactConfig.validateTree(ValidationContextMother.validationContext(artifactStores));
 
         assertFalse(result);
-        assertThat(artifactConfig.errors().getAllOn("storeId"), is(List.of("\"Store id\" is required for PluggableArtifact")));
+        assertThat(artifactConfig.errors().getAllOn("storeId")).isEqualTo(List.of("\"Store id\" is required for PluggableArtifact"));
     }
 
     @Test
@@ -203,14 +202,14 @@ public class PluggableArtifactConfigTest {
         final boolean result = artifactConfig.validateTree(ValidationContextMother.validationContext(artifactStores));
 
         assertFalse(result);
-        assertThat(artifactConfig.errors().getAllOn("id"), is(List.of("Invalid pluggable artifact id name 'asf@%'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.")));
+        assertThat(artifactConfig.errors().getAllOn("id")).isEqualTo(List.of("Invalid pluggable artifact id name 'asf@%'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters."));
     }
 
     @Test
     public void shouldHandleEncryptionOfConfigProperties() throws CryptoException {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -224,20 +223,20 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig);
 
-        assertThat(secureProperty.isSecure(), is(true));
-        assertThat(secureProperty.getEncryptedConfigurationValue(), is(notNullValue()));
-        assertThat(secureProperty.getEncryptedValue(), is(goCipher.encrypt("value1")));
+        assertThat(secureProperty.isSecure()).isTrue();
+        assertThat(secureProperty.getEncryptedConfigurationValue()).isNotNull();
+        assertThat(secureProperty.getEncryptedValue()).isEqualTo(goCipher.encrypt("value1"));
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
 
     }
 
     @Test
-    public void shouldNotEncryptConfigPropertiesWhenSpecifiedAsParameters() throws CryptoException {
+    public void shouldNotEncryptConfigPropertiesWhenSpecifiedAsParameters() {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -251,19 +250,19 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig);
 
-        assertThat(secureProperty.isSecure(), is(false));
-        assertThat(secureProperty.getEncryptedConfigurationValue(), is(nullValue()));
-        assertThat(secureProperty.getValue(), is("#{value1}"));
+        assertThat(secureProperty.isSecure()).isFalse();
+        assertThat(secureProperty.getEncryptedConfigurationValue()).isNull();
+        assertThat(secureProperty.getValue()).isEqualTo("#{value1}");
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
     }
 
     @Test
     public void shouldHandleEncryptionOfConfigPropertiesIfStoreIdIsAValidParam() throws Exception {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -278,12 +277,12 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.encryptSecureProperties(cruiseConfig, preprocessedPluggableArtifactConfig);
 
-        assertThat(secureProperty.isSecure(), is(true));
-        assertThat(secureProperty.getEncryptedConfigurationValue(), is(notNullValue()));
-        assertThat(secureProperty.getEncryptedValue(), is(goCipher.encrypt("value1")));
+        assertThat(secureProperty.isSecure()).isTrue();
+        assertThat(secureProperty.getEncryptedConfigurationValue()).isNotNull();
+        assertThat(secureProperty.getEncryptedValue()).isEqualTo(goCipher.encrypt("value1"));
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
 
     }
 
@@ -291,7 +290,7 @@ public class PluggableArtifactConfigTest {
     public void shouldIgnoreEncryptionOfSecurePropertyForNonExistentParam() {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -305,18 +304,18 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig1.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig1);
 
-        assertThat(secureProperty.isSecure(), is(false));
-        assertThat(secureProperty.getValue(), is("value1"));
+        assertThat(secureProperty.isSecure()).isFalse();
+        assertThat(secureProperty.getValue()).isEqualTo("value1");
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
     }
 
     @Test
     public void shouldIgnoreEncryptionOfSecurePropertyIfParamsIsUndefined() {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -334,22 +333,22 @@ public class PluggableArtifactConfigTest {
         pluggableArtifactConfig1.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig1);
         pluggableArtifactConfig2.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig2);
 
-        assertThat(secureProperty1.isSecure(), is(false));
-        assertThat(secureProperty1.getValue(), is("value1"));
-        assertThat(nonSecureProperty1.isSecure(), is(false));
-        assertThat(nonSecureProperty1.getValue(), is("value2"));
+        assertThat(secureProperty1.isSecure()).isFalse();
+        assertThat(secureProperty1.getValue()).isEqualTo("value1");
+        assertThat(nonSecureProperty1.isSecure()).isFalse();
+        assertThat(nonSecureProperty1.getValue()).isEqualTo("value2");
 
-        assertThat(secureProperty2.isSecure(), is(false));
-        assertThat(secureProperty2.getValue(), is("value1"));
-        assertThat(nonSecureProperty2.isSecure(), is(false));
-        assertThat(nonSecureProperty2.getValue(), is("value2"));
+        assertThat(secureProperty2.isSecure()).isFalse();
+        assertThat(secureProperty2.getValue()).isEqualTo("value1");
+        assertThat(nonSecureProperty2.isSecure()).isFalse();
+        assertThat(nonSecureProperty2.getValue()).isEqualTo("value2");
     }
 
     @Test
     public void shouldIgnoreEncryptionOfSecurePropertyForInvalidParamSpecification() {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -363,18 +362,18 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig);
 
-        assertThat(secureProperty.isSecure(), is(false));
-        assertThat(secureProperty.getValue(), is("value1"));
+        assertThat(secureProperty.isSecure()).isFalse();
+        assertThat(secureProperty.getValue()).isEqualTo("value1");
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
     }
 
     @Test
     public void shouldIgnoreEncryptionOfSecurePropertyIfStoreIdIsNull() {
         GoCipher goCipher = new GoCipher();
 
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
         pluginConfigurations.add(new PluginConfiguration("key1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("key2", new Metadata(true, false)));
         when(artifactPluginInfo.getArtifactConfigSettings()).thenReturn(new PluggableInstanceSettings(pluginConfigurations));
@@ -388,30 +387,30 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.encryptSecureProperties(cruiseConfig, pluggableArtifactConfig);
 
-        assertThat(secureProperty.isSecure(), is(false));
-        assertThat(secureProperty.getValue(), is("value1"));
+        assertThat(secureProperty.isSecure()).isFalse();
+        assertThat(secureProperty.getValue()).isEqualTo("value1");
 
-        assertThat(nonSecureProperty.isSecure(), is(false));
-        assertThat(nonSecureProperty.getValue(), is("value2"));
+        assertThat(nonSecureProperty.isSecure()).isFalse();
+        assertThat(nonSecureProperty.getValue()).isEqualTo("value2");
     }
 
     @Test
     public void addConfigurations_shouldLeaveUserEnteredValuesAsIsIfArtifactStoreIsNull() throws CryptoException {
         PluggableArtifactConfig pluggableArtifactConfig = new PluggableArtifactConfig("id", "non-existent-store-id");
-        ArrayList<ConfigurationProperty> configurationProperties = new ArrayList<>();
+        List<ConfigurationProperty> configurationProperties = new ArrayList<>();
         configurationProperties.add(ConfigurationPropertyMother.create("plain", false, "plain"));
         configurationProperties.add(ConfigurationPropertyMother.create("secure", true, new GoCipher().encrypt("password")));
 
         pluggableArtifactConfig.addConfigurations(configurationProperties);
 
-        assertThat(pluggableArtifactConfig.getConfiguration(), is(configurationProperties));
+        assertThat(pluggableArtifactConfig.getConfiguration()).isEqualTo(configurationProperties);
     }
 
     @Test
     public void addConfigurations_shouldLeaveUserEnteredValuesAsIsIfPluginIsMissing() throws CryptoException {
         ArtifactMetadataStore.instance().remove("cd.go.s3");
         PluggableArtifactConfig pluggableArtifactConfig = new PluggableArtifactConfig("id", "storeId");
-        ArrayList<ConfigurationProperty> configurationProperties = new ArrayList<>();
+        List<ConfigurationProperty> configurationProperties = new ArrayList<>();
         configurationProperties.add(ConfigurationPropertyMother.create("plain", false, "plain"));
         configurationProperties.add(ConfigurationPropertyMother.create("secure", true, new GoCipher().encrypt("password")));
 
@@ -420,12 +419,12 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.addConfigurations(configurationProperties);
 
-        assertThat(pluggableArtifactConfig.getConfiguration(), is(configurationProperties));
+        assertThat(pluggableArtifactConfig.getConfiguration()).isEqualTo(configurationProperties);
     }
 
     @Test
     public void addConfigurations_shouldSetUserSpecifiedConfigurationAsIs() throws CryptoException {
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
 
         pluginConfigurations.add(new PluginConfiguration("secure_property1", new Metadata(true, true)));
         pluginConfigurations.add(new PluginConfiguration("secure_property2", new Metadata(true, true)));
@@ -434,7 +433,7 @@ public class PluggableArtifactConfigTest {
 
         PluggableArtifactConfig pluggableArtifactConfig = new PluggableArtifactConfig("id", "storeId");
 
-        ArrayList<ConfigurationProperty> configurationProperties = new ArrayList<>();
+        List<ConfigurationProperty> configurationProperties = new ArrayList<>();
         configurationProperties.add(new ConfigurationProperty(new ConfigurationKey("plain"), new ConfigurationValue("plain")));
         configurationProperties.add(new ConfigurationProperty(new ConfigurationKey("secure_property1"), new ConfigurationValue("password")));
         configurationProperties.add(new ConfigurationProperty(new ConfigurationKey("secure_property2"), new EncryptedConfigurationValue(new GoCipher().encrypt("secret"))));
@@ -444,7 +443,7 @@ public class PluggableArtifactConfigTest {
 
         pluggableArtifactConfig.addConfigurations(configurationProperties);
 
-        assertThat(pluggableArtifactConfig.getConfiguration(), is(configurationProperties));
+        assertThat(pluggableArtifactConfig.getConfiguration()).isEqualTo(configurationProperties);
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test
 import static com.thoughtworks.go.CurrentGoCDVersion.apiDocsUrl
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
 import static java.util.Collections.emptyList
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class ScmUsageRepresenterTest {
 
@@ -35,7 +35,7 @@ class ScmUsageRepresenterTest {
   void 'should return the map of usages'() {
     def pipelineConfig = PipelineConfigMother.pipelineConfig("some-pipeline")
     Pair<PipelineConfig, PipelineConfigs> pair = new Pair<>(pipelineConfig, new BasicPipelineConfigs("pipeline-group", new Authorization(), pipelineConfig))
-    ArrayList<Pair<PipelineConfig, PipelineConfigs>> pairs = new ArrayList<>()
+    List<Pair<PipelineConfig, PipelineConfigs>> pairs = new ArrayList<>()
     pairs.add(pair)
 
     def actualJSON = toObjectString({ ScmUsageRepresenter.toJSON(it, "scm-id", pairs) })

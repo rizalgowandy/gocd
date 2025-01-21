@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class ParamsConfig extends BaseCollection<ParamConfig> implements Validat
     }
     @Override
     public void validate(ValidationContext validationContext) {
-        HashMap<String, ParamConfig> paramConfigMap = new HashMap<>();
+        Map<String, ParamConfig> paramConfigMap = new HashMap<>();
         for (ParamConfig paramConfig : this) {
             paramConfig.validateName(paramConfigMap, validationContext);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,18 @@ import com.thoughtworks.go.build.DownloadFile
 import org.apache.commons.codec.digest.DigestUtils
 
 private File destFile(String url) {
-  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(new URL(url).path).name}")
+  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(URI.create(url).toURL().path).name}")
 }
 
 task downloadTanukiDeltaPack(type: DownloadFile) {
-  def srcUrl = System.getenv("TANUKI_WRAPPER_URL") ?: "https://nexus.gocd.io/repository/s3-mirrors/local/tanuki/wrapper-delta-pack-${project.versions.tanuki}.tar.gz"
+  def srcUrl = System.getenv("TANUKI_WRAPPER_URL") ?: "https://nexus.gocd.io/repository/tanuki-proxy/${project.versions.tanuki.split("-").first()}/wrapper-delta-pack-${project.versions.tanuki}.tar.gz"
   src srcUrl
   dest destFile(srcUrl)
-  checksum project.versions.tanukiSha256sum
+  checksum = project.versions.tanukiSha256sum
 }
 
 task extractDeltaPack(type: Copy) {
   dependsOn downloadTanukiDeltaPack
   from(project.tarTree(downloadTanukiDeltaPack.outputs.files.singleFile))
-  into project.buildDir
+  into project.layout.buildDirectory
 }

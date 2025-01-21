@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import com.thoughtworks.go.plugin.api.task.TaskExecutionContext;
 import com.thoughtworks.go.util.ReflectionUtil;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class JobConsoleLoggerInternalTest {
@@ -30,9 +28,9 @@ public class JobConsoleLoggerInternalTest {
     public void shouldSetAndUnsetContext() {
         final TaskExecutionContext context = mock(TaskExecutionContext.class);
         JobConsoleLoggerInternal.setContext(context);
-        assertThat(ReflectionUtil.getStaticField(JobConsoleLogger.class, "context"), is(context));
+        assertThat((Object) ReflectionUtil.getStaticField(JobConsoleLogger.class, "context")).isEqualTo(context);
 
         JobConsoleLoggerInternal.unsetContext();
-        assertThat(ReflectionUtil.getStaticField(JobConsoleLogger.class, "context"), is(nullValue()));
+        assertThat((Object) ReflectionUtil.getStaticField(JobConsoleLogger.class, "context")).isNull();
     }
 }

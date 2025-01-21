@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ class EnvironmentVariablesConfigTest {
     @Test
     void shouldSetConfigAttributesSecurely() {
         environmentVariablesConfig = new EnvironmentVariablesConfig();
-        ArrayList<Map<String, String>> attribs = new ArrayList<>();
+        List<Map<String, String>> attribs = new ArrayList<>();
         Map<String, String> var1 = new HashMap<>();
         var1.put(EnvironmentVariableConfig.NAME, "name-var1");
         var1.put(EnvironmentVariableConfig.VALUE, "val-var1");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class InternalSCMsControllerV1Test implements SecurityServiceTrait, ControllerTr
       SCM scm = SCMMother.create("", "foobar", "plugin1", "v1.0", new Configuration(
         ConfigurationPropertyMother.create("key1", false, "value1")
       ))
-      HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
+      HttpLocalizedOperationResult result = new HttpLocalizedOperationResult()
       result.setMessage("Connection ok.")
 
       when(pluggableScmService.checkConnection(any(SCM))).thenReturn(result)
@@ -97,7 +97,7 @@ class InternalSCMsControllerV1Test implements SecurityServiceTrait, ControllerTr
       SCM scm = SCMMother.create("", "foobar", "plugin1", "v1.0", new Configuration(
         ConfigurationPropertyMother.create("key1", false, "value1")
       ))
-      HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
+      HttpLocalizedOperationResult result = new HttpLocalizedOperationResult()
       result.unprocessableEntity("Verify Connection failed.")
 
       when(pluggableScmService.checkConnection(any(SCM))).thenReturn(result)

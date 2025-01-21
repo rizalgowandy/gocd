@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import com.thoughtworks.go.validation.Validator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -213,7 +212,7 @@ public class User extends PersistentObject {
         return isEmailMe() && !StringUtils.isEmpty(email);
     }
 
-    public void populateModel(HashMap<String, Object> model) {
+    public void populateModel(Map<String, Object> model) {
         model.put("matchers", matcher());
         model.put("email", email);
         model.put("emailMe", emailMe);
@@ -292,7 +291,7 @@ public class User extends PersistentObject {
     }
 
     public void removeNotificationFilter(final long filterId) {
-        List<NotificationFilter> toBeDeleted = notificationFilters.stream().filter(filter1 -> filter1.getId() == filterId).collect(Collectors.toList());
+        List<NotificationFilter> toBeDeleted = notificationFilters.stream().filter(filter1 -> filter1.getId() == filterId).toList();
         notificationFilters.removeAll(toBeDeleted);
     }
 

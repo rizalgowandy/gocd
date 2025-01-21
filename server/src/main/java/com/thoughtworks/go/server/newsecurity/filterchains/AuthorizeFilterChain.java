@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,9 @@ public class AuthorizeFilterChain extends FilterChainProxy {
                                 BasicAuthenticationWithChallengeFailureResponseHandler apiAccessDeniedHandler,
                                 GenericAccessDeniedHandler genericAccessDeniedHandler) {
         super(FilterChainBuilder.newInstance()
+                // internal routes
+                .addFilterChain("/rails/**", new DenyAllAccessFilter())
+
                 // agent access
                 .addAuthorityFilterChain("/remoting/files/**", apiAccessDeniedHandler, ROLE_AGENT)
                 .addAuthorityFilterChain("/remoting/api/agent/**", apiAccessDeniedHandler, ROLE_AGENT)

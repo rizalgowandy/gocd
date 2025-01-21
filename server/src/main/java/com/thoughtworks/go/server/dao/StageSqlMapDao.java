@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class StageSqlMapDao extends SqlMapClientDaoSupport implements StageDao, 
                           TransactionSynchronizationManager transactionSynchronizationManager,
                           SystemEnvironment systemEnvironment,
                           Database database) {
-        super(goCache, sqlSessionFactory, systemEnvironment, database);
+        super(goCache, sqlSessionFactory);
         this.buildInstanceDao = buildInstanceDao;
         this.cache = cache;
         this.transactionTemplate = transactionTemplate;

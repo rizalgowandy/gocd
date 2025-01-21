@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,20 @@
  */
 package com.thoughtworks.go.util;
 
-import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 
 import java.net.URISyntaxException;
 import java.net.URL;
 
-class ValidatingSaxBuilder extends SAXBuilder {
+class ValidatingSaxBuilder extends SafeSaxBuilder {
     public ValidatingSaxBuilder() {
+        super();
         this.setFeature("http://apache.org/xml/features/validation/schema", true);
-        this.setValidation(true);
-        this.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        this.setXMLReaderFactory(XMLReaders.XSDVALIDATING);
     }
 
-    public ValidatingSaxBuilder(URL resource) throws URISyntaxException {
+    public ValidatingSaxBuilder(URL schemaLocation) throws URISyntaxException {
         this();
-        this.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", resource.toURI().toString());
+        this.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schemaLocation.toURI().toString());
     }
 }

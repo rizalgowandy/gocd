@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -68,7 +67,7 @@ public class RoleConfigurationValidatorTest {
         validator.validate(roleConfig, "pluginId");
 
         assertTrue(roleConfig.hasErrors());
-        assertThat(roleConfig.getProperty("username").errors().get("username").get(0), is("username format is incorrect"));
+        assertThat(roleConfig.getProperty("username").errors().get("username").get(0)).isEqualTo("username format is incorrect");
     }
 
     @Test
@@ -83,7 +82,7 @@ public class RoleConfigurationValidatorTest {
         validator.validate(roleConfig, "pluginId");
 
         assertTrue(roleConfig.hasErrors());
-        assertThat(roleConfig.getProperty("password").errors().get("password").get(0), is("password is required"));
+        assertThat(roleConfig.getProperty("password").errors().get("password").get(0)).isEqualTo("password is required");
         assertNull(roleConfig.getProperty("password").getValue());
     }
 
@@ -97,6 +96,6 @@ public class RoleConfigurationValidatorTest {
         validator.validate(roleConfig, "pluginId");
 
         assertTrue(roleConfig.hasErrors());
-        assertThat(roleConfig.errors().get("pluginRole").get(0), is("Unable to validate `pluginRole` configuration, missing plugin: pluginId"));
+        assertThat(roleConfig.errors().get("pluginRole").get(0)).isEqualTo("Unable to validate `pluginRole` configuration, missing plugin: pluginId");
     }
 }

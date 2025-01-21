@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -249,7 +249,7 @@ class JobConfigTest {
 
     @Test
     void shouldErrorOutIfTwoJobsHaveSameName() {
-        HashMap<String, JobConfig> visitedConfigs = new HashMap<>();
+        Map<String, JobConfig> visitedConfigs = new HashMap<>();
         visitedConfigs.put("defaultJob".toLowerCase(), new JobConfig("defaultJob"));
         JobConfig defaultJob = new JobConfig("defaultJob");
         defaultJob.validateNameUniqueness(visitedConfigs);

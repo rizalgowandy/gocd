@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package com.thoughtworks.go.util.validators;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Validation {
     public static final Validation SUCCESS = new Validation();
 
-    private ArrayList<Exception> errors = new ArrayList<>();
+    private final List<Exception> errors = new ArrayList<>();
 
     public boolean isSuccessful() {
-        return errors.size() == 0;
+        return errors.isEmpty();
     }
 
     public void logErrors() {

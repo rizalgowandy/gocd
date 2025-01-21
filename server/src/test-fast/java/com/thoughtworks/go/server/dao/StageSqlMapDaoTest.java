@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class StageSqlMapDaoTest {
@@ -75,8 +74,8 @@ class StageSqlMapDaoTest {
 
         List<StageIdentity> latestStageInstances = stageSqlMapDao.findLatestStageInstances();
 
-        assertThat(firstStageInstances, is(latestStages));
-        assertThat(latestStageInstances, is(latestStages));
+        assertThat(firstStageInstances).isEqualTo(latestStages);
+        assertThat(latestStageInstances).isEqualTo(latestStages);
         verify(sqlMapClientTemplate, times(1)).queryForList("latestStageInstances");
     }
 
@@ -86,10 +85,10 @@ class StageSqlMapDaoTest {
         String cacheKey = stageSqlMapDao.cacheKeyForLatestStageInstances();
 
         List<StageIdentity> latestStageInstances = stageSqlMapDao.findLatestStageInstances();
-        assertThat(goCache.get(cacheKey), is(latestStageInstances));
+        assertThat((Object) goCache.get(cacheKey)).isEqualTo(latestStageInstances);
 
         stageSqlMapDao.stageStatusChanged(StageMother.custom("stage"));
-        assertThat(goCache.get(cacheKey), is(nullValue()));
+        assertThat((Object) goCache.get(cacheKey)).isNull();
     }
 
     @Test
@@ -111,8 +110,8 @@ class StageSqlMapDaoTest {
 
         StageHistoryPage stageHistoryPage = spy.findStageHistoryPage(pipelineName, stageName, function);
 
-        assertThat(stageHistoryPage.getStages(), is(expectedStageHistoryEntriesList));
-        assertThat(stageHistoryPage.getImmediateChronologicallyForwardStageHistoryEntry(), is(bottomOfLastPage));
+        assertThat(stageHistoryPage.getStages()).isEqualTo(expectedStageHistoryEntriesList);
+        assertThat(stageHistoryPage.getImmediateChronologicallyForwardStageHistoryEntry()).isEqualTo(bottomOfLastPage);
 
         verify(spy, times(1)).findStages(pagination, pipelineName, stageName);
         verify(spy, times(1)).findImmediateChronologicallyForwardStageHistoryEntry(expectedStageHistoryEntriesList.get(0));
@@ -131,7 +130,7 @@ class StageSqlMapDaoTest {
         StageHistoryEntry bottomOfPreviousPage = mock(StageHistoryEntry.class);
         when(topOfThisPage.getId()).thenReturn(pipelineId);
         when(topOfThisPage.getIdentifier()).thenReturn(stageIdentifier);
-        HashMap args = new HashMap();
+        Map<String, Object> args = new HashMap<>();
         args.put("pipelineName", pipelineName);
         args.put("stageName", stageName);
         args.put("id", pipelineId);
@@ -139,7 +138,7 @@ class StageSqlMapDaoTest {
         when(sqlMapClientTemplate.queryForObject("findStageHistoryEntryBefore", args)).thenReturn(bottomOfPreviousPage);
 
         StageHistoryEntry actual = stageSqlMapDao.findImmediateChronologicallyForwardStageHistoryEntry(topOfThisPage);
-        assertThat(actual, is(bottomOfPreviousPage));
+        assertThat(actual).isEqualTo(bottomOfPreviousPage);
 
         verify(stageIdentifier).getPipelineName();
         verify(stageIdentifier).getStageName();

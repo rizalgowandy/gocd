@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import com.thoughtworks.go.domain.PipelineGroups;
 import com.thoughtworks.go.server.newsecurity.utils.SessionUtils;
 import com.thoughtworks.go.server.service.EntityHashingService;
 import com.thoughtworks.go.server.service.PipelineConfigsService;
-import com.thoughtworks.go.server.service.SecurityService;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import com.thoughtworks.go.spark.Routes;
 import com.thoughtworks.go.spark.spring.SparkSpringController;
@@ -55,15 +54,13 @@ public class PipelineGroupsControllerV1 extends ApiController implements SparkSp
     private final PipelineConfigsService pipelineConfigsService;
     private final ApiAuthenticationHelper apiAuthenticationHelper;
     private final EntityHashingService entityHashingService;
-    private final SecurityService securityService;
 
     @Autowired
-    public PipelineGroupsControllerV1(PipelineConfigsService pipelineConfigsService, ApiAuthenticationHelper apiAuthenticationHelper, EntityHashingService entityHashingService, SecurityService securityService) {
+    public PipelineGroupsControllerV1(PipelineConfigsService pipelineConfigsService, ApiAuthenticationHelper apiAuthenticationHelper, EntityHashingService entityHashingService) {
         super(ApiVersion.v1);
         this.pipelineConfigsService = pipelineConfigsService;
         this.apiAuthenticationHelper = apiAuthenticationHelper;
         this.entityHashingService = entityHashingService;
-        this.securityService = securityService;
     }
 
     @Override

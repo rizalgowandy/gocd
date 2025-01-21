@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -57,7 +57,7 @@ public class JobConsoleLoggerTest {
             JobConsoleLogger.getConsoleLogger();
             fail("expected this to fail");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("context is null"));
+            assertThat(e.getMessage()).isEqualTo("context is null");
         }
     }
 
@@ -92,7 +92,7 @@ public class JobConsoleLoggerTest {
     public void shouldDelegatePrintEnvironmentToConsole() {
         com.thoughtworks.go.plugin.api.task.Console.SecureEnvVarSpecifier secureEnvVarSpecifier = mock(com.thoughtworks.go.plugin.api.task.Console.SecureEnvVarSpecifier.class);
         when(environment.secureEnvSpecifier()).thenReturn(secureEnvVarSpecifier);
-        HashMap<String, String> environmentVariablesMap = new HashMap<>();
+        Map<String, String> environmentVariablesMap = new HashMap<>();
 
         consoleLogger.printEnvironment(environmentVariablesMap);
 

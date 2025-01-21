@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,7 +199,7 @@ public class AccessTokenSqlMapDaoIntegrationTest {
 
     @Test
     public void adminsShouldBeAbleToLoadTokensRevokedByAnyone() {
-        String user = RandomStringUtils.random(32);
+        String user = RandomStringUtils.insecure().next(32);
 
         AccessToken token = randomAccessTokenForUser(user);
 
@@ -211,7 +211,7 @@ public class AccessTokenSqlMapDaoIntegrationTest {
 
     @Test
     public void adminsShouldBeAbleToLoadTokensRevokedBecauseOfUserDeletionButUsersCannot() {
-        String user = RandomStringUtils.random(32);
+        String user = RandomStringUtils.insecure().next(32);
 
         AccessToken token = randomAccessTokenForUser(user);
 

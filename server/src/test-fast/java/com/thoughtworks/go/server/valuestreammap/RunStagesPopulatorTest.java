@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -112,7 +113,7 @@ public class RunStagesPopulatorTest {
     }
 
     private Stages stages(String stageName) {
-        ArrayList<Stage> stages = new ArrayList<>();
+        List<Stage> stages = new ArrayList<>();
         stages.add(StageMother.completedStageInstanceWithTwoPlans(stageName));
         return new Stages(stages);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,8 +167,8 @@ public class AuthenticationController {
         return badAuthentication(request, UNKNOWN_ERROR_WHILE_AUTHENTICATION);
     }
 
-    private HashMap<String, String> getRequestHeaders(HttpServletRequest request) {
-        HashMap<String, String> headers = new HashMap<>();
+    private Map<String, String> getRequestHeaders(HttpServletRequest request) {
+        Map<String, String> headers = new HashMap<>();
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String header = headerNames.nextElement();

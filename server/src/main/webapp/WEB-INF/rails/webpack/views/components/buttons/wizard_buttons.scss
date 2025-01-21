@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+@use "sass:color";
 @import "../../global/common";
 @import "index";
 
 .btn-secondary {
   @include button($background-color: $white);
 
-  color: $btn-primary;
-  border: 1px solid $btn-primary;
+  // stylelint-disable no-duplicate-selectors
+  & {
+    color: $btn-primary;
+    border: 1px solid $btn-primary;
+  }
+  // stylelint-enable
 
   &:hover {
     color: $white;
-    background-color: darken($btn-primary, 10%);
-    border-color: darken($btn-primary, 10%);
+    background-color: color.adjust($btn-primary, $lightness: -10%);
+    border-color: color.adjust($btn-primary, $lightness: -10%);
   }
 }
 

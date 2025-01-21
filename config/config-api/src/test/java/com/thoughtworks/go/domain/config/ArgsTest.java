@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,18 @@ package com.thoughtworks.go.domain.config;
 import com.thoughtworks.go.config.Argument;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArgsTest {
 
     @Test
     public void shouldConvertToEmptyArray() {
-        assertThat(new Arguments().toStringArray().length, is(0));
+        assertThat(new Arguments().toStringArray().length).isEqualTo(0);
     }
 
     @Test
     public void shouldConvertToStringArray() {
-        assertThat(new Arguments(new Argument("arg1"), new Argument("arg2")).toStringArray(), is(new String[]{"arg1", "arg2"}));
+        assertThat(new Arguments(new Argument("arg1"), new Argument("arg2")).toStringArray()).isEqualTo(new String[]{"arg1", "arg2"});
     }
 
 }

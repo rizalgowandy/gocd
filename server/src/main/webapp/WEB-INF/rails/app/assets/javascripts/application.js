@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 //= require "lib/bootstrap-dropdown-2.3.2.js"
 
 // used by Rails value_stream_map_renderer (look for $(.*).draggable etc)
-//= require "lib/jquery-ui-1.13.2.js"
+//= require "lib/jquery-ui-1.14.1.js"
 
 // Used by Rails job details page via timer_observer
 //= require "lib/trimpath-template-1.0.38.js"

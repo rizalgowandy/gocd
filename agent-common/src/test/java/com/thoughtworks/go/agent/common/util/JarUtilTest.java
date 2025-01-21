@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.thoughtworks.go.agent.testhelper.FakeGoServer.TestResource.TEST_AGENT;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JarUtilTest {
@@ -55,7 +55,7 @@ public class JarUtilTest {
     @Test
     public void shouldGetManifestKey() throws Exception {
         String manifestKey = JarUtil.getManifestKey(new File(PATH_WITH_HASHES + "test-agent.jar"), "Go-Agent-Bootstrap-Class");
-        assertThat(manifestKey, is("com.thoughtworks.go.HelloWorldStreamWriter"));
+        assertThat(manifestKey).isEqualTo("com.thoughtworks.go.HelloWorldStreamWriter");
     }
 
     @Test
@@ -63,11 +63,13 @@ public class JarUtilTest {
         File sourceFile = new File(PATH_WITH_HASHES + "test-agent.jar");
         Set<File> files = new HashSet<>(JarUtil.extractFilesInLibDirAndReturnFiles(sourceFile, jarEntry -> jarEntry.getName().endsWith(".class"), temporaryFolder));
 
-        Set<File> actualFiles = Files.list(temporaryFolder.toPath()).map(Path::toFile).collect(Collectors.toSet());
+        try (Stream<Path> directoryStream = Files.list(temporaryFolder.toPath())) {
+            Set<File> actualFiles = directoryStream.map(Path::toFile).collect(Collectors.toSet());
 
-        assertEquals(files, actualFiles);
-        assertEquals(files.size(), 2);
-        Set<String> fileNames = files.stream().map(File::getName).collect(Collectors.toSet());
-        assertEquals(fileNames, Set.of("ArgPrintingMain.class", "HelloWorldStreamWriter.class"));
+            assertEquals(files, actualFiles);
+            assertEquals(files.size(), 2);
+            Set<String> fileNames = files.stream().map(File::getName).collect(Collectors.toSet());
+            assertEquals(fileNames, Set.of("ArgPrintingMain.class", "HelloWorldStreamWriter.class"));
+        }
     }
 }

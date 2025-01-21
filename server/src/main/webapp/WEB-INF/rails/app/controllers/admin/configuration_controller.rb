@@ -1,5 +1,5 @@
 #
-# Copyright 2024 Thoughtworks, Inc.
+# Copyright Thoughtworks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 #
 
 class Admin::ConfigurationController < AdminController
+  before_action :check_admin_user_and_403
   before_action :fetch_config , :only => [:show, :edit]
   before_action :tab_name, :page_title
 

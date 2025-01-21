@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,18 @@ package com.thoughtworks.go.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StageEventTest {
 
     @Test
     public void allEventShouldIncludeOthers() {
-        assertThat(StageEvent.All.include(StageEvent.Fixed), is(true));
+        assertThat(StageEvent.All.include(StageEvent.Fixed)).isTrue();
     }
 
     @Test
     public void eventShouldIncludeItself() {
-        assertThat(StageEvent.Fixed.include(StageEvent.Fixed), is(true));
+        assertThat(StageEvent.Fixed.include(StageEvent.Fixed)).isTrue();
     }
 
 }

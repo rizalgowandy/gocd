@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WebappSessionConfigIntegrationTest {
 
@@ -54,8 +53,8 @@ public class WebappSessionConfigIntegrationTest {
         try {
             server.start();
             Set<SessionTrackingMode> effectiveSessionTrackingModes = ((WebAppContext) server.getHandlers()[0]).getServletContext().getEffectiveSessionTrackingModes();
-            assertThat(effectiveSessionTrackingModes.size(), is(1));
-            assertThat(effectiveSessionTrackingModes.contains(SessionTrackingMode.COOKIE), is(true));
+            assertThat(effectiveSessionTrackingModes.size()).isEqualTo(1);
+            assertThat(effectiveSessionTrackingModes.contains(SessionTrackingMode.COOKIE)).isTrue();
         } finally {
             server.stop();
         }

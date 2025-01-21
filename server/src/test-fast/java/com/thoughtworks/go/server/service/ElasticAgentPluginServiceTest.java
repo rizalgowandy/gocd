@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ class ElasticAgentPluginServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        ArrayList<PluginDescriptor> plugins = new ArrayList<>();
+        List<PluginDescriptor> plugins = new ArrayList<>();
         plugins.add(GoPluginDescriptor.builder().id("p1").isBundledPlugin(true).build());
         plugins.add(GoPluginDescriptor.builder().id("p2").isBundledPlugin(true).build());
         plugins.add(GoPluginDescriptor.builder().id("docker").isBundledPlugin(true).build());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ import com.thoughtworks.go.serverhealth.HealthStateScope;
 import com.thoughtworks.go.serverhealth.HealthStateType;
 import com.thoughtworks.go.serverhealth.ServerHealthService;
 import com.thoughtworks.go.serverhealth.ServerHealthState;
-import com.thoughtworks.go.util.Assertions;
 import com.thoughtworks.go.util.GoConfigFileHelper;
-import com.thoughtworks.go.util.Timeout;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,18 +52,19 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.thoughtworks.go.util.GoConfigFileHelper.env;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.awaitility.Awaitility.await;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
-        "classpath:/applicationContext-global.xml",
-        "classpath:/applicationContext-dataLocalAccess.xml",
-        "classpath:/testPropertyConfigurer.xml",
-        "classpath:/spring-all-servlet.xml",
+    "classpath:/applicationContext-global.xml",
+    "classpath:/applicationContext-dataLocalAccess.xml",
+    "classpath:/testPropertyConfigurer.xml",
+    "classpath:/spring-all-servlet.xml",
 })
 public class PipelineSchedulerIntegrationTest {
     private static final GoConfigFileHelper configHelper = new GoConfigFileHelper();
@@ -78,17 +77,28 @@ public class PipelineSchedulerIntegrationTest {
     private static final String PIPELINE_EVOLVE = "evolve";
     public static SvnTestRepo testRepo;
 
-    @Autowired private GoConfigDao goConfigDao;
-    @Autowired private GoConfigService goConfigService;
-    @Autowired private PipelineScheduler pipelineScheduler;
-    @Autowired private ServerHealthService serverHealthService;
-    @Autowired private PipelineService pipelineService;
-    @Autowired private ScheduleService scheduleService;
-    @Autowired private PipelineScheduleQueue pipelineScheduleQueue;
-    @Autowired private ScheduleHelper scheduleHelper;
-    @Autowired private DatabaseAccessHelper dbHelper;
-    @Autowired private GoCache goCache;
-    @Autowired private PipelinePauseService pipelinePauseService;
+    @Autowired
+    private GoConfigDao goConfigDao;
+    @Autowired
+    private GoConfigService goConfigService;
+    @Autowired
+    private PipelineScheduler pipelineScheduler;
+    @Autowired
+    private ServerHealthService serverHealthService;
+    @Autowired
+    private PipelineService pipelineService;
+    @Autowired
+    private ScheduleService scheduleService;
+    @Autowired
+    private PipelineScheduleQueue pipelineScheduleQueue;
+    @Autowired
+    private ScheduleHelper scheduleHelper;
+    @Autowired
+    private DatabaseAccessHelper dbHelper;
+    @Autowired
+    private GoCache goCache;
+    @Autowired
+    private PipelinePauseService pipelinePauseService;
 
 
     private Username cruise;
@@ -132,39 +142,43 @@ public class PipelineSchedulerIntegrationTest {
         goConfigService.pipelineConfigNamed(new CaseInsensitiveString(PIPELINE_MINGLE)).setVariables(env("KEY", "somejunk"));
         serverHealthService.update(ServerHealthState.failToScheduling(HealthStateType.general(HealthStateScope.forPipeline(PIPELINE_MINGLE)), PIPELINE_MINGLE, "should wait till cleared"));
         pipelineScheduler.manualProduceBuildCauseAndSave(PIPELINE_MINGLE, Username.ANONYMOUS, scheduleOptions, operationResult);
-        assertThat(operationResult.message(), operationResult.canContinue(),is(true));
-        Assertions.waitUntil(Timeout.ONE_MINUTE, () -> serverHealthService.filterByScope(HealthStateScope.forPipeline(PIPELINE_MINGLE)).isEmpty());
+        assertThat(operationResult.canContinue()).describedAs(operationResult.message()).isTrue();
+
+        await()
+            .atMost(1, TimeUnit.MINUTES)
+            .until(() -> serverHealthService.logsSortedForScope(HealthStateScope.forPipeline(PIPELINE_MINGLE)).isEmpty());
+
         BuildCause buildCause = pipelineScheduleQueue.toBeScheduled().get(new CaseInsensitiveString(PIPELINE_MINGLE));
 
         EnvironmentVariables overriddenVariables = buildCause.getVariables();
-        assertThat(overriddenVariables, is(new EnvironmentVariables(List.of(new EnvironmentVariable("KEY", "value")))));
+        assertThat(overriddenVariables).isEqualTo(new EnvironmentVariables(List.of(new EnvironmentVariable("KEY", "value"))));
     }
 
 
     @Test
     public void shouldRemoveErrorLogForPipelineIfSchedulingSucceeded() throws Exception {
         serverHealthService.update(ServerHealthState.error("failed to connect to scm", "failed to connect to scm",
-                HealthStateType.general(HealthStateScope.forPipeline(PIPELINE_MINGLE))));
+            HealthStateType.general(HealthStateScope.forPipeline(PIPELINE_MINGLE))));
         ServerHealthState serverHealthState = scheduleHelper.manuallySchedulePipelineWithRealMaterials(PIPELINE_MINGLE, cruise);
-        assertThat(serverHealthState.isSuccess(), is(true));
+        assertThat(serverHealthState.isSuccess()).isTrue();
         assertCurrentErrorLogNumberIs(PIPELINE_MINGLE, 0);
     }
 
     @SuppressWarnings("SameParameterValue")
     private void assertCurrentErrorLogNumberIs(String pipelineName, int number) {
-        List<ServerHealthState> entries = serverHealthService.filterByScope(HealthStateScope.forPipeline(pipelineName));
-        assertThat(entries.toString(), entries.size(), is(number));
+        List<ServerHealthState> entries = serverHealthService.logsSortedForScope(HealthStateScope.forPipeline(pipelineName));
+        assertThat(entries.size()).describedAs(entries.toString()).isEqualTo(number);
     }
 
     @Test
     public void shouldRemoveAllErrorLogsForPipelineIfSchedulingSucceeded() throws Exception {
         serverHealthService.update(ServerHealthState.error("failed to connect to scm", "failed to connect to scm",
-                HealthStateType.general(HealthStateScope.forPipeline(PIPELINE_MINGLE))));
+            HealthStateType.general(HealthStateScope.forPipeline(PIPELINE_MINGLE))));
         serverHealthService.update(ServerHealthState.error("failed to connect to scm", "failed to connect to scm",
-                HealthStateType.artifactsDiskFull()));
+            HealthStateType.artifactsDiskFull()));
 
         ServerHealthState serverHealthState = scheduleHelper.manuallySchedulePipelineWithRealMaterials(PIPELINE_MINGLE, cruise);
-        assertThat(serverHealthState.isSuccess(), is(true));
+        assertThat(serverHealthState.isSuccess()).isTrue();
         assertCurrentErrorLogNumberIs(PIPELINE_MINGLE, 0);
     }
 
@@ -174,7 +188,7 @@ public class PipelineSchedulerIntegrationTest {
         scheduleService.rerunStage(PIPELINE_MINGLE, pipeline.getCounter(), FT_STAGE);
 
         assertThatThrownBy(() -> scheduleService.rerunStage(PIPELINE_MINGLE, pipeline.getCounter(), FT_STAGE))
-                .hasMessageMatching("Cannot schedule: Pipeline.+is still in progress");
+            .hasMessageMatching("Cannot schedule: Pipeline.+is still in progress");
     }
 
     private Pipeline makeCompletedPipeline() throws Exception {
@@ -196,13 +210,13 @@ public class PipelineSchedulerIntegrationTest {
         pipelinePauseService.pause(pipelineName, "pauseCause", userName);
 
         PipelinePauseInfo pauseInfo = pipelinePauseService.pipelinePauseInfo(pipelineName);
-        assertThat(pauseInfo.isPaused(), is(true));
-        assertThat(pauseInfo.getPauseCause(), is("pauseCause"));
-        assertThat(pauseInfo.getPauseBy(), is("pauseBy"));
+        assertThat(pauseInfo.isPaused()).isTrue();
+        assertThat(pauseInfo.getPauseCause()).isEqualTo("pauseCause");
+        assertThat(pauseInfo.getPauseBy()).isEqualTo("pauseBy");
 
         pipelinePauseService.unpause(pipelineName);
         pauseInfo = pipelinePauseService.pipelinePauseInfo(pipelineName);
-        assertThat(pauseInfo.isPaused(), is(false));
+        assertThat(pauseInfo.isPaused()).isFalse();
     }
 
     @Test
@@ -214,12 +228,12 @@ public class PipelineSchedulerIntegrationTest {
         pipelinePauseService.pause(PIPELINE_NAME, "pauseCause", userName);
 
         PipelinePauseInfo pauseInfo = pipelinePauseService.pipelinePauseInfo(PIPELINE_NAME);
-        assertThat(pauseInfo.isPaused(), is(true));
-        assertThat(pauseInfo.getPauseCause(), is("pauseCause"));
-        assertThat(pauseInfo.getPauseBy(), is("pauseBy"));
+        assertThat(pauseInfo.isPaused()).isTrue();
+        assertThat(pauseInfo.getPauseCause()).isEqualTo("pauseCause");
+        assertThat(pauseInfo.getPauseBy()).isEqualTo("pauseBy");
 
         pipelinePauseService.unpause(PIPELINE_NAME);
         pauseInfo = pipelinePauseService.pipelinePauseInfo(PIPELINE_NAME);
-        assertThat(pauseInfo.isPaused(), is(false));
+        assertThat(pauseInfo.isPaused()).isFalse();
     }
 }

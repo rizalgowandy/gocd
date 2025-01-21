@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class MaterialRepositoryTest {
@@ -44,7 +44,7 @@ public class MaterialRepositoryTest {
     private GoCache goCache;
     private TransactionSynchronizationManager transactionSynchronizationManager;
     private HibernateTemplate mockHibernateTemplate;
-    private HashMap<String, Object> ourCustomCache;
+    private Map<String, Object> ourCustomCache;
     private MaterialConfigConverter materialConfigConverter;
     private MaterialExpansionService materialExpansionService;
     private Database databaseStrategy;
@@ -89,10 +89,10 @@ public class MaterialRepositoryTest {
         when(query.uniqueResult()).thenReturn(modification);
 
         Modification actualModification = materialRepository.findModificationWithRevision(session, materialId, revision);//Prime cache, Cache get returns null twice
-        assertThat(actualModification, is(modification));
+        assertThat(actualModification).isEqualTo(modification);
 
         modification = materialRepository.findModificationWithRevision(session, materialId, revision); //Fetch from cache, Cache get returns modification
-        assertThat(actualModification, is(modification));
+        assertThat(actualModification).isEqualTo(modification);
 
         verify(query, times(1)).uniqueResult();
         verify(goCache, times(3)).get(key);

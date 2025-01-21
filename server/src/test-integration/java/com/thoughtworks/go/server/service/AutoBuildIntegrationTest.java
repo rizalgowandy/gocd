@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -114,6 +113,6 @@ public class AutoBuildIntegrationTest {
         MaterialRevisions expected = scheduleUtil.mrs(scheduleUtil.mr(up_pipe, true, up_pipe_1));
 
         AutoBuild autoBuildType = new AutoBuild(goConfigService, pipelineService, "down_pipe", systemEnvironment, materialChecker);
-        assertThat(autoBuildType.onModifications(given, true, null).getMaterialRevisions(), is(expected));
+        assertThat(autoBuildType.onModifications(given, true, null).getMaterialRevisions()).isEqualTo(expected);
     }
 }

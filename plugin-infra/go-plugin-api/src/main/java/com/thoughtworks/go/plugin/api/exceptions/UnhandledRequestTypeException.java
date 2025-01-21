@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.plugin.api.exceptions;
 
+@SuppressWarnings("unused") // Part of plugin-api contract
 public class UnhandledRequestTypeException extends Exception {
     public UnhandledRequestTypeException(String requestType) {
         super("This is an invalid request type :" + requestType);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,8 @@ import java.util.List;
 
 import static com.thoughtworks.go.domain.AgentInstance.FilterBy.*;
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -118,7 +117,7 @@ public class AgentsUpdateValidatorTest {
             when(agentInstances.filterBy(uuids, Null)).thenReturn(List.of(nonExistingUuid, anotherNonExistingUuid));
 
             RecordNotFoundException e = assertThrows(RecordNotFoundException.class, () -> newAgentsUpdateValidator().validate());
-            assertThat(e.getMessage(), is("Agents with uuids [non-existing-uuid, another-non-existing-uuid] were not found!"));
+            assertThat(e.getMessage()).isEqualTo("Agents with uuids [non-existing-uuid, another-non-existing-uuid] were not found!");
         }
 
         @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import static com.thoughtworks.go.config.remote.ConfigRepoConfig.createConfigRep
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git
 import static java.util.Collections.emptyList
 import static java.util.Collections.emptyMap
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -171,7 +171,7 @@ class SCMControllerV4Test implements SecurityServiceTrait, ControllerTrait<SCMCo
         ))
 
         when(entityHashingService.hashForEntity(scm)).thenReturn('digest')
-        when(scmService.findPluggableScmMaterial("foobar")).thenReturn(scm);
+        when(scmService.findPluggableScmMaterial("foobar")).thenReturn(scm)
 
         getWithApiHeader(controller.controllerPath('/foobar'))
 
@@ -200,7 +200,7 @@ class SCMControllerV4Test implements SecurityServiceTrait, ControllerTrait<SCMCo
         ))
 
         when(entityHashingService.hashForEntity(scm)).thenReturn('digest')
-        when(scmService.findPluggableScmMaterial("foobar")).thenReturn(scm);
+        when(scmService.findPluggableScmMaterial("foobar")).thenReturn(scm)
 
         getWithApiHeader(controller.controllerPath('/foobar'), ['if-none-match': '"digest"'])
 
@@ -871,7 +871,7 @@ class SCMControllerV4Test implements SecurityServiceTrait, ControllerTrait<SCMCo
     void 'should return a list of pipelines which uses the specified scm'() {
       def pipelineConfig = PipelineConfigMother.pipelineConfig("some-pipeline")
       Pair<PipelineConfig, PipelineConfigs> pair = new Pair<>(pipelineConfig, new BasicPipelineConfigs("pipeline-group", new Authorization(), pipelineConfig))
-      ArrayList<Pair<PipelineConfig, PipelineConfigs>> pairs = new ArrayList<>()
+      List<Pair<PipelineConfig, PipelineConfigs>> pairs = new ArrayList<>()
       pairs.add(pair)
 
       def allUsages = new HashMap()

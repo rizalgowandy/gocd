@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class TriStateSelection implements Comparable<TriStateSelection> {
     }
 
     static <T,V> List<TriStateSelection> convert(Set<T> assignables, List<V> assignees, Assigner<T,V> associator) {
-        ArrayList<TriStateSelection> selections = new ArrayList<>();
+        List<TriStateSelection> selections = new ArrayList<>();
         for (T t : assignables) {
             int count = 0;
             boolean enabled = true;

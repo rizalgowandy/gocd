@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public void updatePipelineTimeline(final PipelineTimeline pipelineTimeline, fina
 
 
             private List<PipelineTimelineEntry> populateFrom(List<Object[]> matches) {
-                ArrayList<PipelineTimelineEntry> newPipelines = new ArrayList<>();
+                List<PipelineTimelineEntry> newPipelines = new ArrayList<>();
                 if (matches.isEmpty()) {
                     return newPipelines;
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class TaskConfig extends Configuration {
 
     @Override
     public List<? extends  Property> list() {
-        ArrayList<TaskConfigProperty> list = new ArrayList<>();
+        List<TaskConfigProperty> list = new ArrayList<>();
         for (Property property : super.list()) {
             list.add((TaskConfigProperty) property);
         }
