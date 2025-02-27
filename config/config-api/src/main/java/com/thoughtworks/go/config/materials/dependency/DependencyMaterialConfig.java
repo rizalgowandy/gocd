@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,11 +134,6 @@ public class DependencyMaterialConfig extends AbstractMaterialConfig implements 
         parameters.put("stageName", CaseInsensitiveString.str(stageName));
     }
 
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        appendCriteria(parameters);
-    }
-
     public CaseInsensitiveString getPipelineName() {
         return pipelineName;
     }
@@ -245,7 +240,7 @@ public class DependencyMaterialConfig extends AbstractMaterialConfig implements 
         if (attributes == null) {
             return;
         }
-        Map attributesMap = (Map) attributes;
+        @SuppressWarnings("unchecked") Map<String, ?> attributesMap = (Map<String, ?>) attributes;
         if (attributesMap.containsKey(MATERIAL_NAME)) {
             name = new CaseInsensitiveString((String) attributesMap.get(MATERIAL_NAME));
             if (CaseInsensitiveString.isBlank(name)) {

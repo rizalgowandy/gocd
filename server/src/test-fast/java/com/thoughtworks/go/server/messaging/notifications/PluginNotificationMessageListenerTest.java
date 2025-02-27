@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PluginNotificationMessageListenerTest {
@@ -36,7 +35,7 @@ public class PluginNotificationMessageListenerTest {
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
         PluginNotificationMessageListener listener = new PluginNotificationMessageListener(notificationExtension, serverHealthService);
 
-        PluginNotificationMessage message = new PluginNotificationMessage("pid", "request-name", "data");
+        PluginNotificationMessage<?> message = new PluginNotificationMessage<>("pid", "request-name", "data");
         when(notificationExtension.notify(message.pluginId(), message.getRequestName(), message.getData())).thenReturn(new Result());
         listener.onMessage(message);
 
@@ -50,7 +49,7 @@ public class PluginNotificationMessageListenerTest {
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
         PluginNotificationMessageListener listener = new PluginNotificationMessageListener(notificationExtension, serverHealthService);
 
-        PluginNotificationMessage message = new PluginNotificationMessage("pid", "request-name", "data");
+        PluginNotificationMessage<?> message = new PluginNotificationMessage<>("pid", "request-name", "data");
         Result result = new Result();
         result.withErrorMessages(List.of(new String[]{"error message 1", "error message 2"}));
         when(notificationExtension.notify(message.pluginId(), message.getRequestName(), message.getData())).thenReturn(result);
@@ -59,9 +58,9 @@ public class PluginNotificationMessageListenerTest {
 
         verify(serverHealthService).update(argumentCaptor.capture());
         ServerHealthState serverHealthState = argumentCaptor.getValue();
-        assertThat(serverHealthState.isSuccess(), is(false));
-        assertThat(serverHealthState.getMessage(), is("Notification update failed for plugin: pid"));
-        assertThat(serverHealthState.getDescription(), is("error message 1, error message 2"));
+        assertThat(serverHealthState.isSuccess()).isFalse();
+        assertThat(serverHealthState.getMessage()).isEqualTo("Notification update failed for plugin: pid");
+        assertThat(serverHealthState.getDescription()).isEqualTo("error message 1, error message 2");
         verify(notificationExtension).notify("pid", "request-name", message.getData());
     }
 
@@ -71,16 +70,16 @@ public class PluginNotificationMessageListenerTest {
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
         PluginNotificationMessageListener listener = new PluginNotificationMessageListener(notificationExtension, serverHealthService);
 
-        PluginNotificationMessage message = new PluginNotificationMessage("pid", "request-name", "data");
+        PluginNotificationMessage<?> message = new PluginNotificationMessage<>("pid", "request-name", "data");
         when(notificationExtension.notify(message.pluginId(), message.getRequestName(), message.getData())).thenThrow(new RuntimeException("error!"));
         ArgumentCaptor<ServerHealthState> argumentCaptor = ArgumentCaptor.forClass(ServerHealthState.class);
         listener.onMessage(message);
 
         verify(serverHealthService).update(argumentCaptor.capture());
         ServerHealthState serverHealthState = argumentCaptor.getValue();
-        assertThat(serverHealthState.isSuccess(), is(false));
-        assertThat(serverHealthState.getMessage(), is("Notification update failed for plugin: pid"));
-        assertThat(serverHealthState.getDescription(), is("error!"));
+        assertThat(serverHealthState.isSuccess()).isFalse();
+        assertThat(serverHealthState.getMessage()).isEqualTo("Notification update failed for plugin: pid");
+        assertThat(serverHealthState.getDescription()).isEqualTo("error!");
         verify(notificationExtension).notify("pid", "request-name", message.getData());
     }
 

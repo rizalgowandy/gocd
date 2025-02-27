@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class MergePipelineConfigs implements PipelineConfigs {
     }
 
     private void verifyPipelineNameUniqueness() {
-        HashMap<CaseInsensitiveString, PipelineConfig> hashMap = new HashMap<>();
+        Map<CaseInsensitiveString, PipelineConfig> hashMap = new HashMap<>();
         for (PipelineConfig pipelineConfig : this) {
             pipelineConfig.validateNameUniqueness(hashMap);
         }
@@ -542,9 +542,10 @@ public class MergePipelineConfigs implements PipelineConfigs {
         configErrors.add(fieldName, message);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
-        Map attributeMap = (Map) attributes;
+        Map<String, Object> attributeMap = (Map<String, Object>) attributes;
         if (attributeMap == null) {
             return;
         }

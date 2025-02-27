@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import com.thoughtworks.go.plugin.api.task.TaskConfig;
 import com.thoughtworks.go.plugin.api.task.TaskView;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TaskPreferenceTest {
     @Test
-    public void shouldTestEquals() throws Exception {
+    public void shouldTestEquals() {
         Task task1 = mock(Task.class);
         TaskConfig config1 = new TaskConfig();
         TaskView taskView1 = mock(TaskView.class);
@@ -56,9 +55,9 @@ public class TaskPreferenceTest {
         when(task5.view()).thenReturn(taskView5);
         TaskPreference taskPreference5 = new TaskPreference(task5);
 
-        assertThat(taskPreference1.equals(taskPreference2), is(false));
-        assertThat(taskPreference1.equals(taskPreference3), is(true));
-        assertThat(taskPreference1.equals(taskPreference4), is(true));
-        assertThat(taskPreference1.equals(taskPreference5), is(false));
+        assertThat(taskPreference1.equals(taskPreference2)).isEqualTo(false);
+        assertThat(taskPreference1.equals(taskPreference3)).isEqualTo(true);
+        assertThat(taskPreference1.equals(taskPreference4)).isEqualTo(true);
+        assertThat(taskPreference1.equals(taskPreference5)).isEqualTo(false);
     }
 }

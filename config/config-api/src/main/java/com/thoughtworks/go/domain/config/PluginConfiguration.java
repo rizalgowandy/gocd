@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,9 @@ public class PluginConfiguration implements Serializable, Validatable {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public void setConfigAttributes(Object attributes) {
-        Map attributesMap = (Map) attributes;
+        Map<String, Object> attributesMap = (Map<String, Object>) attributes;
         if (attributesMap.containsKey(ID)) {
             id = (String) attributesMap.get(ID);
         }

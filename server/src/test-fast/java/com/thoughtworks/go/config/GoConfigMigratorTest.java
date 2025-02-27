@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.config;
 
+import com.thoughtworks.go.config.remote.PartialConfig;
 import com.thoughtworks.go.config.update.FullConfigUpdateCommand;
 import com.thoughtworks.go.domain.GoConfigRevision;
 import com.thoughtworks.go.serverhealth.ServerHealthService;
@@ -30,8 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,7 +69,7 @@ public class GoConfigMigratorTest {
         String configXml = "cruise_config_xml_contents";
         CruiseConfig cruiseConfig = mock(CruiseConfig.class);
         ArgumentCaptor<FullConfigUpdateCommand> commandArgumentCaptor = ArgumentCaptor.forClass(FullConfigUpdateCommand.class);
-        ArgumentCaptor<List> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<List<PartialConfig>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
         GoConfigHolder goConfigHolder = mock(GoConfigHolder.class);
 
@@ -80,10 +80,10 @@ public class GoConfigMigratorTest {
 
         GoConfigHolder configHolder = goConfigMigrator.migrate();
 
-        assertThat(configHolder, is(goConfigHolder));
-        assertThat(stringArgumentCaptor.getValue(), is("Upgrade"));
-        assertThat(commandArgumentCaptor.getValue().configForEdit(), is(cruiseConfig));
-        assertThat(listArgumentCaptor.getValue().size(), is(0));
+        assertThat(configHolder).isEqualTo(goConfigHolder);
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo("Upgrade");
+        assertThat(commandArgumentCaptor.getValue().configForEdit()).isEqualTo(cruiseConfig);
+        assertThat(listArgumentCaptor.getValue().size()).isEqualTo(0);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class GoConfigMigratorTest {
         String versionedConfig = "versioned_cruise_config";
         CruiseConfig cruiseConfig = mock(CruiseConfig.class);
         ArgumentCaptor<FullConfigUpdateCommand> commandArgumentCaptor = ArgumentCaptor.forClass(FullConfigUpdateCommand.class);
-        ArgumentCaptor<List> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<List<PartialConfig>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
         when(systemEnvironment.getCruiseConfigFile()).thenReturn("");
@@ -106,9 +106,9 @@ public class GoConfigMigratorTest {
 
         goConfigMigrator.migrate();
 
-        assertThat(stringArgumentCaptor.getValue(), is("Upgrade"));
-        assertThat(commandArgumentCaptor.getValue().configForEdit(), is(cruiseConfig));
-        assertThat(listArgumentCaptor.getValue().size(), is(0));
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo("Upgrade");
+        assertThat(commandArgumentCaptor.getValue().configForEdit()).isEqualTo(cruiseConfig);
+        assertThat(listArgumentCaptor.getValue().size()).isEqualTo(0);
         verify(goConfigMigration).revertFileToVersion(any(File.class), any(GoConfigRevision.class));
     }
 

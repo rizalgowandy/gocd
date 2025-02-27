@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.plugin.access.notification.v2;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.domain.notificationdata.StageNotificationData;
 import com.thoughtworks.go.plugin.access.notification.DataConverter;
@@ -29,7 +30,11 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonMessageHandler2_0 implements JsonMessageHandler {
+
+    private static final Gson GSON = new GsonBuilder().create();
+
     @Override
     public List<String> responseMessageForNotificationsInterestedIn(String responseBody) {
         try {
@@ -84,7 +89,7 @@ public class JsonMessageHandler2_0 implements JsonMessageHandler {
     }
 
     private Map parseResponseToMap(String responseBody) {
-        return (Map) new GsonBuilder().create().fromJson(responseBody, Object.class);
+        return (Map) GSON.fromJson(responseBody, Object.class);
     }
 
     Result toResult(String responseBody) {

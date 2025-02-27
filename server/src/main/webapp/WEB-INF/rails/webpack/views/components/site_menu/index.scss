@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:map";
 @import "../../global/common";
 
 @mixin ie-edge-fix-for-admin-dropdown {
@@ -23,7 +24,7 @@
 
     &::before {
       top: 40px;
-      z-index: map_get($zindex, "menu");
+      z-index: map.get($zindex, "menu");
       transition: all 0.1s ease-in-out;
     }
   }
@@ -107,11 +108,11 @@
   }
 
   .caret_down_icon {
-    @include icon-before($fa-var-caret-down);
-
     color: $icon-color;
     font-size: 13px;
     display: none;
+
+    @include icon-before($fa-var-caret-down);
 
     @media (min-width: $screen-md) {
       display: inline-block;
@@ -120,12 +121,11 @@
 }
 
 .site-nav_link {
-  @include hover-effect-for-top-menu;
-
-  text-decoration: none;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 600;
+
+  @include hover-effect-for-top-menu;
 
   @media (min-width: $screen-md) {
     font-size: 11px;
@@ -148,7 +148,7 @@
     display: none;
     line-height: normal;
     box-shadow: 0 3px 10px $box-shadow-color;
-    z-index: map_get($zindex, submenu);
+    z-index: map.get($zindex, submenu);
   }
 }
 
@@ -176,23 +176,22 @@
 }
 
 .site-sub-nav_item {
-  @media (max-width: $screen-md-min) {
-    line-height: normal;
-  }
-
   list-style-type: none;
   float: none;
   padding: 5px 0;
+
+  @media (max-width: $screen-md-min) {
+    line-height: normal;
+  }
 }
 
 .site-sub-nav_link {
-  @include hover-effect-for-top-menu;
-
-  text-decoration: none;
   display: inline-block;
   font-size: 13px;
   position: relative;
   white-space: nowrap;
+
+  @include hover-effect-for-top-menu;
 
   @media (max-width: $screen-md-min) {
     margin-bottom: 10px;

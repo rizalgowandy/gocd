@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,11 +149,6 @@ public class PluggableSCMMaterialConfig extends AbstractMaterialConfig {
     }
 
     @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        parameters.put("scmName", scmConfig.getName());
-    }
-
-    @Override
     protected void appendPipelineUniqueCriteria(Map<String, Object> basicCriteria) {
         basicCriteria.put("dest", folder);
     }
@@ -179,23 +174,24 @@ public class PluggableSCMMaterialConfig extends AbstractMaterialConfig {
         return Boolean.FALSE;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         if (attributes == null) {
             return;
         }
         super.setConfigAttributes(attributes);
-        Map map = (Map) attributes;
-        this.scmId = (String) map.get(SCM_ID);
+        Map<String, String> map = (Map<String, String>) attributes;
+        this.scmId = map.get(SCM_ID);
         if (map.containsKey(FOLDER)) {
-            String folder = (String) map.get(FOLDER);
+            String folder = map.get(FOLDER);
             if (StringUtils.isBlank(folder)) {
                 folder = null;
             }
             this.folder = folder;
         }
         if (map.containsKey(FILTER)) {
-            String pattern = (String) map.get(FILTER);
+            String pattern = map.get(FILTER);
             if (!StringUtils.isBlank(pattern)) {
                 this.setFilter(Filter.fromDisplayString(pattern));
             } else {

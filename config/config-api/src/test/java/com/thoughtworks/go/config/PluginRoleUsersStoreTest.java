@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,65 +19,64 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PluginRoleUsersStoreTest {
 
     private PluginRoleUsersStore pluginRoleUsersStore;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         pluginRoleUsersStore = PluginRoleUsersStore.instance();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         pluginRoleUsersStore.clearAll();
     }
 
     @Test
-    public void assignRole_ShouldAssignPluginRoleToAnUser() throws Exception {
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(0));
+    public void assignRole_ShouldAssignPluginRoleToAnUser() {
+        assertThat(pluginRoleUsersStore.pluginRoles()).isEmpty();
 
         PluginRoleConfig pluginRoleConfig = new PluginRoleConfig("spacetiger", "ldap");
         pluginRoleUsersStore.assignRole("wing-commander", pluginRoleConfig);
 
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(1));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleConfig), hasItem(new RoleUser("wing-commander")));
+        assertThat(pluginRoleUsersStore.pluginRoles()).hasSize(1);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleConfig)).contains(new RoleUser("wing-commander"));
     }
 
     @Test
-    public void removePluginRole_ShouldRemovePluginRoleFromStore() throws Exception {
+    public void removePluginRole_ShouldRemovePluginRoleFromStore() {
         PluginRoleConfig pluginRoleConfig = new PluginRoleConfig("spacetiger", "ldap");
         pluginRoleUsersStore.assignRole("wing-commander", pluginRoleConfig);
 
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(1));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleConfig), hasItem(new RoleUser("wing-commander")));
+        assertThat(pluginRoleUsersStore.pluginRoles()).hasSize(1);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleConfig)).contains(new RoleUser("wing-commander"));
 
         pluginRoleUsersStore.remove(pluginRoleConfig);
 
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(0));
+        assertThat(pluginRoleUsersStore.pluginRoles()).isEmpty();
     }
 
     @Test
-    public void revokeAllRolesFor_ShouldRevokeAllRolesForAGivenUser() throws Exception {
+    public void revokeAllRolesFor_ShouldRevokeAllRolesForAGivenUser() {
         PluginRoleConfig pluginRoleSpaceTiger = new PluginRoleConfig("spacetiger", "ldap");
         PluginRoleConfig pluginRoleBlackBird = new PluginRoleConfig("blackbird", "ldap");
         pluginRoleUsersStore.assignRole("wing-commander", pluginRoleSpaceTiger);
         pluginRoleUsersStore.assignRole("wing-commander", pluginRoleBlackBird);
         pluginRoleUsersStore.assignRole("bob", pluginRoleBlackBird);
 
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(2));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger), hasSize(1));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird), hasSize(2));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger), hasItem(new RoleUser("wing-commander")));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird), containsInAnyOrder(new RoleUser("wing-commander"), new RoleUser("bob")));
+        assertThat(pluginRoleUsersStore.pluginRoles()).hasSize(2);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger)).hasSize(1);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird)).hasSize(2);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger)).contains(new RoleUser("wing-commander"));
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird)).containsExactlyInAnyOrder(new RoleUser("wing-commander"), new RoleUser("bob"));
 
         pluginRoleUsersStore.revokeAllRolesFor("wing-commander");
 
-        assertThat(pluginRoleUsersStore.pluginRoles(), hasSize(1));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger), hasSize(0));
-        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird), hasSize(1));
+        assertThat(pluginRoleUsersStore.pluginRoles()).hasSize(1);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleSpaceTiger)).hasSize(0);
+        assertThat(pluginRoleUsersStore.usersInRole(pluginRoleBlackBird)).hasSize(1);
     }
 }

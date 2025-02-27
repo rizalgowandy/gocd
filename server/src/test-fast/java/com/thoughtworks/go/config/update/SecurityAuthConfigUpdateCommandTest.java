@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,8 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,28 +37,28 @@ public class SecurityAuthConfigUpdateCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldRaiseErrorWhenUpdatingNonExistentProfile() throws Exception {
+    public void shouldRaiseErrorWhenUpdatingNonExistentProfile() {
         cruiseConfig.server().security().securityAuthConfigs().clear();
         SecurityAuthConfigUpdateCommand command = new SecurityAuthConfigUpdateCommand(null, new SecurityAuthConfig("foo", "ldap"), null, null, new HttpLocalizedOperationResult(), null, null);
         assertThatThrownBy(() -> command.update(cruiseConfig)).isInstanceOf(RecordNotFoundException.class);
     }
 
     @Test
-    public void shouldUpdateExistingProfile() throws Exception {
+    public void shouldUpdateExistingProfile() {
         SecurityAuthConfig oldAuthConfig = new SecurityAuthConfig("foo", "ldap");
         SecurityAuthConfig newAuthConfig = new SecurityAuthConfig("foo", "github");
 
         cruiseConfig.server().security().securityAuthConfigs().add(oldAuthConfig);
         SecurityAuthConfigUpdateCommand command = new SecurityAuthConfigUpdateCommand(null, newAuthConfig, null, null, null, null, null);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("foo"), is(equalTo(newAuthConfig)));
+        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("foo")).isEqualTo(newAuthConfig);
     }
 
     @Test
@@ -78,7 +77,7 @@ public class SecurityAuthConfigUpdateCommandTest {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         SecurityAuthConfigUpdateCommand command = new SecurityAuthConfigUpdateCommand(goConfigService, newAuthConfig, null, currentUser, result, entityHashingService, "bad-digest");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result.toString(), containsString("Someone has modified the configuration for"));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result.toString()).contains("Someone has modified the configuration for");
     }
 }

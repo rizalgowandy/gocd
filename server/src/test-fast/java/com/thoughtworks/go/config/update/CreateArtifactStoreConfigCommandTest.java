@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateArtifactStoreConfigCommandTest {
@@ -33,12 +32,12 @@ public class CreateArtifactStoreConfigCommandTest {
     private ArtifactExtension extension;
 
     @Test
-    public void shouldAddArtifactStoreToConfig() throws Exception {
+    public void shouldAddArtifactStoreToConfig() {
         BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
         ArtifactStore artifactStore = new ArtifactStore("docker", "cd.go.artifact.docker");
         CreateArtifactStoreConfigCommand command = new CreateArtifactStoreConfigCommand(null, artifactStore, extension, null, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.getArtifactStores().find("docker"), equalTo(artifactStore));
+        assertThat(cruiseConfig.getArtifactStores().find("docker")).isEqualTo(artifactStore);
     }
 }

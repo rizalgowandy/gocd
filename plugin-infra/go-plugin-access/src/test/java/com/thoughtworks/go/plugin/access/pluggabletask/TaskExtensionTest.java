@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.execution.ExecutionResult;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
+import com.thoughtworks.go.plugin.api.task.Task;
 import com.thoughtworks.go.plugin.api.task.TaskConfig;
 import com.thoughtworks.go.plugin.infra.Action;
 import com.thoughtworks.go.plugin.infra.ActionWithReturn;
@@ -38,12 +39,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.PLUGGABLE_TASK_EXTENSION;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -67,7 +64,7 @@ public class TaskExtensionTest {
     public void setup() {
         extension = new TaskExtension(pluginManager, extensionsRegistry);
         pluginId = "plugin-id";
-        when(pluginManager.resolveExtensionVersion(eq(pluginId), eq(PLUGGABLE_TASK_EXTENSION), any(List.class))).thenReturn("1.0");
+        when(pluginManager.resolveExtensionVersion(eq(pluginId), eq(PLUGGABLE_TASK_EXTENSION), any())).thenReturn("1.0");
 
         pluginSettingsConfiguration = new PluginSettingsConfiguration();
         requestArgumentCaptor = ArgumentCaptor.forClass(GoPluginApiRequest.class);
@@ -75,7 +72,7 @@ public class TaskExtensionTest {
 
     @Test
     public void shouldExtendAbstractExtension() {
-       assertThat(extension, instanceOf(AbstractExtension.class));
+       assertThat(extension).isInstanceOf(AbstractExtension.class);
     }
 
     @Test
@@ -113,7 +110,7 @@ public class TaskExtensionTest {
 
         assertRequest(requestArgumentCaptor.getValue(), PLUGGABLE_TASK_EXTENSION, "1.0", PluginSettingsConstants.REQUEST_PLUGIN_SETTINGS_VIEW, null);
         verify(pluginSettingsJSONMessageHandler).responseMessageForPluginSettingsView(responseBody);
-        assertSame(response, deserializedResponse);
+        assertSame(deserializedResponse, response);
     }
 
     @Test
@@ -140,19 +137,19 @@ public class TaskExtensionTest {
 
     @Test
     public void shouldExecuteTheTask() {
-        ActionWithReturn actionWithReturn = mock(ActionWithReturn.class);
+        @SuppressWarnings("unchecked") ActionWithReturn<Task, ExecutionResult> actionWithReturn = mock(ActionWithReturn.class);
         when(actionWithReturn.execute(any(JsonBasedPluggableTask.class), nullable(GoPluginDescriptor.class))).thenReturn(ExecutionResult.success("yay"));
 
         ExecutionResult executionResult = extension.execute(pluginId, actionWithReturn);
 
         verify(actionWithReturn).execute(any(JsonBasedPluggableTask.class), nullable(GoPluginDescriptor.class));
-        assertThat(executionResult.getMessagesForDisplay(), is("yay"));
+        assertThat(executionResult.getMessagesForDisplay()).isEqualTo("yay");
         assertTrue(executionResult.isSuccessful());
     }
 
     @Test
     public void shouldPerformTheActionOnTask() {
-        Action action = mock(Action.class);
+        @SuppressWarnings("unchecked") Action<Task> action = mock(Action.class);
         final GoPluginDescriptor descriptor = mock(GoPluginDescriptor.class);
         when(pluginManager.getPluginDescriptorFor(pluginId)).thenReturn(descriptor);
 
@@ -181,9 +178,9 @@ public class TaskExtensionTest {
     }
 
     private void assertRequest(GoPluginApiRequest goPluginApiRequest, String extensionName, String version, String requestName, String requestBody) {
-        assertThat(goPluginApiRequest.extension(), is(extensionName));
-        assertThat(goPluginApiRequest.extensionVersion(), is(version));
-        assertThat(goPluginApiRequest.requestName(), is(requestName));
-        assertThat(goPluginApiRequest.requestBody(), is(requestBody));
+        assertThat(goPluginApiRequest.extension()).isEqualTo(extensionName);
+        assertThat(goPluginApiRequest.extensionVersion()).isEqualTo(version);
+        assertThat(goPluginApiRequest.requestName()).isEqualTo(requestName);
+        assertThat(goPluginApiRequest.requestBody()).isEqualTo(requestBody);
     }
 }

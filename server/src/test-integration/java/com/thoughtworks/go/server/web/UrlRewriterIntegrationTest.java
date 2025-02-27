@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,7 +57,6 @@ public class UrlRewriterIntegrationTest {
 
     private static HttpTestUtil httpUtil;
     private static WebApplicationContext wac;
-    private static boolean useConfiguredUrls;
 
     private static final ResponseAssertion NO_REWRITE = new ResponseAssertion(HTTP_URL + "/go/quux?hello=world", HTTP_URL + "/go/quux?hello=world");
     private static final ResponseAssertion PIPELINE_GROUP_CREATE = new ResponseAssertion(HTTP_URL + "/go/api/admin/pipeline_groups", HTTP_URL + "/go/spark/api/admin/pipeline_groups", METHOD.POST);
@@ -90,6 +88,8 @@ public class UrlRewriterIntegrationTest {
     private static final ResponseAssertion ARTIFACT_API_JSON_LISTING = new ResponseAssertion(HTTP_URL + "/go/files/pipeline/1/stage/2/job.json", HTTP_URL + "/go/repository/restful/artifact/GET/json?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=", true);
     private static final ResponseAssertion ARTIFACT_API_GET_FILE = new ResponseAssertion(HTTP_URL + "/go/files/pipeline/1/stage/2/job/tmp/file", HTTP_URL + "/go/repository/restful/artifact/GET/?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=tmp%2Ffile", true);
     private static final ResponseAssertion ARTIFACT_API_PUSH_FILE = new ResponseAssertion(HTTP_URL + "/go/files/pipeline/1/stage/2/job/tmp/file", HTTP_URL + "/go/repository/restful/artifact/POST/?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=tmp%2Ffile", METHOD.POST, true);
+    private static final ResponseAssertion ARTIFACT_API_PUSH_FILE_AGENT_REMOTING = new ResponseAssertion(HTTP_URL + "/go/remoting/files/pipeline/1/stage/2/job/file%25?attempt=100&buildId=1000", HTTP_URL + "/go/repository/restful/artifact/POST/?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=file%25&attempt=100&buildId=1000", METHOD.POST, true);
+    private static final ResponseAssertion ARTIFACT_API_PUSH_FILE_AGENT_REMOTING_NO_PATH = new ResponseAssertion(HTTP_URL + "/go/remoting/files/pipeline/1/stage/2/job/?attempt=100&buildId=1000", HTTP_URL + "/go/repository/restful/artifact/POST/?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=&attempt=100&buildId=1000", METHOD.POST, true);
     private static final ResponseAssertion ARTIFACT_API_CHANGE_FILE = new ResponseAssertion(HTTP_URL + "/go/files/pipeline/1/stage/2/job/file", HTTP_URL + "/go/repository/restful/artifact/PUT/?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=file", METHOD.PUT, true);
     private static final ResponseAssertion ARTIFACT_API_CONSOLE_LOG = new ResponseAssertion(HTTP_URL + "/go/files/pipeline/1/stage/2/job/cruise-output/console.log?startLineNumber=1000", HTTP_URL + "/go/consoleout.json?pipelineName=pipeline&pipelineCounter=1&stageName=stage&stageCounter=2&buildName=job&filePath=cruise-output%2Fconsole.log&startLineNumber=1000");
 
@@ -128,6 +128,8 @@ public class UrlRewriterIntegrationTest {
             ARTIFACT_API_JSON_LISTING,
             ARTIFACT_API_GET_FILE,
             ARTIFACT_API_PUSH_FILE,
+            ARTIFACT_API_PUSH_FILE_AGENT_REMOTING,
+            ARTIFACT_API_PUSH_FILE_AGENT_REMOTING_NO_PATH,
             ARTIFACT_API_CHANGE_FILE,
             ARTIFACT_API_CONSOLE_LOG,
             PIPELINES_STAGE_DETAILS,
@@ -152,10 +154,6 @@ public class UrlRewriterIntegrationTest {
         });
         httpUtil.httpConnector(HTTP);
         when(wac.getBean("serverConfigService")).thenReturn(new BaseUrlProvider() {
-            @Override
-            public boolean hasAnyUrlConfigured() {
-                return useConfiguredUrls;
-            }
 
             @Override
             public String siteUrlFor(String url, boolean forceSsl) throws URISyntaxException {
@@ -217,7 +215,6 @@ public class UrlRewriterIntegrationTest {
     @ParameterizedTest
     @MethodSource("testResponseAssertions")
     public void shouldRewrite(final ResponseAssertion assertion) throws Exception {
-        useConfiguredUrls = assertion.useConfiguredUrls;
         GoAgentServerHttpClientBuilder builder = new GoAgentServerHttpClientBuilder(null, SslVerificationMode.NONE, null, null, null);
         try (CloseableHttpClient httpClient = builder.build()) {
             HttpRequestBase httpMethod;
@@ -232,8 +229,8 @@ public class UrlRewriterIntegrationTest {
             }
 
             try (CloseableHttpResponse response = httpClient.execute(httpMethod)) {
-                assertThat("status code match failed", response.getStatusLine().getStatusCode(), is(assertion.responseCode));
-                assertThat("handler url match failed", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8), is(assertion.servedUrl));
+                assertThat(response.getStatusLine().getStatusCode()).isEqualTo(assertion.responseCode);
+                assertThat(IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8)).isEqualTo(assertion.servedUrl);
             }
         }
     }

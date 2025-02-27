@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,6 @@ public class DummyMaterialConfig extends ScmMaterialConfig {
     }
 
     @Override
-    protected String getLocation() {
-        return null;
-    }
-
-    @Override
     public String getUriForDisplay() {
         return null;
     }
@@ -56,10 +51,6 @@ public class DummyMaterialConfig extends ScmMaterialConfig {
 
     @Override
     protected void appendCriteria(Map<String, Object> parameters) {
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
     }
 
     @Override

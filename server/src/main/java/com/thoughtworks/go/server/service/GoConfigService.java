@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.thoughtworks.go.config.validation.GoConfigValidity.*;
 import static com.thoughtworks.go.i18n.LocalizedMessage.forbiddenToEditPipeline;
@@ -374,7 +373,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
     }
 
     private List<CaseInsensitiveString> getAuthorizedUsers(AdminsConfig authorizedAdmins) {
-        ArrayList<CaseInsensitiveString> users = new ArrayList<>();
+        List<CaseInsensitiveString> users = new ArrayList<>();
         for (Admin admin : authorizedAdmins) {
             if (admin instanceof AdminRole) {
                 addRoleUsers(users, admin.getName());
@@ -472,7 +471,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
     }
 
     public List<PipelineConfig> getAllPipelineConfigsForEditForUser(Username username) {
-        ArrayList<PipelineConfig> pipelineConfigs = new ArrayList<>();
+        List<PipelineConfig> pipelineConfigs = new ArrayList<>();
 
         List<String> groupsForUser = getConfigForEditing().getGroupsForUser(username.getUsername(), rolesForUser(username.getUsername()));
 
@@ -532,13 +531,13 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
     }
 
     public List<CaseInsensitiveString> pipelinesWithMaterial(String fingerprint) {
-        ArrayList<CaseInsensitiveString> pipelineNames = new ArrayList<>();
+        List<CaseInsensitiveString> pipelineNames = new ArrayList<>();
         getAllPipelineConfigs().forEach(pipeline -> pipeline.materialConfigs().stream().filter(materialConfig -> materialConfig.getFingerprint().equals(fingerprint)).findFirst().ifPresent(expectedMaterialConfig -> pipelineNames.add(pipeline.name())));
         return pipelineNames;
     }
 
     public List<PackageDefinition> getPackages() {
-        ArrayList<PackageDefinition> packages = new ArrayList<>();
+        List<PackageDefinition> packages = new ArrayList<>();
         for (PackageRepository repository : this.getCurrentConfig().getPackageRepositories()) {
             packages.addAll(repository.getPackages());
         }
@@ -599,7 +598,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
     }
 
     public List<String> getResourceList() {
-        ArrayList<String> resources = new ArrayList<>();
+        List<String> resources = new ArrayList<>();
         for (ResourceConfig res : getCurrentConfig().getAllResources()) {
             resources.add(res.getName());
         }
@@ -673,7 +672,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
         }
     }
 
-    public XmlPartialSaver<?> groupSaver(String groupName) {
+    public XmlPartialSaver<Object> groupSaver(String groupName) {
         return new XmlPartialPipelineGroupSaver(groupName);
     }
 
@@ -811,7 +810,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
         return cloner.deepClone(getConfigForEditing());
     }
 
-    public CruiseConfig preprocessedCruiseConfigForPipelineUpdate(PipelineConfigCommand command) throws Exception {
+    public CruiseConfig preprocessedCruiseConfigForPipelineUpdate(PipelineConfigCommand command) {
         CruiseConfig config = clonedConfigForEdit();
         command.update(config);
         config.setPartials(cachedGoPartials.lastValidPartials());
@@ -905,7 +904,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
         return cruiseConfig().getArtifactStores();
     }
 
-    public CruiseConfig validateCruiseConfig(CruiseConfig cruiseConfig) throws Exception {
+    public CruiseConfig validateCruiseConfig(CruiseConfig cruiseConfig) {
         return xmlLoader.validateCruiseConfig(cruiseConfig);
     }
 
@@ -936,7 +935,7 @@ public class GoConfigService implements Initializer, CruiseConfigProvider {
         List<PipelineConfig> pipelineConfigs = getAllPipelineConfigs()
                 .stream()
                 .filter((pipelineConfig) -> pipelineConfig.getName().equals(pipelineName))
-                .collect(Collectors.toList());
+                .toList();
         if (!pipelineConfigs.isEmpty()) {
             return pipelineConfigs.get(0);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@ public class GoDashboardPipelinePauseStatusChangeHandlerTest {
     private GoDashboardPipelinePauseStatusChangeHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         handler = new GoDashboardPipelinePauseStatusChangeHandler(cacheUpdateService);
     }
 
     @Test
-    public void shouldHandlePipelinePauseStatusChangeByRefreshingPipelineInCache() throws Exception {
+    public void shouldHandlePipelinePauseStatusChangeByRefreshingPipelineInCache() {
         handler.call(PipelinePauseChangeListener.Event.pause("pipeline1", Username.valueOf("user1")));
 
         verify(cacheUpdateService).updateCacheForPipeline(new CaseInsensitiveString("pipeline1"));

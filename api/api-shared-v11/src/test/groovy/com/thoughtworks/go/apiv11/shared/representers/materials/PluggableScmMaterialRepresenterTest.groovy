@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import com.thoughtworks.go.helper.MaterialConfigsMother
 import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.junit.jupiter.api.Assertions.*
 import static org.mockito.Mockito.mock
 
@@ -98,7 +98,7 @@ class PluggableScmMaterialRepresenterTest {
   @Test
   void "should render errors"() {
     def pluggableScmMaterial = new PluggableSCMMaterialConfig(new CaseInsensitiveString(''), null, '/dest', null, false)
-    def materialConfigs = new MaterialConfigs(pluggableScmMaterial);
+    def materialConfigs = new MaterialConfigs(pluggableScmMaterial)
     materialConfigs.validateTree(PipelineConfigSaveValidationContext.forChain(true, "group", new BasicCruiseConfig(), new PipelineConfig()))
 
     def actualJson = toObjectString({ MaterialsRepresenter.toJSON(it, materialConfigs.first()) })

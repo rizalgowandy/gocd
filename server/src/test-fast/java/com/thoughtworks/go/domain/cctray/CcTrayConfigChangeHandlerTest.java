@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,19 +54,19 @@ public class CcTrayConfigChangeHandlerTest {
     private PluginRoleUsersStore pluginRoleUsersStore;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigMother = new GoConfigMother();
         handler = new CcTrayConfigChangeHandler(cache, stageStatusLoader, pipelinePermissionsAuthority);
         pluginRoleUsersStore = PluginRoleUsersStore.instance();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         pluginRoleUsersStore.clearAll();
     }
 
     @Test
-    public void shouldProvideCCTrayCacheWithAListOfAllProjectsInOrder() throws Exception {
+    public void shouldProvideCCTrayCacheWithAListOfAllProjectsInOrder() {
         ProjectStatus pipeline1_stage1 = new ProjectStatus("pipeline1 :: stage", "Activity1", "Status1", "Label1", new Date(), "stage1-url");
         ProjectStatus pipeline1_stage1_job = new ProjectStatus("pipeline1 :: stage :: job", "Activity1-Job", "Status1-Job", "Label1-Job", new Date(), "job1-url");
         ProjectStatus pipeline2_stage1 = new ProjectStatus("pipeline2 :: stage", "Activity2", "Status2", "Label2", new Date(), "stage2-url");
@@ -85,7 +84,7 @@ public class CcTrayConfigChangeHandlerTest {
     }
 
     @Test
-    public void shouldPopulateNewCacheWithProjectsFromOldCacheWhenTheyExist() throws Exception {
+    public void shouldPopulateNewCacheWithProjectsFromOldCacheWhenTheyExist() {
         String stageProjectName = "pipeline1 :: stage";
         String jobProjectName = "pipeline1 :: stage :: job";
 
@@ -104,7 +103,7 @@ public class CcTrayConfigChangeHandlerTest {
     }
 
     @Test
-    public void shouldPopulateNewCacheWithStageAndJobFromDB_WhenAStageIsNotFoundInTheOldCache() throws Exception {
+    public void shouldPopulateNewCacheWithStageAndJobFromDB_WhenAStageIsNotFoundInTheOldCache() {
         CruiseConfig config = GoConfigMother.configWithPipelines("pipeline1");
 
         String stageProjectName = "pipeline1 :: stage";
@@ -123,7 +122,7 @@ public class CcTrayConfigChangeHandlerTest {
     }
 
     @Test
-    public void shouldHandleNewStagesInConfig_ByReplacingStagesMissingInDBWithNullStagesAndJobs() throws Exception {
+    public void shouldHandleNewStagesInConfig_ByReplacingStagesMissingInDBWithNullStagesAndJobs() {
         CruiseConfig config = new BasicCruiseConfig();
         goConfigMother.addPipeline(config, "pipeline1", "stage1", "job1");
         goConfigMother.addStageToPipeline(config, "pipeline1", "stage2", "job2");
@@ -153,7 +152,7 @@ public class CcTrayConfigChangeHandlerTest {
 
     /* Simulate adding a job, when server is down. DB does not know anything about that job. */
     @Test
-    public void shouldHandleNewJobsInConfig_ByReplacingJobsMissingInDBWithNullJob() throws Exception {
+    public void shouldHandleNewJobsInConfig_ByReplacingJobsMissingInDBWithNullJob() {
         CruiseConfig config = new BasicCruiseConfig();
         goConfigMother.addPipeline(config, "pipeline1", "stage1", "job1", "NEW_JOB_IN_CONFIG");
 
@@ -177,7 +176,7 @@ public class CcTrayConfigChangeHandlerTest {
 
     /* Simulate adding a job, in a running system. Cache has the stage info, but not the job info. */
     @Test
-    public void shouldHandleNewJobsInConfig_ByReplacingJobsMissingInConfigWithNullJob() throws Exception {
+    public void shouldHandleNewJobsInConfig_ByReplacingJobsMissingInConfigWithNullJob() {
         String stage1ProjectName = "pipeline1 :: stage1";
         String job1ProjectName = "pipeline1 :: stage1 :: job1";
         String projectNameOfNewJob = "pipeline1 :: stage1 :: NEW_JOB_IN_CONFIG";
@@ -201,14 +200,12 @@ public class CcTrayConfigChangeHandlerTest {
     }
 
     @Test
-    public void shouldRemoveExtraJobsFromCache_WhichAreNoLongerInConfig() throws Exception {
+    public void shouldRemoveExtraJobsFromCache_WhichAreNoLongerInConfig() {
         String stage1ProjectName = "pipeline1 :: stage1";
         String job1ProjectName = "pipeline1 :: stage1 :: job1";
-        String projectNameOfJobWhichWillBeRemoved = "pipeline1 :: stage1 :: JOB_IN_OLD_CONFIG";
 
         ProjectStatus statusOfStage1InCache = new ProjectStatus(stage1ProjectName, "OldActivity", "OldStatus", "OldLabel", new Date(), "stage-url");
         ProjectStatus statusOfJob1InCache = new ProjectStatus(job1ProjectName, "OldActivity-Job", "OldStatus-Job", "OldLabel-Job", new Date(), "job1-url");
-        ProjectStatus statusOfOldJobInCache = new ProjectStatus(projectNameOfJobWhichWillBeRemoved, "OldActivity-Job", "OldStatus-Job", "OldLabel-Job", new Date(), "job2-url");
         when(cache.get(stage1ProjectName)).thenReturn(statusOfStage1InCache);
         when(cache.get(job1ProjectName)).thenReturn(statusOfJob1InCache);
 
@@ -224,7 +221,7 @@ public class CcTrayConfigChangeHandlerTest {
     }
 
     @Test
-    public void shouldUpdateViewPermissionsForEveryProjectBasedOnViewPermissionsOfTheGroup() throws Exception {
+    public void shouldUpdateViewPermissionsForEveryProjectBasedOnViewPermissionsOfTheGroup() {
         PluginRoleConfig admin = new PluginRoleConfig("admin", "ldap");
         pluginRoleUsersStore.assignRole("user4", admin);
 
@@ -242,39 +239,37 @@ public class CcTrayConfigChangeHandlerTest {
 
         verify(cache).replaceAllEntriesInCacheWith(statusesCaptor.capture());
         List<ProjectStatus> statuses = statusesCaptor.getValue();
-        assertThat(statuses.size(), is(4));
+        assertThat(statuses.size()).isEqualTo(4);
 
-        assertThat(statuses.get(0).name(), is("pipeline1 :: stage1"));
-        assertThat(statuses.get(0).canBeViewedBy("user1"), is(true));
-        assertThat(statuses.get(0).canBeViewedBy("user2"), is(true));
-        assertThat(statuses.get(0).canBeViewedBy("user3"), is(false));
-        assertThat(statuses.get(0).canBeViewedBy("user4"), is(false));
+        assertThat(statuses.get(0).name()).isEqualTo("pipeline1 :: stage1");
+        assertThat(statuses.get(0).canBeViewedBy("user1")).isTrue();
+        assertThat(statuses.get(0).canBeViewedBy("user2")).isTrue();
+        assertThat(statuses.get(0).canBeViewedBy("user3")).isFalse();
+        assertThat(statuses.get(0).canBeViewedBy("user4")).isFalse();
 
-        assertThat(statuses.get(1).name(), is("pipeline1 :: stage1 :: job1"));
-        assertThat(statuses.get(1).canBeViewedBy("user1"), is(true));
-        assertThat(statuses.get(1).canBeViewedBy("user2"), is(true));
-        assertThat(statuses.get(1).canBeViewedBy("user3"), is(false));
-        assertThat(statuses.get(1).canBeViewedBy("user4"), is(false));
+        assertThat(statuses.get(1).name()).isEqualTo("pipeline1 :: stage1 :: job1");
+        assertThat(statuses.get(1).canBeViewedBy("user1")).isTrue();
+        assertThat(statuses.get(1).canBeViewedBy("user2")).isTrue();
+        assertThat(statuses.get(1).canBeViewedBy("user3")).isFalse();
+        assertThat(statuses.get(1).canBeViewedBy("user4")).isFalse();
 
-        assertThat(statuses.get(2).name(), is("pipeline2 :: stage2"));
-        assertThat(statuses.get(2).canBeViewedBy("user1"), is(false));
-        assertThat(statuses.get(2).canBeViewedBy("user2"), is(false));
-        assertThat(statuses.get(2).canBeViewedBy("user3"), is(true));
-        assertThat(statuses.get(2).canBeViewedBy("user4"), is(true));
+        assertThat(statuses.get(2).name()).isEqualTo("pipeline2 :: stage2");
+        assertThat(statuses.get(2).canBeViewedBy("user1")).isFalse();
+        assertThat(statuses.get(2).canBeViewedBy("user2")).isFalse();
+        assertThat(statuses.get(2).canBeViewedBy("user3")).isTrue();
+        assertThat(statuses.get(2).canBeViewedBy("user4")).isTrue();
 
-        assertThat(statuses.get(3).name(), is("pipeline2 :: stage2 :: job2"));
-        assertThat(statuses.get(3).canBeViewedBy("user1"), is(false));
-        assertThat(statuses.get(3).canBeViewedBy("user2"), is(false));
-        assertThat(statuses.get(3).canBeViewedBy("user3"), is(true));
-        assertThat(statuses.get(3).canBeViewedBy("user4"), is(true));
+        assertThat(statuses.get(3).name()).isEqualTo("pipeline2 :: stage2 :: job2");
+        assertThat(statuses.get(3).canBeViewedBy("user1")).isFalse();
+        assertThat(statuses.get(3).canBeViewedBy("user2")).isFalse();
+        assertThat(statuses.get(3).canBeViewedBy("user3")).isTrue();
+        assertThat(statuses.get(3).canBeViewedBy("user4")).isTrue();
     }
 
     @Test
     public void shouldUpdateCacheWithPipelineDetailsWhenPipelineConfigChanges(){
         String pipeline1Stage = "pipeline1 :: stage1";
         String pipeline1job = "pipeline1 :: stage1 :: job1";
-        String pipeline2stage = "pipeline2 :: stage1";
-        String pipeline2job = "pipeline2 :: stage1 :: job1";
 
         ProjectStatus statusOfPipeline1StageInCache = new ProjectStatus(pipeline1Stage, "OldActivity", "OldStatus", "OldLabel", new Date(), "p1-stage-url");
         ProjectStatus statusOfPipeline1JobInCache = new ProjectStatus(pipeline1job, "OldActivity-Job", "OldStatus-Job", "OldLabel-Job", new Date(), "p1-job-url");
@@ -284,12 +279,12 @@ public class CcTrayConfigChangeHandlerTest {
         PipelineConfig pipeline1Config = GoConfigMother.pipelineHavingJob("pipeline1", "stage1", "job1", "arts", "dir").pipelineConfigByName(new CaseInsensitiveString("pipeline1"));
 
         handler.call(pipeline1Config);
-        ArgumentCaptor<ArrayList<ProjectStatus>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<ArrayList<ProjectStatus>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
         verify(cache).putAll(argumentCaptor.capture());
 
         List<ProjectStatus> allValues = argumentCaptor.getValue();
-        assertThat(allValues.get(0).name(), is(pipeline1Stage));
-        assertThat(allValues.get(1).name(), is(pipeline1job));
+        assertThat(allValues.get(0).name()).isEqualTo(pipeline1Stage);
+        assertThat(allValues.get(1).name()).isEqualTo(pipeline1job);
 
         verify(cache, atLeastOnce()).get(pipeline1Stage);
         verify(cache, atLeastOnce()).get(pipeline1job);
@@ -310,18 +305,18 @@ public class CcTrayConfigChangeHandlerTest {
         when(pipelinePermissionsAuthority.permissionsForPipeline(pipeline1Config.name())).thenReturn(new Permissions(viewers("user1", "user2"), null, null, null));
 
         handler.call(pipeline1Config);
-        ArgumentCaptor<ArrayList<ProjectStatus>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<ArrayList<ProjectStatus>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
         verify(cache).putAll(argumentCaptor.capture());
 
         List<ProjectStatus> allValues = argumentCaptor.getValue();
-        assertThat(allValues.get(0).name(), is(pipeline1Stage));
-        assertThat(allValues.get(0).viewers().contains("user1"), is(true));
-        assertThat(allValues.get(0).viewers().contains("user2"), is(true));
-        assertThat(allValues.get(0).viewers().contains("user3"), is(false));
-        assertThat(allValues.get(1).name(), is(pipeline1job));
-        assertThat(allValues.get(1).viewers().contains("user1"), is(true));
-        assertThat(allValues.get(1).viewers().contains("user2"), is(true));
-        assertThat(allValues.get(1).viewers().contains("user3"), is(false));
+        assertThat(allValues.get(0).name()).isEqualTo(pipeline1Stage);
+        assertThat(allValues.get(0).viewers().contains("user1")).isTrue();
+        assertThat(allValues.get(0).viewers().contains("user2")).isTrue();
+        assertThat(allValues.get(0).viewers().contains("user3")).isFalse();
+        assertThat(allValues.get(1).name()).isEqualTo(pipeline1job);
+        assertThat(allValues.get(1).viewers().contains("user1")).isTrue();
+        assertThat(allValues.get(1).viewers().contains("user2")).isTrue();
+        assertThat(allValues.get(1).viewers().contains("user3")).isFalse();
     }
 
     private Users viewers(String... users) {

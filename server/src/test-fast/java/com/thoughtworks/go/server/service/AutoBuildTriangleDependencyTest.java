@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import com.thoughtworks.go.util.SystemEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class AutoBuildTriangleDependencyTest {
@@ -42,7 +41,7 @@ public class AutoBuildTriangleDependencyTest {
     private MaterialChecker materialChecker;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = mock(BasicCruiseConfig.class);
         pipelineService = mock(PipelineService.class);
@@ -52,7 +51,7 @@ public class AutoBuildTriangleDependencyTest {
     }
 
     @Test
-    public void should_useTriangleDependencyResolution_whenFainInIsOptedOut() throws Exception {
+    public void should_useTriangleDependencyResolution_whenFainInIsOptedOut() {
         SystemEnvironment systemEnvironment = mock(SystemEnvironment.class);
         when(systemEnvironment.enforceRevisionCompatibilityWithUpstream()).thenReturn(false);
         String pipelineName = "downstream";
@@ -74,6 +73,6 @@ public class AutoBuildTriangleDependencyTest {
 
         verify(pipelineService).getRevisionsBasedOnDependencies(dependencyGraph, originalRevisions);
         verify(pipelineService, never()).getRevisionsBasedOnDependencies(any(MaterialRevisions.class), any(BasicCruiseConfig.class), any(CaseInsensitiveString.class));
-        assertThat(buildCause.getMaterialRevisions(), is(recomputedRevisions));
+        assertThat(buildCause.getMaterialRevisions()).isEqualTo(recomputedRevisions);
     }
 }

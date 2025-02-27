@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -85,7 +84,7 @@ public class ElasticAgentPluginService {
     private ConsoleService consoleService;
     private EphemeralAutoRegisterKeyService ephemeralAutoRegisterKeyService;
     private final SecretParamResolver secretParamResolver;
-    private JobInstanceSqlMapDao jobInstanceSqlMapDao = null;
+    private JobInstanceSqlMapDao jobInstanceSqlMapDao;
     private JobStatusTopic jobStatusTopic;
 
     @Value("${go.elasticplugin.heartbeat.interval}")
@@ -198,11 +197,11 @@ public class ElasticAgentPluginService {
             }
         }
 
-        ArrayList<JobPlan> jobsThatRequireAgent = new ArrayList<>();
+        List<JobPlan> jobsThatRequireAgent = new ArrayList<>();
         jobsThatRequireAgent.addAll(Sets.difference(new HashSet<>(newPlan), new HashSet<>(old)));
         jobsThatRequireAgent.addAll(starvingJobs);
 
-        List<JobPlan> plansThatRequireElasticAgent = jobsThatRequireAgent.stream().filter(isElasticAgent()).collect(toList());
+        List<JobPlan> plansThatRequireElasticAgent = jobsThatRequireAgent.stream().filter(isElasticAgent()).toList();
 //      messageTimeToLive is lesser than the starvation threshold to ensure there are no duplicate create agent message
         long messageTimeToLive = goConfigService.elasticJobStarvationThreshold() - 10000;
 
@@ -354,7 +353,7 @@ public class ElasticAgentPluginService {
     private void logToJobConsole(JobIdentifier identifier, String message) {
         try {
             consoleService.appendToConsoleLog(identifier, message);
-        } catch (IllegalArtifactLocationException | IOException e) {
+        } catch (IllegalArtifactLocationException e) {
             LOGGER.error(format("Failed to add message(%s) to the job(%s) console", message, identifier), e);
         }
     }

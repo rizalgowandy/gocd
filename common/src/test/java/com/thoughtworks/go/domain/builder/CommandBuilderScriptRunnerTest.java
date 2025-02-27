@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class CommandBuilderScriptRunnerTest extends AbstractCommandBuilderScript
 
         @ParameterizedTest
         @ValueSource(strings = {DIR_WINDOWS, DIR_WINDOWS_QUOTED, DIR_PROGRAM_FILES_QUOTED})
-        void commandInNormalPathCanRunArgsWithSpacesAndQuotes(String attribArg) throws Exception {
+        void commandInNormalPathCanRunArgsWithSpacesAndQuotes(String attribArg) {
             assertThatExecutableOutputIncludesArgs(ATTRIB_WINDOWS.toString(), attribArg);
         }
 

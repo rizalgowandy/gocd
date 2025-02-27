@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.PACKAGE_MATERIAL_EXTENSION;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -73,7 +71,7 @@ public class PackageRepositoryExtensionTest {
     private ArgumentCaptor<GoPluginApiRequest> requestArgumentCaptor;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         extension = new PackageRepositoryExtension(pluginManager, extensionsRegistry);
 
         pluginSettingsConfiguration = new PluginSettingsConfiguration();
@@ -91,12 +89,12 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldExtendAbstractExtension() throws Exception {
-        assertThat(extension, instanceOf(AbstractExtension.class));
+    public void shouldExtendAbstractExtension() {
+        assertThat(extension).isInstanceOf(AbstractExtension.class);
     }
 
     @Test
-    public void shouldTalkToPluginToGetPluginSettingsConfiguration() throws Exception {
+    public void shouldTalkToPluginToGetPluginSettingsConfiguration() {
         extension.registerHandler("1.0", pluginSettingsJSONMessageHandler);
         extension.messageHandlerMap.put("1.0", jsonMessageHandler);
 
@@ -115,7 +113,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetPluginSettingsView() throws Exception {
+    public void shouldTalkToPluginToGetPluginSettingsView() {
         extension.registerHandler("1.0", pluginSettingsJSONMessageHandler);
         extension.messageHandlerMap.put("1.0", jsonMessageHandler);
 
@@ -130,11 +128,11 @@ public class PackageRepositoryExtensionTest {
 
         assertRequest(requestArgumentCaptor.getValue(), PACKAGE_MATERIAL_EXTENSION, "1.0", PluginSettingsConstants.REQUEST_PLUGIN_SETTINGS_VIEW, null);
         verify(pluginSettingsJSONMessageHandler).responseMessageForPluginSettingsView(responseBody);
-        assertSame(response, deserializedResponse);
+        assertSame(deserializedResponse, response);
     }
 
     @Test
-    public void shouldTalkToPluginToValidatePluginSettings() throws Exception {
+    public void shouldTalkToPluginToValidatePluginSettings() {
         extension.registerHandler("1.0", pluginSettingsJSONMessageHandler);
         extension.messageHandlerMap.put("1.0", jsonMessageHandler);
 
@@ -155,7 +153,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetRepositoryConfiguration() throws Exception {
+    public void shouldTalkToPluginToGetRepositoryConfiguration() {
         String expectedRequestBody = null;
 
         String expectedResponseBody = "{" +
@@ -176,7 +174,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetPackageConfiguration() throws Exception {
+    public void shouldTalkToPluginToGetPackageConfiguration() {
         String expectedRequestBody = null;
 
         String expectedResponseBody = "{" +
@@ -196,7 +194,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckIfRepositoryConfigurationIsValid() throws Exception {
+    public void shouldTalkToPluginToCheckIfRepositoryConfigurationIsValid() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}}";
 
         String expectedResponseBody = "[{\"key\":\"key-one\",\"message\":\"incorrect value\"},{\"message\":\"general error\"}]";
@@ -212,7 +210,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckIfPackageConfigurationIsValid() throws Exception {
+    public void shouldTalkToPluginToCheckIfPackageConfigurationIsValid() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}," +
                 "\"package-configuration\":{\"key-three\":{\"value\":\"value-three\"},\"key-four\":{\"value\":\"value-four\"}}}";
 
@@ -257,7 +255,7 @@ public class PackageRepositoryExtensionTest {
                 "\"trackbackUrl\":\"http:\\\\localhost:9999\",\"data\":{\"dataKeyOne\":\"data-value-one\",\"dataKeyTwo\":\"data-value-two\"}}";
 
         Date timestamp = new SimpleDateFormat(DATE_FORMAT).parse("2011-07-13T19:43:37.100Z");
-        Map data = new LinkedHashMap();
+        Map<String, String> data = new LinkedHashMap<>();
         data.put("dataKeyOne", "data-value-one");
         data.put("dataKeyTwo", "data-value-two");
         PackageRevision previouslyKnownRevision = new PackageRevision("abc.rpm", timestamp, "someuser", "comment", null, data);
@@ -272,7 +270,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckRepositoryConnectionSuccessful() throws Exception {
+    public void shouldTalkToPluginToCheckRepositoryConnectionSuccessful() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}}";
 
         String expectedResponseBody = "{\"status\":\"success\",messages=[\"message-one\",\"message-two\"]}";
@@ -287,7 +285,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckRepositoryConnectionFailure() throws Exception {
+    public void shouldTalkToPluginToCheckRepositoryConnectionFailure() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}}";
 
         String expectedResponseBody = "{\"status\":\"failed\",messages=[\"message-one\",\"message-two\"]}";
@@ -302,7 +300,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckPackageConnectionSuccessful() throws Exception {
+    public void shouldTalkToPluginToCheckPackageConnectionSuccessful() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}," +
                 "\"package-configuration\":{\"key-three\":{\"value\":\"value-three\"},\"key-four\":{\"value\":\"value-four\"}}}";
 
@@ -318,7 +316,7 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckPackageConnectionFailure() throws Exception {
+    public void shouldTalkToPluginToCheckPackageConnectionFailure() {
         String expectedRequestBody = "{\"repository-configuration\":{\"key-one\":{\"value\":\"value-one\"},\"key-two\":{\"value\":\"value-two\"}}," +
                 "\"package-configuration\":{\"key-three\":{\"value\":\"value-three\"},\"key-four\":{\"value\":\"value-four\"}}}";
 
@@ -334,57 +332,57 @@ public class PackageRepositoryExtensionTest {
     }
 
     @Test
-    public void shouldHandleExceptionDuringPluginInteraction() throws Exception {
+    public void shouldHandleExceptionDuringPluginInteraction() {
         when(pluginManager.isPluginOfType(PACKAGE_MATERIAL_EXTENSION, PLUGIN_ID)).thenReturn(true);
         when(pluginManager.submitTo(eq(PLUGIN_ID), eq(PACKAGE_MATERIAL_EXTENSION), requestArgumentCaptor.capture())).thenThrow(new RuntimeException("exception-from-plugin"));
         try {
             extension.checkConnectionToPackage(PLUGIN_ID, packageConfiguration, repositoryConfiguration);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("exception-from-plugin"));
+            assertThat(e.getMessage()).isEqualTo("exception-from-plugin");
         }
     }
 
     private void assertPropertyConfiguration(PackageMaterialProperty property, String key, String value, boolean partOfIdentity, boolean required, boolean secure, String displayName, int displayOrder) {
-        assertThat(property.getKey(), is(key));
-        assertThat(property.getValue(), is(value));
-        assertThat(property.getOption(Property.PART_OF_IDENTITY), is(partOfIdentity));
-        assertThat(property.getOption(Property.REQUIRED), is(required));
-        assertThat(property.getOption(Property.SECURE), is(secure));
-        assertThat(property.getOption(Property.DISPLAY_NAME), is(displayName));
-        assertThat(property.getOption(Property.DISPLAY_ORDER), is(displayOrder));
+        assertThat(property.getKey()).isEqualTo(key);
+        assertThat(property.getValue()).isEqualTo(value);
+        assertThat(property.getOption(Property.PART_OF_IDENTITY)).isEqualTo(partOfIdentity);
+        assertThat(property.getOption(Property.REQUIRED)).isEqualTo(required);
+        assertThat(property.getOption(Property.SECURE)).isEqualTo(secure);
+        assertThat(property.getOption(Property.DISPLAY_NAME)).isEqualTo(displayName);
+        assertThat(property.getOption(Property.DISPLAY_ORDER)).isEqualTo(displayOrder);
     }
 
     private void assertRequest(GoPluginApiRequest goPluginApiRequest, String extensionName, String version, String requestName, String requestBody) {
-        assertThat(goPluginApiRequest.extension(), is(extensionName));
-        assertThat(goPluginApiRequest.extensionVersion(), is(version));
-        assertThat(goPluginApiRequest.requestName(), is(requestName));
-        assertThat(goPluginApiRequest.requestBody(), is(requestBody));
+        assertThat(goPluginApiRequest.extension()).isEqualTo(extensionName);
+        assertThat(goPluginApiRequest.extensionVersion()).isEqualTo(version);
+        assertThat(goPluginApiRequest.requestName()).isEqualTo(requestName);
+        assertThat(goPluginApiRequest.requestBody()).isEqualTo(requestBody);
     }
 
     private void assertValidationError(ValidationError validationError, String expectedKey, String expectedMessage) {
-        assertThat(validationError.getKey(), is(expectedKey));
-        assertThat(validationError.getMessage(), is(expectedMessage));
+        assertThat(validationError.getKey()).isEqualTo(expectedKey);
+        assertThat(validationError.getMessage()).isEqualTo(expectedMessage);
     }
 
     private void assertPackageRevision(PackageRevision packageRevision, String revision, String user, String timestamp, String comment, String trackbackUrl) throws ParseException {
-        assertThat(packageRevision.getRevision(), is(revision));
-        assertThat(packageRevision.getUser(), is(user));
-        assertThat(packageRevision.getTimestamp(), is(new SimpleDateFormat(DATE_FORMAT).parse(timestamp)));
-        assertThat(packageRevision.getRevisionComment(), is(comment));
-        assertThat(packageRevision.getTrackbackUrl(), is(trackbackUrl));
-        assertThat(packageRevision.getData().size(), is(2));
-        assertThat(packageRevision.getDataFor("dataKeyOne"), is("data-value-one"));
-        assertThat(packageRevision.getDataFor("dataKeyTwo"), is("data-value-two"));
+        assertThat(packageRevision.getRevision()).isEqualTo(revision);
+        assertThat(packageRevision.getUser()).isEqualTo(user);
+        assertThat(packageRevision.getTimestamp()).isEqualTo(new SimpleDateFormat(DATE_FORMAT).parse(timestamp));
+        assertThat(packageRevision.getRevisionComment()).isEqualTo(comment);
+        assertThat(packageRevision.getTrackbackUrl()).isEqualTo(trackbackUrl);
+        assertThat(packageRevision.getData().size()).isEqualTo(2);
+        assertThat(packageRevision.getDataFor("dataKeyOne")).isEqualTo("data-value-one");
+        assertThat(packageRevision.getDataFor("dataKeyTwo")).isEqualTo("data-value-two");
     }
 
     private void assertSuccessResult(Result result, List<String> messages) {
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(result.getMessages(), is(messages));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(result.getMessages()).isEqualTo(messages);
     }
 
     private void assertFailureResult(Result result, List<String> messages) {
-        assertThat(result.isSuccessful(), is(false));
-        assertThat(result.getMessages(), is(messages));
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(result.getMessages()).isEqualTo(messages);
     }
 
 }

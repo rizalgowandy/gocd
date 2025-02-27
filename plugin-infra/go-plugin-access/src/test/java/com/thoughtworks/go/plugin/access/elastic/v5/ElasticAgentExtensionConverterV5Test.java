@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,7 +52,7 @@ public class ElasticAgentExtensionConverterV5Test {
     private Map<String, String> clusterProfile;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         clusterProfile = Map.of("key", "value");
         jobIdentifier = new JobIdentifier("test-pipeline", 1, "Test Pipeline", "test-stage", "1", "test-job");
         jobIdentifier.setBuildId(100L);
@@ -72,7 +71,7 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeCreateAgentRequestBody() throws Exception {
+    public void shouldJSONizeCreateAgentRequestBody() {
         Map<String, String> configuration = new HashMap<>();
         configuration.put("key1", "value1");
         configuration.put("key2", "value2");
@@ -97,10 +96,10 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeShouldAssignWorkRequestBody() throws Exception {
-        HashMap<String, String> configuration = new HashMap<>();
+    public void shouldJSONizeShouldAssignWorkRequestBody() {
+        Map<String, String> configuration = new HashMap<>();
         configuration.put("property_name", "property_value");
-        HashMap<String, String> clusterProfileProperties = new HashMap<>();
+        Map<String, String> clusterProfileProperties = new HashMap<>();
         clusterProfileProperties.put("property_name", "property_value");
 
         String actual = new ElasticAgentExtensionConverterV5().shouldAssignWorkRequestBody(elasticAgent(), "prod", configuration, clusterProfileProperties, jobIdentifier);
@@ -120,10 +119,10 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeJobCompletionRequestBody() throws Exception {
-        HashMap<String, String> elasticProfileConfiguration = new HashMap<>();
+    public void shouldJSONizeJobCompletionRequestBody() {
+        Map<String, String> elasticProfileConfiguration = new HashMap<>();
         elasticProfileConfiguration.put("property_name", "property_value");
-        HashMap<String, String> clusterProfileConfiguration = new HashMap<>();
+        Map<String, String> clusterProfileConfiguration = new HashMap<>();
         clusterProfileConfiguration.put("property_name", "property_value");
         String actual = new ElasticAgentExtensionConverterV5().getJobCompletionRequestBody("ea1", jobIdentifier, elasticProfileConfiguration, clusterProfileConfiguration);
 
@@ -143,10 +142,10 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeServerPingRequestBody() throws Exception {
-        HashMap<String, String> clusterProfileConfiguration1 = new HashMap<>();
+    public void shouldJSONizeServerPingRequestBody() {
+        Map<String, String> clusterProfileConfiguration1 = new HashMap<>();
         clusterProfileConfiguration1.put("property_name", "property_value");
-        HashMap<String, String> clusterProfileConfiguration2 = new HashMap<>();
+        Map<String, String> clusterProfileConfiguration2 = new HashMap<>();
         clusterProfileConfiguration2.put("property_name_1", "property_value_1");
         clusterProfileConfiguration2.put("property_name_2", "property_value_2");
         String actual = new ElasticAgentExtensionConverterV5().serverPingRequestBody(List.of(clusterProfileConfiguration1, clusterProfileConfiguration2));
@@ -167,7 +166,7 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeElasticAgentStatusReportRequestBodyWhenElasticAgentIdIsProvided() throws Exception {
+    public void shouldJSONizeElasticAgentStatusReportRequestBodyWhenElasticAgentIdIsProvided() {
         String elasticAgentId = "my-fancy-elastic-agent-id";
         String actual = new ElasticAgentExtensionConverterV5().getAgentStatusReportRequestBody(null, elasticAgentId, clusterProfile);
         String expected = format("{" +
@@ -181,7 +180,7 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeElasticAgentStatusReportRequestBodyWhenJobIdentifierIsProvided() throws Exception {
+    public void shouldJSONizeElasticAgentStatusReportRequestBodyWhenJobIdentifierIsProvided() {
         String actual = new ElasticAgentExtensionConverterV5().getAgentStatusReportRequestBody(jobIdentifier, null, clusterProfile);
         String expected = """
                 {  "job_identifier": {
@@ -199,7 +198,7 @@ public class ElasticAgentExtensionConverterV5Test {
     }
 
     @Test
-    public void shouldJSONizeClusterStatusReportRequestBody() throws Exception {
+    public void shouldJSONizeClusterStatusReportRequestBody() {
         String actual = new ElasticAgentExtensionConverterV5().getClusterStatusReportRequestBody(Map.of("key1", "value1"));
         String expected = "{" +
                 "   \"cluster_profile_properties\":{" +
@@ -212,7 +211,7 @@ public class ElasticAgentExtensionConverterV5Test {
 
     @Test
     public void shouldConstructValidationRequest() {
-        HashMap<String, String> configuration = new HashMap<>();
+        Map<String, String> configuration = new HashMap<>();
         configuration.put("key1", "value1");
         configuration.put("key2", "value2");
         configuration.put("key3", null);
@@ -224,31 +223,31 @@ public class ElasticAgentExtensionConverterV5Test {
     public void shouldHandleValidationResponse() {
         String responseBody = "[{\"key\":\"key-one\",\"message\":\"error on key one\"}, {\"key\":\"key-two\",\"message\":\"error on key two\"}]";
         ValidationResult result = new ElasticAgentExtensionConverterV5().getElasticProfileValidationResultResponseFromBody(responseBody);
-        assertThat(result.isSuccessful(), is(false));
-        assertThat(result.getErrors().size(), is(2));
-        assertThat(result.getErrors().get(0).getKey(), is("key-one"));
-        assertThat(result.getErrors().get(0).getMessage(), is("error on key one"));
-        assertThat(result.getErrors().get(1).getKey(), is("key-two"));
-        assertThat(result.getErrors().get(1).getMessage(), is("error on key two"));
+        assertThat(result.isSuccessful()).isEqualTo(false);
+        assertThat(result.getErrors().size()).isEqualTo(2);
+        assertThat(result.getErrors().get(0).getKey()).isEqualTo("key-one");
+        assertThat(result.getErrors().get(0).getMessage()).isEqualTo("error on key one");
+        assertThat(result.getErrors().get(1).getKey()).isEqualTo("key-two");
+        assertThat(result.getErrors().get(1).getMessage()).isEqualTo("error on key two");
     }
 
     @Test
     public void shouldUnJSONizeGetProfileViewResponseFromBody() {
         String template = new ElasticAgentExtensionConverterV5().getProfileViewResponseFromBody("{\"template\":\"foo\"}");
-        assertThat(template, is("foo"));
+        assertThat(template).isEqualTo("foo");
     }
 
     @Test
     public void shouldUnJSONizeGetImageResponseFromBody() {
         com.thoughtworks.go.plugin.domain.common.Image image = new ElasticAgentExtensionConverterV5().getImageResponseFromBody("{\"content_type\":\"foo\", \"data\":\"bar\"}");
-        assertThat(image.getContentType(), is("foo"));
-        assertThat(image.getData(), is("bar"));
+        assertThat(image.getContentType()).isEqualTo("foo");
+        assertThat(image.getData()).isEqualTo("bar");
     }
 
     @Test
     public void shouldGetStatusReportViewFromResponseBody() {
         String template = new ElasticAgentExtensionConverterV5().getStatusReportView("{\"view\":\"foo\"}");
-        assertThat(template, is("foo"));
+        assertThat(template).isEqualTo("foo");
     }
 
     @Test
@@ -422,7 +421,7 @@ public class ElasticAgentExtensionConverterV5Test {
 
         ElasticAgentInformation expectedElasticAgentInformation = new ElasticAgentInformation(pluginSettings, clusterProfiles, elasticAgentProfiles);
 
-        assertThat(elasticAgentInformation, is(expectedElasticAgentInformation));
+        assertThat(elasticAgentInformation).isEqualTo(expectedElasticAgentInformation);
     }
 
     @Test

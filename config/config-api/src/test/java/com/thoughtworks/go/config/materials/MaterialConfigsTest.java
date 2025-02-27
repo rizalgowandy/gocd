@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class MaterialConfigsTest {
     private GoConfigMother goConfigMother;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigMother = new GoConfigMother();
     }
 
@@ -515,7 +515,7 @@ Above scenario allowed
         hashMap.put(GitMaterialConfig.URL, "foo");
         hashMap.put(GitMaterialConfig.BRANCH, "master");
 
-        HashMap<String, Object> attributeMap = new HashMap<>();
+        Map<String, Object> attributeMap = new HashMap<>();
         attributeMap.put(AbstractMaterialConfig.MATERIAL_TYPE, GitMaterialConfig.TYPE);
         attributeMap.put(GitMaterialConfig.TYPE, hashMap);
         materialConfigs.setConfigAttributes(attributeMap);

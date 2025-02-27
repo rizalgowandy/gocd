@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CommandUtilsTest {
     @Test
-    public void quoteArgument() throws Exception {
+    public void quoteArgument() {
         String alreadyDoubleQuoted = "\"Hello there! I'm properly quoted\"";
         String alreadyDoubleQuotedWithUnclosedQuote = "\"Hello there! I've got an unmatched double quote \" inside\"";
         String noQuotes = "I have nothing";
@@ -53,7 +53,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shellJoin() throws Exception {
+    public void shellJoin() {
         String[] tokens = new String[]{
                 "bash",
                 "-c",

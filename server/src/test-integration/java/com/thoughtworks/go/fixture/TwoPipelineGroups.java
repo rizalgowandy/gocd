@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class TwoPipelineGroups implements PreCondition {
     }
 
     @Override
-    public void onTearDown() throws Exception {
+    public void onTearDown() {
         if (isSetup) {
             configHelper.onTearDown();
             svnTestRepo.tearDown();

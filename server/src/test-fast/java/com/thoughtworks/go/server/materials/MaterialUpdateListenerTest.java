@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class MaterialUpdateListenerTest {
     private MaintenanceModeService maintenanceModeService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         topic = mock(MaterialUpdateCompletedTopic.class);
         updater = mock(MaterialDatabaseUpdater.class);
         diskSpaceMonitor = mock(GoDiskSpaceMonitor.class);

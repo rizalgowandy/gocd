@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,60 +20,60 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class SCMRevisionTest {
     @Test
-    public void shouldAcceptDataKeyMadeUpOfAlphaNumericAndUnderScoreCharacters() throws Exception {
+    public void shouldAcceptDataKeyMadeUpOfAlphaNumericAndUnderScoreCharacters() {
         SCMRevision scmRevision = new SCMRevision("rev123", new Date(), "loser", null, new HashMap<>(), null);
         scmRevision.addData("HELLO_WORLD123", "value");
-        assertThat(scmRevision.getDataFor("HELLO_WORLD123"), is("value"));
+        assertThat(scmRevision.getDataFor("HELLO_WORLD123")).isEqualTo("value");
     }
 
     @Test
-    public void shouldThrowExceptionWhenDataKeyIsNullOrEmpty() throws Exception {
+    public void shouldThrowExceptionWhenDataKeyIsNullOrEmpty() {
         SCMRevision scmRevision = new SCMRevision("rev123", new Date(), "loser", null, null, null);
         try {
             scmRevision.addData(null, "value");
         } catch (InvalidSCMRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key names cannot be null or empty."));
+            assertThat(e.getMessage()).isEqualTo("Key names cannot be null or empty.");
         }
         try {
             scmRevision.addData("", "value");
         } catch (InvalidSCMRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key names cannot be null or empty."));
+            assertThat(e.getMessage()).isEqualTo("Key names cannot be null or empty.");
         }
     }
 
     @Test
-    public void shouldThrowExceptionIfDataKeyContainsCharactersOtherThanAlphaNumericAndUnderScoreCharacters() throws Exception {
+    public void shouldThrowExceptionIfDataKeyContainsCharactersOtherThanAlphaNumericAndUnderScoreCharacters() {
         SCMRevision scmRevision = new SCMRevision("rev123", new Date(), "loser", null, null, null);
         try {
             scmRevision.addData("HEL-LO-WORLD", "value");
             fail("should have thrown exception");
         } catch (InvalidSCMRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key 'HEL-LO-WORLD' is invalid. Key names should consists of only alphanumeric characters and/or underscores."));
+            assertThat(e.getMessage()).isEqualTo("Key 'HEL-LO-WORLD' is invalid. Key names should consists of only alphanumeric characters and/or underscores.");
         }
     }
 
     @Test
-    public void shouldNotAllowDataWhenKeyIsInvalid() throws Exception {
+    public void shouldNotAllowDataWhenKeyIsInvalid() {
         assertForInvalidKey(null, "Key names cannot be null or empty.");
         assertForInvalidKey("", "Key names cannot be null or empty.");
         assertForInvalidKey("HEL-LO-WORLD", "Key 'HEL-LO-WORLD' is invalid. Key names should consists of only alphanumeric characters and/or underscores.");
     }
 
     private void assertForInvalidKey(String key, String expectedMessage) {
-        HashMap<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put(key, "value");
         try {
             new SCMRevision(null, null, null, null, data, null);
             fail("should have thrown exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is(expectedMessage));
+            assertThat(e.getMessage()).isEqualTo(expectedMessage);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import java.util.Collection;
 import java.util.zip.ZipInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PluginsInitializerTest {
@@ -49,7 +48,7 @@ public class PluginsInitializerTest {
     private ElasticAgentInformationMigrator elasticAgentInformationMigrator;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         systemEnvironment = mock(SystemEnvironment.class);
         when(systemEnvironment.get(SystemEnvironment.PLUGIN_GO_PROVIDED_PATH)).thenReturn(goPluginsDir.toFile().getAbsolutePath());
         pluginManager = mock(PluginManager.class);
@@ -96,26 +95,26 @@ public class PluginsInitializerTest {
     }
 
     @Test
-    public void shouldUnzipPluginsZipToPluginsPath() throws IOException {
+    public void shouldUnzipPluginsZipToPluginsPath() {
         pluginsInitializer.initialize();
-        assertThat(FileUtils.listFiles(goPluginsDir.toFile(), null, true).size(), is(2));
+        assertThat(FileUtils.listFiles(goPluginsDir.toFile(), null, true).size()).isEqualTo(2);
     }
 
     @Test
     public void shouldNotReplacePluginsIfTheSameVersionWasAlreadyExploded() throws IOException {
         File versionFile = Files.writeString(goPluginsDir.resolve("version.txt"), "13.3.0(17222-4c7fabcb9c9e9c)", UTF_8).toFile();
         pluginsInitializer.initialize();
-        Collection collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.contains(versionFile), is(true));
+        Collection<File> collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
+        assertThat(collection.size()).isEqualTo(1);
+        assertThat(collection.contains(versionFile)).isTrue();
     }
 
     @Test
     public void shouldReplacePluginsIfTheDifferentVersionOfPluginsAvailable() throws IOException {
         Files.writeString(goPluginsDir.resolve("version.txt"), "13.2.0(17222-4c7fabcb9c9e9c)", UTF_8).toFile();
         pluginsInitializer.initialize();
-        Collection collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
-        assertThat(collection.size(), is(2));
+        Collection<File> collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
+        assertThat(collection.size()).isEqualTo(2);
     }
 
     @Test
@@ -123,9 +122,9 @@ public class PluginsInitializerTest {
         File oldPlugin = Files.createFile(goPluginsDir.resolve("old-plugin.jar")).toFile();
         Files.writeString(goPluginsDir.resolve("version.txt"), "13.2.0(17222-4c7fabcb9c9e9c)", UTF_8).toFile();
         pluginsInitializer.initialize();
-        Collection collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
-        assertThat(collection.size(), is(2));
-        assertThat(collection.contains(oldPlugin), is(false));
+        Collection<File> collection = FileUtils.listFiles(goPluginsDir.toFile(), null, true);
+        assertThat(collection.size()).isEqualTo(2);
+        assertThat(collection.contains(oldPlugin)).isFalse();
     }
 
     @Test
@@ -136,8 +135,8 @@ public class PluginsInitializerTest {
             FileUtils.forceMkdir(pluginsBundles);
             FileUtils.forceMkdir(pluginsNew);
             pluginsInitializer.initialize();
-            assertThat("should have cleaned up  plugins_bundles folder", pluginsBundles.exists(), is(false));
-            assertThat("should have cleaned up  plugins-new folder", pluginsNew.exists(), is(false));
+            assertThat(pluginsBundles.exists()).isFalse();
+            assertThat(pluginsNew.exists()).isFalse();
         } finally {
             FileUtils.deleteQuietly(pluginsBundles);
             FileUtils.deleteQuietly(pluginsNew);

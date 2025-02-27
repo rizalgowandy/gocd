@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionHandler {
     public static final String VERSION = "1.0";
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonBasedTaskExtensionHandler_V1.class);
+    private static final Gson GSON = new GsonBuilder().create();
 
     @Override
     public String version() {
@@ -51,9 +54,9 @@ public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionH
     @Override
     public TaskConfig convertJsonToTaskConfig(String configJson) {
         final TaskConfig taskConfig = new TaskConfig();
-        ArrayList<String> exceptions = new ArrayList<>();
+        List<String> exceptions = new ArrayList<>();
         try {
-            Map<String, Object> configMap = (Map) new GsonBuilder().create().fromJson(configJson, Object.class);
+            Map<String, Object> configMap = (Map) GSON.fromJson(configJson, Object.class);
             if (configMap.isEmpty()) {
                 exceptions.add("The Json for Task Config cannot be empty");
             }
@@ -114,9 +117,9 @@ public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionH
     @Override
     public ValidationResult toValidationResult(String responseBody) {
         ValidationResult validationResult = new ValidationResult();
-        ArrayList<String> exceptions = new ArrayList<>();
+        List<String> exceptions = new ArrayList<>();
         try {
-            Map result = (Map) new GsonBuilder().create().fromJson(responseBody, Object.class);
+            Map result = (Map) GSON.fromJson(responseBody, Object.class);
             if (result == null) return validationResult;
             final Map<String, Object> errors = (Map<String, Object>) result.get("errors");
             if (errors != null) {
@@ -140,9 +143,9 @@ public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionH
 
     @Override
     public TaskView toTaskView(String responseBody) {
-        ArrayList<String> exceptions = new ArrayList<>();
+        List<String> exceptions = new ArrayList<>();
         try {
-            final Map map = (Map) new GsonBuilder().create().fromJson(responseBody, Object.class);
+            final Map map = (Map) GSON.fromJson(responseBody, Object.class);
             if (map.isEmpty()) {
                 exceptions.add("The Json for Task View cannot be empty");
             } else {
@@ -176,9 +179,9 @@ public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionH
     @Override
     public ExecutionResult toExecutionResult(String responseBody) {
         ExecutionResult executionResult = new ExecutionResult();
-        ArrayList<String> exceptions = new ArrayList<>();
+        List<String> exceptions = new ArrayList<>();
         try {
-            Map result = (Map) new GsonBuilder().create().fromJson(responseBody, Object.class);
+            Map result = (Map) GSON.fromJson(responseBody, Object.class);
             if (!(result.containsKey("success") && result.get("success") instanceof Boolean)) {
                 exceptions.add("The Json for Execution Result must contain a not-null 'success' field of type Boolean");
             }
@@ -213,10 +216,10 @@ public class JsonBasedTaskExtensionHandler_V1 implements JsonBasedTaskExtensionH
     }
 
     private Map configPropertiesAsMap(TaskConfig taskConfig) {
-        HashMap properties = new HashMap();
+        Map properties = new HashMap();
 
         for (Property property : taskConfig.list()) {
-            final HashMap propertyValue = new HashMap();
+            final Map propertyValue = new HashMap();
             propertyValue.put("value", property.getValue());
             propertyValue.put("secure", property.getOption(Property.SECURE));
             propertyValue.put("required", property.getOption(Property.REQUIRED));

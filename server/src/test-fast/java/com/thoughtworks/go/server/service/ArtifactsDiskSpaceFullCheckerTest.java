@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class ArtifactsDiskSpaceFullCheckerTest {
     private ArtifactsDiskSpaceFullChecker checker;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigService = mockGoConfigServiceToHaveSiteUrl();
         when(goConfigService.artifactsDir()).thenReturn(new File("."));
         emailSender = mock(EmailSender.class);
@@ -49,7 +49,7 @@ public class ArtifactsDiskSpaceFullCheckerTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(emailSender);
     }
 

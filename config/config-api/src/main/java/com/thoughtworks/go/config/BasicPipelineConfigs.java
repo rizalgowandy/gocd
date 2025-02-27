@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -326,7 +326,7 @@ public class BasicPipelineConfigs extends BaseCollection<PipelineConfig> impleme
     }
 
     private void verifyPipelineNameUniqueness() {
-        HashMap<CaseInsensitiveString, PipelineConfig> hashMap = new HashMap<>();
+        Map<CaseInsensitiveString, PipelineConfig> hashMap = new HashMap<>();
         for (PipelineConfig pipelineConfig : this) {
             pipelineConfig.validateNameUniqueness(hashMap);
         }
@@ -395,14 +395,15 @@ public class BasicPipelineConfigs extends BaseCollection<PipelineConfig> impleme
         return users;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
-        Map attributeMap = (Map) attributes;
+        Map<String, String> attributeMap = (Map<String, String>) attributes;
         if (attributeMap == null) {
             return;
         }
         if (attributeMap.containsKey(GROUP)) {
-            this.group = (String) attributeMap.get(GROUP);
+            this.group = attributeMap.get(GROUP);
         }
         if (attributeMap.containsKey(AUTHORIZATION)) {
             this.authorization = new Authorization();

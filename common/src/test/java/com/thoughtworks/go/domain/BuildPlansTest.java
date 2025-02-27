@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.thoughtworks.go.config.JobConfig;
 import com.thoughtworks.go.config.JobConfigs;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class BuildPlansTest {
@@ -30,18 +29,18 @@ public class BuildPlansTest {
     public void shouldFindBuildPlanByName() {
         JobConfigs jobConfigs = new JobConfigs();
         jobConfigs.add(jobConfig("Test"));
-        assertThat(jobConfigs.containsName(new CaseInsensitiveString("Poo")), is(false));
+        assertThat(jobConfigs.containsName(new CaseInsensitiveString("Poo"))).isFalse();
     }
 
     @Test
-    public void shouldNotBombIfABuildPlanWithSameNameIsSetAgain() throws Exception {
+    public void shouldNotBombIfABuildPlanWithSameNameIsSetAgain() {
         JobConfigs jobConfigs = new JobConfigs();
         jobConfigs.add(jobConfig("Test"));
         jobConfigs.set(0, jobConfig("Test"));
     }
 
     @Test
-    public void shouldBombIfABuildPlanWithSameNameIsAdded() throws Exception {
+    public void shouldBombIfABuildPlanWithSameNameIsAdded() {
         JobConfigs jobConfigs = new JobConfigs();
         jobConfigs.add(jobConfig("Test"));
         try {
@@ -52,7 +51,7 @@ public class BuildPlansTest {
     }
 
     @Test
-    public void shouldBombIfABuildPlanWithSameNameWithDifferentCaseIsAdded() throws Exception {
+    public void shouldBombIfABuildPlanWithSameNameWithDifferentCaseIsAdded() {
         JobConfigs jobConfigs = new JobConfigs();
         jobConfigs.add(jobConfig("Test"));
         try {

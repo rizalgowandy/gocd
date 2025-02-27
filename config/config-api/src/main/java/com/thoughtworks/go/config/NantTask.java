@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class NantTask extends BuildTask {
 
     @Override
     public String arguments() {
-        ArrayList<String> args = new ArrayList<>();
+        List<String> args = new ArrayList<>();
         if (buildFile != null) {
             args.add("-buildfile:\"" + FilenameUtils.separatorsToUnix(buildFile) + "\"");
         }
@@ -77,7 +77,7 @@ public class NantTask extends BuildTask {
     }
 
     @Override
-    protected void setBuildTaskConfigAttributes(Map attributeMap) {
+    protected void setBuildTaskConfigAttributes(Map<String, ?> attributeMap) {
         nantPath = inferValueFromMap(attributeMap, NANT_PATH);
     }
 

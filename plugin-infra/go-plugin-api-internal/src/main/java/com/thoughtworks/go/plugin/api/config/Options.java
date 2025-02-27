@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import java.util.List;
  * Container for {@link Option}
  */
 public class Options {
-    private List<Option> options = new ArrayList<>();
+    @SuppressWarnings("rawtypes")
+    private final List<Option> options = new ArrayList<>();
 
     /**
      * Adds given option to container
@@ -50,8 +51,9 @@ public class Options {
      * @return matched option
      * @throws RuntimeException when matching option not found
      */
+    @SuppressWarnings("unchecked")
     public <T> Option<T> findOption(Option<T> option) {
-        for (Option candidateOption : options) {
+        for (Option<T> candidateOption : options) {
             if (candidateOption.hasSameNameAs(option)) {
                 return candidateOption;
             }
@@ -60,7 +62,7 @@ public class Options {
     }
 
     public <T> boolean hasOption(Option<T> option) {
-        for (Option candidateOption : options) {
+        for (Option<?> candidateOption : options) {
             if (candidateOption.hasSameNameAs(option)) {
                 return true;
             }

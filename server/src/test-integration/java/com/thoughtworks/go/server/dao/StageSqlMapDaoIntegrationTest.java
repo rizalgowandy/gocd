@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.util.ReflectionUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.*;
 
 import static com.thoughtworks.go.domain.PersistentObject.NOT_PERSISTED;
@@ -123,7 +121,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateCompletingTransitionIdWhenUpdatingResult() throws Exception {
+    public void shouldUpdateCompletingTransitionIdWhenUpdatingResult() {
         Pipeline pipeline = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig)[1];
         Stage stage = pipeline.getStages().get(0);
         stage.setCompletedByTransitionId(10L);
@@ -145,7 +143,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateStageStateWhenUpdatingResult() throws Exception {
+    public void shouldUpdateStageStateWhenUpdatingResult() {
         Pipeline pipeline = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig)[1];
         Stage stage = pipeline.getStages().get(0);
         stage.calculateResult();
@@ -156,7 +154,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldFindAllRunsOfAStageForAPipelineRun() throws Exception {
+    public void shouldFindAllRunsOfAStageForAPipelineRun() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Pipeline completed = pipelines[0];
 
@@ -169,7 +167,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetPassedStagesByName() throws Exception {
+    public void shouldGetPassedStagesByName() {
         List<Pipeline> completedPipelines = createFourPipelines();
 
         Stages stages = stageDao.getPassedStagesByName(CaseInsensitiveString.str(mingleConfig.name()), STAGE_DEV, 2, 0);
@@ -337,7 +335,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetPassedStagesAfterAGivenStage() throws Exception {
+    public void shouldGetPassedStagesAfterAGivenStage() {
         List<Pipeline> completedPipelines = createFourPipelines();
 
         Pipeline firstPipeline = completedPipelines.get(0);
@@ -369,7 +367,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldNotGetFailedCancelledUnknownStagesAfterAGivenStage_AndShouldGetStageTransitionTimeFromStageTable() throws Exception {
+    public void shouldNotGetFailedCancelledUnknownStagesAfterAGivenStage_AndShouldGetStageTransitionTimeFromStageTable() {
         List<Pipeline> pipelines = new ArrayList<>();
         pipelines.add(pipelineWithFirstStagePassed(mingleConfig));
         pipelines.add(pipelineWithFirstStageCancelled(mingleConfig));
@@ -661,7 +659,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetMostRecentStageWithBuilds() throws Exception {
+    public void shouldGetMostRecentStageWithBuilds() {
         pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Stage completed = stageDao.mostRecentWithBuilds(CaseInsensitiveString.str(mingleConfig.name()), mingleConfig.get(0));
         verifyBuildInstancesWithoutCaringAboutTransitions(STAGE_DEV, completed);
@@ -710,7 +708,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldNotAllowCachedCopyToBeMutated() throws Exception {
+    public void shouldNotAllowCachedCopyToBeMutated() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         long id = pipelines[0].getStages().get(0).getId();
         Stage loaded = stageDao.stageById(id);
@@ -720,7 +718,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldClear_StageById_Cache_OnStageStatusChange() throws Exception {
+    public void shouldClear_StageById_Cache_OnStageStatusChange() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Stage stage = pipelines[1].getStages().get(0);
         long id = stage.getId();
@@ -733,7 +731,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldServeStageByIdLookupFromCache() throws Exception {
+    public void shouldServeStageByIdLookupFromCache() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Stage stage = pipelines[1].getStages().get(0);
 
@@ -753,7 +751,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetMostRecentStageWithIdentifier() throws Exception {
+    public void shouldGetMostRecentStageWithIdentifier() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Stage loaded = stageDao.mostRecentStage(new StageConfigIdentifier(PIPELINE_NAME, STAGE_DEV));
         Stage stage = pipelines[1].getStages().byName(STAGE_DEV);
@@ -769,7 +767,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetMostRecentCompletedStage() throws Exception {
+    public void shouldGetMostRecentCompletedStage() {
         pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Stage stage = stageDao.mostRecentCompleted(new StageConfigIdentifier(PIPELINE_NAME, STAGE_DEV));
         assertThat(stage.getResult()).isEqualTo(StageResult.Passed);
@@ -782,14 +780,14 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNullIfNoMostRecentCompletedStage() throws Exception {
+    public void shouldReturnNullIfNoMostRecentCompletedStage() {
         pipelineWithOneJustScheduled();
         Stage stage = stageDao.mostRecentCompleted(new StageConfigIdentifier(PIPELINE_NAME, STAGE_DEV));
         assertThat(stage).isNull();
     }
 
     @Test
-    public void shouldFindStageWithJobsAndTransitionsByIdentifier() throws Exception {
+    public void shouldFindStageWithJobsAndTransitionsByIdentifier() {
         PipelineConfig pipelineConfig = twoBuildPlansWithResourcesAndMaterials("pipeline-1", "stage-1");
 
         Pipeline pipeline = pipelineWithOnePassedAndOneCurrentlyRunning(pipelineConfig)[0];
@@ -807,7 +805,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldFindStageEvenMultiplePipelinesWithSameLabel() throws Exception {
+    public void shouldFindStageEvenMultiplePipelinesWithSameLabel() {
         mingleConfig.setLabelTemplate("fixed-label");
         Pipeline pipeline = pipelineWithFirstStagePassed(mingleConfig);
         Stage expect = pipeline.getFirstStage();
@@ -916,7 +914,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetCount() throws Exception {
+    public void shouldGetCount() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Pipeline completed = pipelines[0];
 
@@ -924,7 +922,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetStagesByPipelineId() throws Exception {
+    public void shouldGetStagesByPipelineId() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Pipeline completed = pipelines[0];
         ignoreFirstBuildInFirstStage(completed);
@@ -936,7 +934,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetLatestStageInstancesByPipelineId() throws Exception {
+    public void shouldGetLatestStageInstancesByPipelineId() {
         Pipeline[] pipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
         Pipeline completed = pipelines[0];
 
@@ -1197,7 +1195,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldFindAllCompletedStages() throws SQLException {
+    public void shouldFindAllCompletedStages() {
         PipelineAndStage[] stages = run4Pipelines();
 
         List<FeedEntry> completedStages = new ArrayList<>(stageDao.findAllCompletedStages(FeedModifier.Latest, -1, 5));
@@ -1208,7 +1206,7 @@ public class StageSqlMapDaoIntegrationTest {
     }
 
     @Test
-    public void shouldFindAllCompletedStagesBeforeAGivenStage() throws SQLException {
+    public void shouldFindAllCompletedStagesBeforeAGivenStage() {
         PipelineAndStage[] stages = run4Pipelines();
 
         List<FeedEntry> completedStages = new ArrayList<>(stageDao.findAllCompletedStages(FeedModifier.Before, transitionId(stages[3].stage), 2));
@@ -1588,15 +1586,15 @@ public class StageSqlMapDaoIntegrationTest {
         verify(listener, atLeastOnce()).notifyElementRemoved(any(), elementRemovedCaptor.capture());
         verify(listener, atLeastOnce()).notifyElementPut(any(), elementAddedCaptor.capture());
 
-        List<Serializable> keysThatWereRemoved = new ArrayList<>();
-        List<Serializable> keysThatWereAdded = new ArrayList<>();
+        List<Object> keysThatWereRemoved = new ArrayList<>();
+        List<Object> keysThatWereAdded = new ArrayList<>();
 
         for (Element element : elementRemovedCaptor.getAllValues()) {
-            keysThatWereRemoved.add(element.getKey());
+            keysThatWereRemoved.add(element.getObjectKey());
         }
 
         for (Element element : elementAddedCaptor.getAllValues()) {
-            keysThatWereAdded.add(element.getKey());
+            keysThatWereAdded.add(element.getObjectKey());
         }
 
         Assertions.assertThat(keysThatWereRemoved).contains(
@@ -1829,7 +1827,7 @@ public class StageSqlMapDaoIntegrationTest {
         }
     }
 
-    private List<Pipeline> createFourPipelines() throws Exception {
+    private List<Pipeline> createFourPipelines() {
         List<Pipeline> completedPipelines = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             Pipeline[] createdPipelines = pipelineWithOnePassedAndOneCurrentlyRunning(mingleConfig);
@@ -1855,7 +1853,7 @@ public class StageSqlMapDaoIntegrationTest {
         return completed;
     }
 
-    private Pipeline[] pipelineWithOnePassedAndOneCurrentlyRunning(PipelineConfig pipelineConfig) throws Exception {
+    private Pipeline[] pipelineWithOnePassedAndOneCurrentlyRunning(PipelineConfig pipelineConfig) {
         Pipeline completed = pipelineWithFirstStagePassed(pipelineConfig);
 
         Pipeline running = dbHelper.schedulePipeline(pipelineConfig, new TimeProvider());

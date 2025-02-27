@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.jetbrains.annotations.TestOnly;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -247,7 +246,7 @@ public class ConfigurationProperty implements Serializable, Validatable, SecretP
     }
 
     public void setConfigAttributes(Object attributes, SecureKeyInfoProvider secureKeyInfoProvider) {
-        Map attributesMap = (Map) attributes;
+        @SuppressWarnings("unchecked") Map<String, ?> attributesMap = (Map<String, ?>) attributes;
         if (attributesMap.containsKey(CONFIGURATION_KEY)) {
             configurationKey = new ConfigurationKey();
             configurationKey.setConfigAttributes(attributesMap.get(CONFIGURATION_KEY));
@@ -293,7 +292,7 @@ public class ConfigurationProperty implements Serializable, Validatable, SecretP
         setEncryptedValue(new EncryptedConfigurationValue(encryptedValue));
     }
 
-    public void validateKeyUniqueness(HashMap<String, ConfigurationProperty> map, String entity) {
+    public void validateKeyUniqueness(Map<String, ConfigurationProperty> map, String entity) {
         String name = configurationKey.getName().toLowerCase();
         ConfigurationProperty propertyWithSameKey = map.get(name);
         if (propertyWithSameKey == null) {

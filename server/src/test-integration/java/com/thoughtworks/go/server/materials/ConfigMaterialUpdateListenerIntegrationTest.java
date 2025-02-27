@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.hg;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -152,7 +150,7 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
     private void assertInProgressState() throws InterruptedException {
         HealthStateScope healthStateScope = HealthStateScope.forPartialConfigRepo(material.config().getFingerprint());
         int i = 0;
-        while (serverHealthService.filterByScope(healthStateScope).isEmpty() && goConfigRepoConfigDataSource.getRevisionAtLastAttempt(material.config()) == null) {
+        while (serverHealthService.logsSortedForScope(healthStateScope).isEmpty() && goConfigRepoConfigDataSource.getRevisionAtLastAttempt(material.config()) == null) {
             if (!materialUpdateService.isInProgress(material))
                 fail("should be still in progress");
 
@@ -171,8 +169,8 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         assertNotNull(revision);
 
         PartialConfig partial = goConfigRepoConfigDataSource.latestPartialConfigForMaterial(materialConfig);
-        assertThat(partial.getGroups().size(), is(0));
-        assertThat(partial.getEnvironments().size(), is(0));
+        assertThat(partial.getGroups().size()).isEqualTo(0);
+        assertThat(partial.getEnvironments().size()).isEqualTo(0);
     }
 
     private void waitForMaterialNotInProgress() throws InterruptedException {
@@ -202,7 +200,7 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         waitForMaterialNotInProgress();
         PartialConfig partial2 = goConfigRepoConfigDataSource.latestPartialConfigForMaterial(materialConfig);
         assertNotSame(partial, partial2);
-        assertThat("originsShouldDiffer", partial2.getOrigin(), is(not(partial.getOrigin())));
+        assertThat(partial2.getOrigin()).isNotEqualTo(partial.getOrigin());
     }
 
     @Test
@@ -219,8 +217,8 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         waitForMaterialNotInProgress();
         PartialConfig partial = goConfigRepoConfigDataSource.latestPartialConfigForMaterial(materialConfig);
         assertNotNull(partial);
-        assertThat(partial.getGroups().get(0).size(), is(1));
-        assertThat(partial.getGroups().get(0).get(0), is(pipelineConfig));
+        assertThat(partial.getGroups().get(0).size()).isEqualTo(1);
+        assertThat(partial.getGroups().get(0).get(0)).isEqualTo(pipelineConfig);
     }
 
     @Test
@@ -233,14 +231,14 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         configTestRepo.addPipelineToRepositoryAndPush(fileName, pipelineConfig);
 
         materialUpdateService.updateMaterial(material);
-       assertThat(materialUpdateService.isInProgress(material), is(true));
+       assertThat(materialUpdateService.isInProgress(material)).isTrue();
         // time for messages to pass through all services
         waitForMaterialNotInProgress();
 
         cachedGoConfig.forceReload();
 
-        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name()), is(true));
-        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name()), is(pipelineConfig));
+        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name())).isTrue();
+        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name())).isEqualTo(pipelineConfig);
     }
 
     @Test
@@ -255,8 +253,8 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         waitForMaterialNotInProgress();
 
         File flyweightDir = materialRepository.folderFor(material);
-       assertThat(flyweightDir.exists(), is(true));
-       assertThat(new File(flyweightDir, "pipe1.gocd.xml").exists(), is(true));
+       assertThat(flyweightDir.exists()).isTrue();
+       assertThat(new File(flyweightDir, "pipe1.gocd.xml").exists()).isTrue();
     }
 
     @Test
@@ -277,9 +275,9 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
         waitForMaterialNotInProgress();
 
         File flyweightDir = materialRepository.folderFor(material);
-       assertThat(flyweightDir.exists(), is(true));
-       assertThat(new File(flyweightDir, "pipe1.gocd.xml").exists(), is(true));
-       assertThat("shouldContainFilesAddedLater", new File(flyweightDir, "pipe2.gocd.xml").exists(), is(true));
+       assertThat(flyweightDir.exists()).isTrue();
+       assertThat(new File(flyweightDir, "pipe1.gocd.xml").exists()).isTrue();
+       assertThat(new File(flyweightDir, "pipe2.gocd.xml").exists()).isTrue();
     }
 
     @Test
@@ -297,8 +295,8 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
 
         cachedGoConfig.forceReload();
 
-        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name()), is(true));
-        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name()), is(pipelineConfig));
+        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name())).isTrue();
+        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name())).isEqualTo(pipelineConfig);
 
         configTestRepo.addCodeToRepositoryAndPush("badPipe.gocd.xml", "added bad config file", """
                 <?xml version="1.0" encoding="utf-8"?>
@@ -317,10 +315,10 @@ public class ConfigMaterialUpdateListenerIntegrationTest {
 
         cachedGoConfig.forceReload();
         // but we still have the old part
-        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name()), is(true));
-        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name()), is(pipelineConfig));
+        assertThat(goConfigService.hasPipelineNamed(pipelineConfig.name())).isTrue();
+        assertThat(goConfigService.pipelineConfigNamed(pipelineConfig.name())).isEqualTo(pipelineConfig);
         // and no trace of badPipe
-        assertThat(goConfigService.hasPipelineNamed(new CaseInsensitiveString("badPipe")), is(false));
+        assertThat(goConfigService.hasPipelineNamed(new CaseInsensitiveString("badPipe"))).isFalse();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class DeleteEnvironmentCommandTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
         environmentName = new CaseInsensitiveString("Dev");

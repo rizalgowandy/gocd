@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import java.util.Properties;
 
 import static com.thoughtworks.go.util.SystemUtil.currentWorkingDirectory;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -71,15 +70,15 @@ public class GoArtifactsManipulatorTest {
     public void shouldBombWithErrorWhenStatusCodeReturnedIsRequestEntityTooLarge() throws IOException {
         when(httpService.upload(any(String.class), eq(tempFile.length()), any(File.class), any(Properties.class))).thenReturn(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
 
-        CircularFifoQueue buffer = ReflectionUtil.getField(ReflectionUtil.getField(goPublisher, "consoleOutputTransmitter"), "buffer");
+        CircularFifoQueue<?> buffer = ReflectionUtil.getField(ReflectionUtil.getField(goPublisher, "consoleOutputTransmitter"), "buffer");
         synchronized (buffer) {
             try {
                 goArtifactsManipulatorStub.publish(goPublisher, "some_dest", tempFile, jobIdentifier);
                 fail("should have thrown request entity too large error");
             } catch (RuntimeException e) {
                 String expectedMessage = "Artifact upload for file " + tempFile.getAbsolutePath() + " (Size: "+ tempFile.length() +") was denied by the server. This usually happens when server runs out of disk space.";
-                assertThat(e.getMessage(), is("java.lang.RuntimeException: " + expectedMessage + ".  HTTP return code is 413"));
-                assertThat(buffer.toString().contains(expectedMessage), is(true));
+                assertThat(e.getMessage()).isEqualTo("java.lang.RuntimeException: " + expectedMessage + ".  HTTP return code is 413");
+                assertThat(buffer.toString().contains(expectedMessage)).isTrue();
             }
         }
     }

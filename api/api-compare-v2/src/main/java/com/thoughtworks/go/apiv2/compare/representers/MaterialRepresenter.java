@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class MaterialRepresenter {
     public static void toJSON(OutputWriter jsonWriter, MaterialConfig materialConfig) {
         if (!materialConfig.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 errorMapping.put("materialName", "name");
                 errorMapping.put("folder", "destination");
                 errorMapping.put("autoUpdate", "auto_update");

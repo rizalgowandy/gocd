@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ public class PluginSettings implements Validatable {
     }
 
     public static PluginSettings from(Plugin plugin, PluginInfo pluginInfo) {
-        ArrayList<ConfigurationProperty> settingsMap = new ArrayList<>();
+        List<ConfigurationProperty> settingsMap = new ArrayList<>();
         ConfigurationPropertyBuilder builder = new ConfigurationPropertyBuilder();
 
         for (String key : plugin.getAllConfigurationKeys()) {

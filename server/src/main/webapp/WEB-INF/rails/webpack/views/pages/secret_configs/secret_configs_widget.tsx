@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ export class SecretConfigsWidget extends MithrilViewComponent<Attrs> {
     return <ul data-test-id="secret-config-info">
       <li>Click on "Add" to add new secret configuration.</li>
       <li>A secret configuration can be used to access secrets from an external secret management store.</li>
-      <li>You can read more about secret configurations from
-        <Link target="_blank" href={docsUrl('configuration/secrets_management.html')}> here</Link>.
+      <li>You can read more about secret configurations from&nbsp;
+        <Link href={docsUrl('configuration/secrets_management.html')} target="_blank" externalLinkIcon={true}> here</Link>.
       </li>
     </ul>;
   }

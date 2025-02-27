@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.CurrentGoCDVersion.apiDocsUrl
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class EntityConfigOriginRepresenterTest {
   @Test
@@ -66,7 +66,7 @@ class EntityConfigOriginRepresenterTest {
 
   @Test
   void 'should render config repo origin with hal representation'() {
-    def origin = new RepoConfigOrigin(ConfigRepoConfig.createConfigRepoConfig(MaterialConfigsMother.git("foo.git"), "json-plugon", "repo1"), "revision1");
+    def origin = new RepoConfigOrigin(ConfigRepoConfig.createConfigRepoConfig(MaterialConfigsMother.git("foo.git"), "json-plugon", "repo1"), "revision1")
     def actualJSON = toObjectString({ EntityConfigOriginRepresenter.toJSON(it, origin) })
 
     def expectedJSON = [

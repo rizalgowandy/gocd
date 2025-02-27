@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.nio.file.Path;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
@@ -119,7 +117,7 @@ public class JobControllerIntegrationTest {
         fixture = new PipelineWithTwoStages(materialRepository, transactionTemplate, tempDir);
         fixture.usingConfigHelper(configHelper).usingDbHelper(dbHelper).onSetUp();
         controller = new JobController(jobInstanceService, agentService, jobInstanceDao,
-                goConfigService, pipelineService, restfulService, artifactService, stageService, jobAgentMetadataDao, systemEnvironment, securityService);
+                goConfigService, pipelineService, restfulService, artifactService, stageService, jobAgentMetadataDao, securityService);
     }
 
     @AfterEach
@@ -128,28 +126,27 @@ public class JobControllerIntegrationTest {
     }
 
     @Test
-    public void shouldSupportPipelineCounter() throws Exception {
+    public void shouldSupportPipelineCounter() {
         Pipeline pipeline = fixture.createdPipelineWithAllStagesPassed();
         Stage stage = pipeline.getFirstStage();
         JobInstance job = stage.getFirstJob();
         ModelAndView modelAndView = controller.jobDetail(pipeline.getName(), String.valueOf(pipeline.getCounter()),
                 stage.getName(), String.valueOf(stage.getCounter()), job.getName());
-        assertThat(presenter(modelAndView).getBuildLocator(), is(job.getIdentifier().buildLocator()));
+        assertThat(presenter(modelAndView).getBuildLocator()).isEqualTo(job.getIdentifier().buildLocator());
     }
 
     @Test
-    public void shouldReturnErrorMessageWhenFailedToFindJob() throws Exception {
+    public void shouldReturnErrorMessageWhenFailedToFindJob() {
         try {
             controller.jobDetail(fixture.pipelineName, "1", fixture.devStage, "1", "invalid-job");
         } catch (Exception e) {
             ModelAndView modelAndView = controller.handle(request, response, e);
-            assertThat((String) modelAndView.getModel().get(GoConstants.ERROR_FOR_PAGE),
-                    containsString("invalid-job not found"));
+            assertThat((String) modelAndView.getModel().get(GoConstants.ERROR_FOR_PAGE)).contains("invalid-job not found");
         }
     }
 
     @Test
-    public void shouldFindJobByPipelineCounterEvenMultiplePipelinesHaveSameLabel() throws Exception {
+    public void shouldFindJobByPipelineCounterEvenMultiplePipelinesHaveSameLabel() {
         fixture.configLabelTemplateUsingMaterialRevision();
         Pipeline oldPipeline = fixture.createdPipelineWithAllStagesPassed();
         Stage stage = oldPipeline.getFirstStage();
@@ -157,13 +154,13 @@ public class JobControllerIntegrationTest {
         ModelAndView modelAndView = controller.jobDetail(oldPipeline.getName(),
                 String.valueOf(oldPipeline.getCounter()),
                 stage.getName(), String.valueOf(stage.getCounter()), job.getName());
-        assertThat(presenter(modelAndView).getBuildLocator(), is(job.getIdentifier().buildLocator()));
+        assertThat(presenter(modelAndView).getBuildLocator()).isEqualTo(job.getIdentifier().buildLocator());
     }
 
     @Test
-    public void shouldCreateJobPresentationModelWithRightStage() throws Exception {
+    public void shouldCreateJobPresentationModelWithRightStage() {
         controller = new JobController(jobInstanceService, agentService, jobInstanceDao,
-                goConfigService, pipelineService, restfulService, artifactService, stageService, jobAgentMetadataDao, systemEnvironment, securityService);
+                goConfigService, pipelineService, restfulService, artifactService, stageService, jobAgentMetadataDao, securityService);
         fixture.configLabelTemplateUsingMaterialRevision();
         Pipeline pipeline = fixture.createdPipelineWithAllStagesPassed();
         Stage devStage = pipeline.getStages().byName("dev");
@@ -171,12 +168,12 @@ public class JobControllerIntegrationTest {
 
         ModelAndView modelAndView = controller.jobDetail(pipeline.getName(), String.valueOf(pipeline.getCounter()), devStage.getName(), String.valueOf(devStage.getCounter()), job.getName());
 
-        assertThat(presenter(modelAndView).getStageLocator(), is(devStage.stageLocator()));
-        assertThat(presenter(modelAndView).getStage(), is(devStage));
+        assertThat(presenter(modelAndView).getStageLocator()).isEqualTo(devStage.stageLocator());
+        assertThat(presenter(modelAndView).getStage()).isEqualTo(devStage);
     }
 
     @Test
-    public void jobDetailModel_shouldHaveTheElasticProfilePluginIdWhenAgentIsNotAssigned() throws Exception {
+    public void jobDetailModel_shouldHaveTheElasticProfilePluginIdWhenAgentIsNotAssigned() {
         Pipeline pipeline = fixture.createPipelineWithFirstStageAssigned();
         Stage stage = pipeline.getFirstStage();
         JobInstance job = stage.getFirstJob();
@@ -184,19 +181,19 @@ public class JobControllerIntegrationTest {
         GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id("plugin_id").about(about).build();
         ElasticAgentMetadataStore.instance().setPluginInfo(new ElasticAgentPluginInfo(descriptor, null, null, null, null, new Capabilities(false, true)));
 
-        ElasticProfile profile = new ElasticProfile("profile_id", "cluster_profile_id", Collections.EMPTY_LIST);
-        ClusterProfile clusterProfile = new ClusterProfile("cluster_profile_id", "plugin_id", Collections.EMPTY_LIST);
+        ElasticProfile profile = new ElasticProfile("profile_id", "cluster_profile_id", Collections.emptyList());
+        ClusterProfile clusterProfile = new ClusterProfile("cluster_profile_id", "plugin_id", Collections.emptyList());
 
         fixture.addJobAgentMetadata(new JobAgentMetadata(job.getId(), profile, clusterProfile));
 
         ModelAndView modelAndView = controller.jobDetail(pipeline.getName(), String.valueOf(pipeline.getCounter()),
                 stage.getName(), String.valueOf(stage.getCounter()), job.getName());
 
-        assertThat(modelAndView.getModel().get("elasticAgentPluginId"), is("plugin_id"));
+        assertThat(modelAndView.getModel().get("elasticAgentPluginId")).isEqualTo("plugin_id");
     }
 
     @Test
-    public void jobDetailModel_shouldHaveTheElasticPluginIdAndElasticAgentIdWhenAgentIsAssigned() throws Exception {
+    public void jobDetailModel_shouldHaveTheElasticPluginIdAndElasticAgentIdWhenAgentIsAssigned() {
         Pipeline pipeline = fixture.createPipelineWithFirstStageAssigned();
         Stage stage = pipeline.getFirstStage();
         JobInstance job = stage.getFirstJob();
@@ -205,8 +202,8 @@ public class JobControllerIntegrationTest {
         GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id("plugin_id").about(about).build();
         ElasticAgentMetadataStore.instance().setPluginInfo(new ElasticAgentPluginInfo(descriptor, null, null, null, null, new Capabilities(false, true)));
 
-        ElasticProfile profile = new ElasticProfile("profile_id", "cluster_profile_id", Collections.EMPTY_LIST);
-        ClusterProfile clusterProfile = new ClusterProfile("cluster_profile_id", "plugin_id", Collections.EMPTY_LIST);
+        ElasticProfile profile = new ElasticProfile("profile_id", "cluster_profile_id", Collections.emptyList());
+        ClusterProfile clusterProfile = new ClusterProfile("cluster_profile_id", "plugin_id", Collections.emptyList());
 
         fixture.addJobAgentMetadata(new JobAgentMetadata(job.getId(), profile, clusterProfile));
 
@@ -218,12 +215,12 @@ public class JobControllerIntegrationTest {
         ModelAndView modelAndView = controller.jobDetail(pipeline.getName(), String.valueOf(pipeline.getCounter()),
                 stage.getName(), String.valueOf(stage.getCounter()), job.getName());
 
-        assertThat(modelAndView.getModel().get("elasticAgentPluginId"), is("plugin_id"));
-        assertThat(modelAndView.getModel().get("elasticAgentId"), is("elastic_agent_id"));
+        assertThat(modelAndView.getModel().get("elasticAgentPluginId")).isEqualTo("plugin_id");
+        assertThat(modelAndView.getModel().get("elasticAgentId")).isEqualTo("elastic_agent_id");
     }
 
     @Test
-    public void jobDetailModel_shouldNotHaveTheElasticProfilePluginIdAndElasticAgentIdWhenAgentIsNotElasticAgent() throws Exception {
+    public void jobDetailModel_shouldNotHaveTheElasticProfilePluginIdAndElasticAgentIdWhenAgentIsNotElasticAgent() {
         Pipeline pipeline = fixture.createPipelineWithFirstStageAssigned();
         Stage stage = pipeline.getFirstStage();
         JobInstance job = stage.getFirstJob();
@@ -239,7 +236,7 @@ public class JobControllerIntegrationTest {
     }
 
     @Test
-    public void jobDetailModel_shouldNotHaveElasticPluginIdAndElasticAgentIdForACompletedJob() throws Exception {
+    public void jobDetailModel_shouldNotHaveElasticPluginIdAndElasticAgentIdForACompletedJob() {
         Pipeline pipeline = fixture.createdPipelineWithAllStagesPassed();
         Stage stage = pipeline.getFirstStage();
         JobInstance job = stage.getFirstJob();

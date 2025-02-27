@@ -133,7 +133,7 @@ public class CommandLine {
                     } else if ("\"".equals(nextTok)) {
                         state = inDoubleQuote;
                     } else if (" ".equals(nextTok)) {
-                        if (current.length() != 0) {
+                        if (!current.isEmpty()) {
                             v.addElement(current.toString());
                             current.setLength(0);
                         }
@@ -144,7 +144,7 @@ public class CommandLine {
             }
         }
 
-        if (current.length() != 0) {
+        if (!current.isEmpty()) {
             v.addElement(current.toString());
         }
 
@@ -218,25 +218,6 @@ public class CommandLine {
         ProcessWrapper process = createProcess(environmentVariableContext, outputStreamConsumer, processTag, ERROR_STREAM_PREFIX_FOR_CMDS);
         process.typeInputToConsole(inputs);
         return process;
-    }
-
-    public void waitForSuccess(int timeout) {
-        ConsoleResult lastResult = ConsoleResult.unknownResult();
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < timeout) {
-            try {
-                lastResult = runOrBomb(null);
-                if (!lastResult.failed()) {
-                    return;
-                }
-                Thread.sleep(100);
-            } catch (Exception e) {
-                lastResult.error().add(e.getMessage());
-            }
-        }
-        double seconds = timeout / 1000.0;
-        ExceptionUtils.bomb("Timeout after " + seconds + " seconds waiting for command '" + toStringForDisplay() + "'\n"
-            + "Last output was:\n" + lastResult.describe());
     }
 
     public String getExecutable() {
@@ -328,7 +309,7 @@ public class CommandLine {
         SafeOutputStreamConsumer streamConsumer =
             new SafeOutputStreamConsumer(
                 new BoundedOutputStreamConsumer(
-                    new ProcessOutputStreamConsumer(outputStreamConsumer, errorStreamConsumer),
+                    new ProcessOutputStreamConsumer<>(outputStreamConsumer, errorStreamConsumer),
                     new SystemEnvironment().get(SystemEnvironment.CONSOLE_LOG_MAX_LINE_LENGTH)
                 )
         );

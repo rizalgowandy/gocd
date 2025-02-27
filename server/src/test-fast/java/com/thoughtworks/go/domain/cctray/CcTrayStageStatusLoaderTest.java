@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,32 +45,32 @@ public class CcTrayStageStatusLoaderTest {
     private CcTrayStageStatusLoader loader;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         loader = new CcTrayStageStatusLoader(stageDao, stageChangeHandler);
     }
 
     @Test
-    public void shouldNotHaveAnyStatusesIfAStageCannotBeFoundInDB() throws Exception {
+    public void shouldNotHaveAnyStatusesIfAStageCannotBeFoundInDB() {
         setupStagesInDB(new StageIdentity("pipeline1", "stage1", 12L), new StageIdentity("pipeline2", "stage2", 14L));
 
         List<ProjectStatus> actualStatuses = loader.getStatusesForStageAndJobsOf(pipelineConfigFor("pipeline1"), stageConfigFor("non-existent-stage"));
 
-        assertThat(actualStatuses, is(Collections.<ProjectStatus>emptyList()));
+        assertThat(actualStatuses).isEqualTo(Collections.<ProjectStatus>emptyList());
     }
 
     @Test
-    public void shouldConvertToStatusesIfAStageIsFoundInDB() throws Exception {
+    public void shouldConvertToStatusesIfAStageIsFoundInDB() {
         List<ProjectStatus> expectedStatuses = List.of(new ProjectStatus("pipeline1 :: stage1", "Sleeping", "some-status", "some-label", new Date(), "some-url"));
         List<Stage> stages = setupStagesInDB(new StageIdentity("pipeline1", "stage1", 12L), new StageIdentity("pipeline2", "stage2", 14L));
         when(stageChangeHandler.statusesOfStageAndItsJobsFor(stages.get(0))).thenReturn(expectedStatuses);
 
         List<ProjectStatus> actualStatuses = loader.getStatusesForStageAndJobsOf(pipelineConfigFor("pipeline1"), stageConfigFor("stage1"));
 
-        assertThat(actualStatuses, is(expectedStatuses));
+        assertThat(actualStatuses).isEqualTo(expectedStatuses);
     }
 
     @Test
-    public void shouldCacheResultOfLatestStageInstancesOnce() throws Exception {
+    public void shouldCacheResultOfLatestStageInstancesOnce() {
         setupStagesInDB(new StageIdentity("pipeline1", "stage1", 12L), new StageIdentity("pipeline2", "stage2", 14L));
 
         loader.getStatusesForStageAndJobsOf(pipelineConfigFor("pipeline1"), stageConfigFor("stage1"));

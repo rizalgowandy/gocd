@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import com.thoughtworks.go.serverhealth.HealthStateScope;
 import com.thoughtworks.go.serverhealth.HealthStateType;
 import com.thoughtworks.go.serverhealth.ServerHealthService;
-import com.thoughtworks.go.serverhealth.ServerHealthState;
 import com.thoughtworks.go.util.MaterialFingerprintTag;
 import com.thoughtworks.go.util.ProcessManager;
 import com.thoughtworks.go.util.SystemEnvironment;
@@ -139,14 +138,13 @@ public class MaterialUpdateService implements GoMessageListener<MaterialUpdateCo
         }
     }
 
-    public void notifyMaterialsForUpdate(Username username, Object params, HttpLocalizedOperationResult result) {
+    public void notifyMaterialsForUpdate(Username username, Map<String, String> attributes, HttpLocalizedOperationResult result) {
         if (!goConfigService.isUserAdmin(username)) {
             result.forbidden("Unauthorized to access this API.", HealthStateType.forbidden());
             return;
         }
-        final Map attributes = (Map) params;
         if (attributes.containsKey(MaterialUpdateService.TYPE)) {
-            PostCommitHookMaterialType materialType = postCommitHookMaterialType.toType((String) attributes.get(MaterialUpdateService.TYPE));
+            PostCommitHookMaterialType materialType = postCommitHookMaterialType.toType(attributes.get(MaterialUpdateService.TYPE));
             if (!materialType.isKnown()) {
                 result.badRequest("The request could not be understood by Go Server due to malformed syntax. The client SHOULD NOT repeat the request without modifications.");
                 return;
@@ -254,12 +252,7 @@ public class MaterialUpdateService implements GoMessageListener<MaterialUpdateCo
     @Override
     public void onConfigChange(CruiseConfig newCruiseConfig) {
         Set<HealthStateScope> materialScopes = toHealthStateScopes(newCruiseConfig.getAllUniqueMaterials());
-        for (ServerHealthState state : serverHealthService.logs()) {
-            HealthStateScope currentScope = state.getType().getScope();
-            if (currentScope.isForMaterial() && !materialScopes.contains(currentScope)) {
-                serverHealthService.removeByScope(currentScope);
-            }
-        }
+        serverHealthService.removeByScopeMatcher(scope -> scope.isForMaterial() && !materialScopes.contains(scope));
     }
 
     protected EntityConfigChangedListener<PipelineConfig> pipelineConfigChangedListener() {

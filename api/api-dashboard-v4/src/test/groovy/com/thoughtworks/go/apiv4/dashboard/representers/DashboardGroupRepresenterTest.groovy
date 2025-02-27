@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test
 import static com.thoughtworks.go.CurrentGoCDVersion.apiDocsUrl
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
 import static com.thoughtworks.go.helpers.PipelineModelMother.pipeline_model
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -42,9 +42,9 @@ class DashboardGroupRepresenterTest {
 
   @Nested
   class PipelineGroups {
-    private LinkedHashMap<String, LinkedHashMap<String, String>> expectedLinks = [
+    private Map<String, LinkedHashMap<String, String>> expectedLinks = [
       doc : [
-        href: 'https://api.go.cd/current/#pipeline-groups'
+        href: 'https://api.gocd.org/current/#pipeline-groups'
       ],
       self: [
         href: 'http://test.host/go/api/config/pipeline_groups'
@@ -101,7 +101,7 @@ class DashboardGroupRepresenterTest {
 
   @Nested
   class Environments {
-    private LinkedHashMap<String, LinkedHashMap<String, String>> expectedLinks = [
+    private Map<String, LinkedHashMap<String, String>> expectedLinks = [
       doc : [
         href: apiDocsUrl('#environment-config')
       ],

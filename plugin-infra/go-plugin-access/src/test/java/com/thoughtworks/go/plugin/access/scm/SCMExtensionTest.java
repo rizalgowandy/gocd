@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.SCM_EXTENSION;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,7 +67,7 @@ public class SCMExtensionTest {
     private ArgumentCaptor<GoPluginApiRequest> requestArgumentCaptor;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         scmExtension = new SCMExtension(pluginManager, extensionsRegistry);
         scmExtension.getPluginSettingsMessageHandlerMap().put("1.0", pluginSettingsJSONMessageHandler);
         scmExtension.getMessageHandlerMap().put("1.0", jsonMessageHandler);
@@ -85,12 +84,12 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldExtendAbstractExtension() throws Exception {
+    public void shouldExtendAbstractExtension() {
         assertTrue(scmExtension instanceof AbstractExtension);
     }
 
     @Test
-    public void shouldTalkToPluginToGetPluginSettingsConfiguration() throws Exception {
+    public void shouldTalkToPluginToGetPluginSettingsConfiguration() {
         PluginSettingsConfiguration deserializedResponse = new PluginSettingsConfiguration();
         when(pluginSettingsJSONMessageHandler.responseMessageForPluginSettingsConfiguration(responseBody)).thenReturn(deserializedResponse);
 
@@ -102,7 +101,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetPluginSettingsView() throws Exception {
+    public void shouldTalkToPluginToGetPluginSettingsView() {
         String deserializedResponse = "";
         when(pluginSettingsJSONMessageHandler.responseMessageForPluginSettingsView(responseBody)).thenReturn(deserializedResponse);
 
@@ -114,7 +113,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetValidatePluginSettings() throws Exception {
+    public void shouldTalkToPluginToGetValidatePluginSettings() {
         when(pluginSettingsJSONMessageHandler.requestMessageForPluginSettingsValidation(pluginSettingsConfiguration)).thenReturn(requestBody);
         ValidationResult deserializedResponse = new ValidationResult();
         when(pluginSettingsJSONMessageHandler.responseMessageForPluginSettingsValidation(responseBody)).thenReturn(deserializedResponse);
@@ -127,7 +126,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetSCMConfiguration() throws Exception {
+    public void shouldTalkToPluginToGetSCMConfiguration() {
         SCMPropertyConfiguration deserializedResponse = new SCMPropertyConfiguration();
         when(jsonMessageHandler.responseMessageForSCMConfiguration(responseBody)).thenReturn(deserializedResponse);
 
@@ -161,7 +160,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckIfSCMConfigurationIsValid() throws Exception {
+    public void shouldTalkToPluginToCheckIfSCMConfigurationIsValid() {
         when(jsonMessageHandler.requestMessageForIsSCMConfigurationValid(scmPropertyConfiguration)).thenReturn(requestBody);
         ValidationResult deserializedResponse = new ValidationResult();
         when(jsonMessageHandler.responseMessageForIsSCMConfigurationValid(responseBody)).thenReturn(deserializedResponse);
@@ -175,7 +174,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckSCMConnectionSuccessful() throws Exception {
+    public void shouldTalkToPluginToCheckSCMConnectionSuccessful() {
         when(jsonMessageHandler.requestMessageForCheckConnectionToSCM(scmPropertyConfiguration)).thenReturn(requestBody);
         Result deserializedResponse = new Result();
         when(jsonMessageHandler.responseMessageForCheckConnectionToSCM(responseBody)).thenReturn(deserializedResponse);
@@ -189,7 +188,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetLatestModification() throws Exception {
+    public void shouldTalkToPluginToGetLatestModification() {
         String flyweight = "flyweight";
         when(jsonMessageHandler.requestMessageForLatestRevision(scmPropertyConfiguration, materialData, flyweight)).thenReturn(requestBody);
         MaterialPollResult deserializedResponse = new MaterialPollResult();
@@ -204,7 +203,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToGetLatestModificationSinceLastRevision() throws Exception {
+    public void shouldTalkToPluginToGetLatestModificationSinceLastRevision() {
         String flyweight = "flyweight";
         SCMRevision previouslyKnownRevision = new SCMRevision();
         when(jsonMessageHandler.requestMessageForLatestRevisionsSince(scmPropertyConfiguration, materialData, flyweight, previouslyKnownRevision)).thenReturn(requestBody);
@@ -220,7 +219,7 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldTalkToPluginToCheckout() throws Exception {
+    public void shouldTalkToPluginToCheckout() {
         String destination = "destination";
         SCMRevision revision = new SCMRevision();
         when(jsonMessageHandler.requestMessageForCheckout(scmPropertyConfiguration, destination, revision)).thenReturn(requestBody);
@@ -236,19 +235,19 @@ public class SCMExtensionTest {
     }
 
     @Test
-    public void shouldHandleExceptionDuringPluginInteraction() throws Exception {
+    public void shouldHandleExceptionDuringPluginInteraction() {
         when(pluginManager.submitTo(eq(PLUGIN_ID), eq(SCM_EXTENSION), requestArgumentCaptor.capture())).thenThrow(new RuntimeException("exception-from-plugin"));
         try {
             scmExtension.checkConnectionToSCM(PLUGIN_ID, scmPropertyConfiguration);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("exception-from-plugin"));
+            assertThat(e.getMessage()).isEqualTo("exception-from-plugin");
         }
     }
 
     private void assertRequest(GoPluginApiRequest goPluginApiRequest, String extensionName, String version, String requestName, String requestBody) {
-        assertThat(goPluginApiRequest.extension(), is(extensionName));
-        assertThat(goPluginApiRequest.extensionVersion(), is(version));
-        assertThat(goPluginApiRequest.requestName(), is(requestName));
-        assertThat(goPluginApiRequest.requestBody(), is(requestBody));
+        assertThat(goPluginApiRequest.extension()).isEqualTo(extensionName);
+        assertThat(goPluginApiRequest.extensionVersion()).isEqualTo(version);
+        assertThat(goPluginApiRequest.requestName()).isEqualTo(requestName);
+        assertThat(goPluginApiRequest.requestBody()).isEqualTo(requestBody);
     }
 }

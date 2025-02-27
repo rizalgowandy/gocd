@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -190,12 +190,6 @@ public abstract class AbstractMaterial extends PersistentObject implements Mater
     @Override
     public String toString() {
         return String.format("AbstractMaterial{name=%s, type=%s}", name, materialType);
-    }
-
-    protected void resetCachedIdentityAttributes() {
-        sqlCriteria = null;
-        attributesForXml = null;
-        pipelineUniqueFingerprint = null;
     }
 
     @Override

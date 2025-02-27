@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class PipelineStateDao extends SqlMapClientDaoSupport implements StageSta
                             SystemEnvironment systemEnvironment,
                             Database database,
                             SessionFactory sessionFactory) {
-        super(goCache, sqlSessionFactory, systemEnvironment, database);
+        super(goCache, sqlSessionFactory);
         this.transactionTemplate = transactionTemplate;
         this.transactionSynchronizationManager = transactionSynchronizationManager;
         this.sessionFactory = sessionFactory;
@@ -174,6 +174,7 @@ public class PipelineStateDao extends SqlMapClientDaoSupport implements StageSta
         return cacheKeyGenerator.generate("lockedPipeline", pipelineName.toLowerCase());
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> lockedPipelines() {
         return transactionTemplate.execute(status -> {
             PropertyProjection pipelineName = Projections.property("pipelineName");

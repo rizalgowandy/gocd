@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class MaterialConfigServiceTest {
     private MaterialConfigService materialConfigService;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() {
 
         user = "looser";
         when(securityService.hasViewPermissionForGroup(user, "group1")).thenReturn(true);

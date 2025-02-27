@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Map;
 public interface AnalyticsMessageConverter {
     Capabilities getCapabilitiesFromResponseBody(String responseBody);
 
-    String getAnalyticsRequestBody(String type, String metricId, Map params);
+    String getAnalyticsRequestBody(String type, String metricId, Map<String, ?> params);
 
     AnalyticsData getAnalyticsFromResponseBody(String responseBody);
 

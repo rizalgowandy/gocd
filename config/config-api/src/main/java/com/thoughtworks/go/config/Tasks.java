@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,14 +99,15 @@ public class Tasks extends BaseCollection<Task> implements Validatable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void setConfigAttributes(Object attributes, TaskFactory taskFactory) {
         clear();
         if (attributes == null) {
             return;
         }
         if (taskFactory == null) throw new IllegalArgumentException("ConfigContext cannot be null");
-        Map attributeMap = (Map) attributes;
-        String taskType = (String) attributeMap.get(TASK_OPTIONS);
+        Map<String, String> attributeMap = (Map<String, String>) attributes;
+        String taskType = attributeMap.get(TASK_OPTIONS);
         Task task = taskFactory.taskInstanceFor(taskType);
         task.setConfigAttributes(attributeMap.get(taskType), taskFactory);
         add(task);

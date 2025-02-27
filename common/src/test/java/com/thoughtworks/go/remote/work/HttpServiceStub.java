@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.thoughtworks.go.domain.FetchHandler;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -40,7 +39,7 @@ public class HttpServiceStub extends HttpService {
     }
 
     @Override
-    public int upload(String url, long size, File artifactFile, Properties artifactChecksums) throws IOException {
+    public int upload(String url, long size, File artifactFile, Properties artifactChecksums) {
         uploadedFiles.put(url, artifactFile);
         return returnCode;
     }

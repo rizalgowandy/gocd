@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ public abstract class AbstractConfigXmlLoaderTest {
     ConfigCache configCache = new ConfigCache();
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         SCMMetadataStore.getInstance().clear();
         xmlLoader = new MagicalGoConfigXmlLoader(configCache, ConfigElementImplementationRegistryMother.withNoPlugins());
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SCMMetadataStore.getInstance().clear();
     }
 }

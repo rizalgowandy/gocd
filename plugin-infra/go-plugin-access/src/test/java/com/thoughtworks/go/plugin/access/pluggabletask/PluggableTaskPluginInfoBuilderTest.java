@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -71,14 +70,14 @@ public class PluggableTaskPluginInfoBuilderTest {
         when(descriptor.id()).thenReturn(pluginId);
 
         doAnswer(invocation -> {
-            final Action<Task> action = (Action<Task>) invocation.getArguments()[1];
+            @SuppressWarnings("unchecked") final Action<Task> action = (Action<Task>) invocation.getArguments()[1];
             action.execute(task, descriptor);
             return null;
-        }).when(extension).doOnTask(eq("plugin1"), any(Action.class));
+        }).when(extension).doOnTask(eq("plugin1"), any());
     }
 
     @Test
-    public void shouldBuildPluginInfo() throws Exception {
+    public void shouldBuildPluginInfo() {
         GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id("plugin1").build();
 
         PluggableTaskPluginInfo pluginInfo = new PluggableTaskPluginInfoBuilder(extension) .pluginInfoFor(descriptor);
@@ -89,10 +88,10 @@ public class PluggableTaskPluginInfoBuilderTest {
         );
         PluginView pluginView = new PluginView("some html");
 
-        assertThat(pluginInfo.getDescriptor(), is(descriptor));
-        assertThat(pluginInfo.getExtensionName(), is("task"));
-        assertThat(pluginInfo.getDisplayName(), is("my task plugin"));
-        assertThat(pluginInfo.getTaskSettings(), is(new PluggableInstanceSettings(pluginConfigurations, pluginView)));
+        assertThat(pluginInfo.getDescriptor()).isEqualTo(descriptor);
+        assertThat(pluginInfo.getExtensionName()).isEqualTo("task");
+        assertThat(pluginInfo.getDisplayName()).isEqualTo("my task plugin");
+        assertThat(pluginInfo.getTaskSettings()).isEqualTo(new PluggableInstanceSettings(pluginConfigurations, pluginView));
         assertNull(pluginInfo.getPluginSettings());
     }
 }

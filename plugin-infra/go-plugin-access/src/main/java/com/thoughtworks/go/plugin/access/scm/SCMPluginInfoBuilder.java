@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class SCMPluginInfoBuilder implements PluginInfoBuilder<SCMPluginInfo> {
     }
 
     private List<PluginConfiguration> scmPluginConfigurations(Configuration config) {
-        ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>();
+        List<PluginConfiguration> pluginConfigurations = new ArrayList<>();
 
         for (Property property : config.list()) {
             Metadata metadata = new MetadataWithPartOfIdentity(property.getOption(Property.REQUIRED), property.getOption(Property.SECURE), property.getOption(Property.PART_OF_IDENTITY));

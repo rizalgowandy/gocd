@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class UpdatePipelineConfigCommandTest {
 
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         entityHashingService = mock(EntityHashingService.class);
         externalArtifactsService = mock(ExternalArtifactsService.class);
         goConfigService = mock(GoConfigService.class);
@@ -75,7 +75,7 @@ class UpdatePipelineConfigCommandTest {
     }
 
     @Test
-    void shouldDisallowUpdateIfPipelineEditIsDisAllowed() throws Exception {
+    void shouldDisallowUpdateIfPipelineEditIsDisAllowed() {
         UpdatePipelineConfigCommand command = new UpdatePipelineConfigCommand(goConfigService, null,
             pipelineConfig, "", username, "stale_digest", localizedOperationResult, externalArtifactsService);
 
@@ -90,7 +90,7 @@ class UpdatePipelineConfigCommandTest {
     }
 
     @Test
-    void shouldInvokeUpdateMethodOfCruiseConfig() throws Exception {
+    void shouldInvokeUpdateMethodOfCruiseConfig() {
         UpdatePipelineConfigCommand command = new UpdatePipelineConfigCommand(goConfigService, null,
             pipelineConfig, "group1", username, "stale_digest", localizedOperationResult, externalArtifactsService);
 

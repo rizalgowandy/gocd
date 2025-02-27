@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import java.io.File;
 import static com.thoughtworks.go.logging.LogHelper.rootLogger;
 
 public class DefaultPluginLoggingService implements LoggingService {
-    private static Logger loggingServiceLogger = LoggerFactory.getLogger(DefaultPluginLoggingService.class);
-    private static int MAX_LENGTH_OF_PLUGIN_FILENAME = 200;
+    private static final Logger loggingServiceLogger = LoggerFactory.getLogger(DefaultPluginLoggingService.class);
+    private static final int MAX_LENGTH_OF_PLUGIN_FILENAME = 200;
     private static final String PLUGIN_LOGGER_PREFIX = "plugin";
 
     private final SystemEnvironment systemEnvironment;
@@ -221,7 +221,7 @@ public class DefaultPluginLoggingService implements LoggingService {
 
     String getCurrentLogDirectory() {
         try {
-            FileAppender fileAppender = getGoServerLogFileAppender();
+            FileAppender<ILoggingEvent> fileAppender = getGoServerLogFileAppender();
             String fileName = fileAppender.rawFileProperty();
             return new File(fileName).getAbsoluteFile().getParent();
         } catch (Exception e) {
@@ -229,8 +229,8 @@ public class DefaultPluginLoggingService implements LoggingService {
         }
     }
 
-    FileAppender getGoServerLogFileAppender() {
-        return (FileAppender) rootLogger().getAppender("FileAppender");
+    FileAppender<ILoggingEvent> getGoServerLogFileAppender() {
+        return (FileAppender<ILoggingEvent>) rootLogger().getAppender("FileAppender");
     }
 
 }

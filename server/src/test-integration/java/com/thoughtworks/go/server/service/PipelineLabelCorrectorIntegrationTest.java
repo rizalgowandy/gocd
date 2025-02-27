@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.sql.SQLException;
-
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
 import static com.thoughtworks.go.util.IBatisUtil.arguments;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -89,42 +85,42 @@ public class PipelineLabelCorrectorIntegrationTest {
     }
 
     @Test
-    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbAndKeepTheOneMatchingPipelineNameCaseInConfig() throws SQLException {
+    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbAndKeepTheOneMatchingPipelineNameCaseInConfig() {
         String pipelineName = "Pipeline-Name";
         configHelper.addPipeline(pipelineName, "stage-name");
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName.toLowerCase()).and("count", 10).asMap());
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName.toUpperCase()).and("count", 20).asMap());
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName).and("count", 30).asMap());
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size(), is(1));
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName), is(true));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size()).isEqualTo(1);
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName)).isTrue();
 
         pipelineLabelCorrector.correctPipelineLabelCountEntries();
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().isEmpty(), is(true));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName), is(30));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toLowerCase()), is(30));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toUpperCase()), is(30));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().isEmpty()).isTrue();
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName)).isEqualTo(30);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toLowerCase())).isEqualTo(30);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toUpperCase())).isEqualTo(30);
     }
 
     @Test
-    public void shouldRemoveAllEntriesForPipelineCounterFromDbIfThePipelineDoesnotBelongToConfigAnymoreAndThereWereNoPipelineRunsForThatPipelineButDuplicatesWereFound() throws SQLException {
+    public void shouldRemoveAllEntriesForPipelineCounterFromDbIfThePipelineDoesnotBelongToConfigAnymoreAndThereWereNoPipelineRunsForThatPipelineButDuplicatesWereFound() {
         // Such a scenario could be created in pre 18.4 world when the pipeline was recreated with different cases via the API or the UI which causes the pipeline to be paused by default. Pipeline pause information is stored in the same table.
         String pipelineName = "Pipeline-Name";
         configHelper.addPipeline(pipelineName, "stage-name");
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName.toLowerCase()).and("count", 10).asMap());
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName.toUpperCase()).and("count", 20).asMap());
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName).and("count", 30).asMap());
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size(), is(1));
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName), is(true));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size()).isEqualTo(1);
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName)).isTrue();
         configHelper.removePipeline(pipelineName);
 
         pipelineLabelCorrector.correctPipelineLabelCountEntries();
 
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount(), hasSize(0));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName), is(0));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount()).hasSize(0);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName)).isEqualTo(0);
     }
 
     @Test
-    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbIfThePipelineDoesnotBelongToConfigAnymoreAndLeaveOutTheOneThatMatchesTheCaseOfLatestPipelineRun() throws SQLException {
+    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbIfThePipelineDoesnotBelongToConfigAnymoreAndLeaveOutTheOneThatMatchesTheCaseOfLatestPipelineRun() {
         // Such a scenario could be created in pre 18.4 world when the pipeline was recreated with different cases, and has had a few runs after which it was deleted
         String pipelineName = "Pipeline-Name";
         SvnMaterial svn = scheduleUtil.wf(new SvnMaterial("svn", "username", "password", false), "folder1");
@@ -143,18 +139,18 @@ public class PipelineLabelCorrectorIntegrationTest {
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName.toLowerCase()).and("count", 10).asMap());
         pipelineSqlMapDao.getSqlMapClientTemplate().insert("insertPipelineLabelCounter", arguments("pipelineName", pipelineName).and("count", 20).asMap());
 
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size(), is(1));
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName), is(true));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().size()).isEqualTo(1);
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount().get(0).equalsIgnoreCase(pipelineName)).isTrue();
         configHelper.removePipeline(pipelineName);
 
         pipelineLabelCorrector.correctPipelineLabelCountEntries();
 
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount(), hasSize(0));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName), is(20));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount()).hasSize(0);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName)).isEqualTo(20);
     }
 
     @Test
-    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbIfTheConfigRepoPipelineHasNotBeenLoadedUpYetLeavingBehindTheOneWhichMatchesTheCaseOfTheLastRunPipeline() throws SQLException {
+    public void shouldRemoveDuplicateEntriesForPipelineCounterFromDbIfTheConfigRepoPipelineHasNotBeenLoadedUpYetLeavingBehindTheOneWhichMatchesTheCaseOfTheLastRunPipeline() {
         // Such a scenario could be created in pre 18.4 world when the pipeline defined in a config-repo was created/renamed with different cases, and has had a few runs. After this the server is upgraded to a version >= 18.4
         String pipelineName = "Pipeline-Name";
         ConfigRepoConfig repoConfig = ConfigRepoConfig.createConfigRepoConfig(git("url2"), "plugin", "id2");
@@ -175,10 +171,10 @@ public class PipelineLabelCorrectorIntegrationTest {
 
         addConfigRepoPipeline(repoConfig, pipelineName.toUpperCase());
 
-        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount(), hasSize(0));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName), is(10));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toUpperCase()), is(10));
-        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toLowerCase()), is(10));
+        assertThat(pipelineSqlMapDao.getPipelineNamesWithMultipleEntriesForLabelCount()).hasSize(0);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName)).isEqualTo(10);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toUpperCase())).isEqualTo(10);
+        assertThat(pipelineSqlMapDao.getCounterForPipeline(pipelineName.toLowerCase())).isEqualTo(10);
     }
 
     private PipelineConfig addConfigRepoPipeline(ConfigRepoConfig repoConfig, String pipeline) {

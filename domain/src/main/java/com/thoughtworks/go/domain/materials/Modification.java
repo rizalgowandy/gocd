@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -258,8 +258,8 @@ public class Modification extends PersistentObject implements Comparable<Modific
         return materialInstance;
     }
 
-    public static ArrayList<Modification> modifications(Modification modification) {
-        ArrayList<Modification> modifications = new ArrayList<>();
+    public static List<Modification> modifications(Modification modification) {
+        List<Modification> modifications = new ArrayList<>();
         modifications.add(modification);
         return modifications;
     }

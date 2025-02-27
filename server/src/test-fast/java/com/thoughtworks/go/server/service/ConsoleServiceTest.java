@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static com.thoughtworks.go.util.ArtifactLogUtil.getConsoleOutputFolderAndFileName;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +37,7 @@ public class ConsoleServiceTest {
     private ConsoleService service;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         chooser = mock(ArtifactDirectoryChooser.class);
         service = new ConsoleService(chooser);
     }
@@ -58,7 +57,7 @@ public class ConsoleServiceTest {
 
         File file = service.consoleLogFile(jobIdentifier);
 
-        assertThat(file, is(consoleFile));
+        assertThat(file).isEqualTo(consoleFile);
     }
 
     @Test
@@ -77,7 +76,7 @@ public class ConsoleServiceTest {
 
         File file = service.consoleLogFile(jobIdentifier);
 
-        assertThat(file, is(finalConsoleFile));
+        assertThat(file).isEqualTo(finalConsoleFile);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class ConsoleServiceTest {
 
         File file = service.consoleLogFile(jobIdentifier);
 
-        assertThat(file, is(consoleFile));
+        assertThat(file).isEqualTo(consoleFile);
     }
 
     @Test
@@ -111,8 +110,8 @@ public class ConsoleServiceTest {
 
         service.moveConsoleArtifacts(jobIdentifier);
 
-        assertThat(temporaryConsoleLog.exists(), is(false));
-        assertThat(finalConsoleLog.exists(), is(true));
+        assertThat(temporaryConsoleLog.exists()).isFalse();
+        assertThat(finalConsoleLog.exists()).isTrue();
     }
 
     @Test
@@ -127,8 +126,8 @@ public class ConsoleServiceTest {
 
         service.moveConsoleArtifacts(jobIdentifier);
 
-        assertThat(temporaryConsoleLog.exists(), is(false));
-        assertThat(finalConsoleLog.exists(), is(true));
+        assertThat(temporaryConsoleLog.exists()).isFalse();
+        assertThat(finalConsoleLog.exists()).isTrue();
     }
 
 }

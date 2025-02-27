@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public class ResourceRepository extends HibernateDaoSupport {
         return copyOfResource;
     }
 
+    @SuppressWarnings("unchecked")
     public Resources findByBuildId(long buildId) {
         return new Resources((List<Resource>) getHibernateTemplate().find(GET_RESOURCES_BY_BUILD_ID, buildId));
     }

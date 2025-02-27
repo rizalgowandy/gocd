@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class HgMaterialRepresenterTest implements MaterialRepresenterTrait {
 
   def existingMaterialWithErrors() {
     def hgConfig = hg(new HgUrlArgument(''), null, null, null, true, null, false, '/dest/', new CaseInsensitiveString('!nV@l!d'))
-    def materialConfigs = new MaterialConfigs(hgConfig);
+    def materialConfigs = new MaterialConfigs(hgConfig)
     materialConfigs.validateTree(PipelineConfigSaveValidationContext.forChain(true, "group", new BasicCruiseConfig(), new PipelineConfig()))
     return materialConfigs.get(0)
   }

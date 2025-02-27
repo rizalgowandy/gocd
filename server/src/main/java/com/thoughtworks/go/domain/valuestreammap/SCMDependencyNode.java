@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import static com.thoughtworks.go.util.ExceptionUtils.bombIfNull;
 
 
 public class SCMDependencyNode extends Node {
-    private Set<Revision> revisions = new HashSet<>();
-    private String materialType;
-    private HashSet<String> materialNames = new LinkedHashSet<>();
-    private Set<MaterialRevisionWrapper> materialRevisionWrappers = new HashSet<>();
-    private List<MaterialRevision> materialRevisions = new ArrayList<>();
+    private final Set<Revision> revisions = new HashSet<>();
+    private final String materialType;
+    private final Set<String> materialNames = new LinkedHashSet<>();
+    private final Set<MaterialRevisionWrapper> materialRevisionWrappers = new HashSet<>();
+    private final List<MaterialRevision> materialRevisions = new ArrayList<>();
 
     public SCMDependencyNode(String nodeId, String nodeName, String materialType) {
         super(DependencyNodeType.MATERIAL, new CaseInsensitiveString(nodeId), nodeName);
@@ -46,7 +46,7 @@ public class SCMDependencyNode extends Node {
 
     @Override
     public List<Revision> revisions() {
-        ArrayList<Revision> revisions = new ArrayList<>(this.revisions);
+        List<Revision> revisions = new ArrayList<>(this.revisions);
         for (MaterialRevision revision : materialRevisions) {
             for (Modification modification : revision.getModifications()) {
                 revisions.add(new SCMRevision(modification));
@@ -69,7 +69,7 @@ public class SCMDependencyNode extends Node {
         this.materialNames.add(name);
     }
 
-    public HashSet<String> getMaterialNames() {
+    public Set<String> getMaterialNames() {
         return materialNames;
     }
 
@@ -83,16 +83,12 @@ public class SCMDependencyNode extends Node {
         return materialRevisions;
     }
 
-    private class MaterialRevisionWrapper {
-        private MaterialRevision materialRevision;
+    private static class MaterialRevisionWrapper {
+        private final MaterialRevision materialRevision;
 
         public MaterialRevisionWrapper(MaterialRevision materialRevision) {
             bombIfNull(materialRevision, "Material Revision cannot be null");
             this.materialRevision = materialRevision;
-        }
-
-        public MaterialRevision getMaterialRevision() {
-            return materialRevision;
         }
 
         @Override

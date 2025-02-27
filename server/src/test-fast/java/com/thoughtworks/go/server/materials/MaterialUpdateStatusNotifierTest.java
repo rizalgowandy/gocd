@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import com.thoughtworks.go.domain.materials.Material;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class MaterialUpdateStatusNotifierTest {
@@ -32,7 +31,7 @@ public class MaterialUpdateStatusNotifierTest {
     private MaterialUpdateStatusNotifier materialUpdateStatusNotifier;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         mockTopic = mock(MaterialUpdateCompletedTopic.class);
         materialUpdateStatusNotifier = new MaterialUpdateStatusNotifier(mockTopic);
     }
@@ -49,9 +48,9 @@ public class MaterialUpdateStatusNotifierTest {
     public void shouldKnowAboutAListenerBasedOnAPipelineConfig() {
         PipelineConfig pipelineConfig = new PipelineConfig(new CaseInsensitiveString("config"), new MaterialConfigs());
         materialUpdateStatusNotifier.registerListenerFor(pipelineConfig, mock(MaterialUpdateStatusListener.class));
-        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig), is(true));
+        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig)).isTrue();
         materialUpdateStatusNotifier.removeListenerFor(pipelineConfig);
-        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig), is(false));
+        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig)).isFalse();
     }
 
     @Test
@@ -99,7 +98,7 @@ public class MaterialUpdateStatusNotifierTest {
         materialUpdateStatusNotifier.registerListenerFor(pipelineConfig, statusListener);
         materialUpdateStatusNotifier.onMessage(new MaterialUpdateSuccessfulMessage(material, 123));
 
-        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig), is(false));
+        assertThat(materialUpdateStatusNotifier.hasListenerFor(pipelineConfig)).isFalse();
     }
 
     @Test

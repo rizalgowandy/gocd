@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -99,7 +98,7 @@ public class GoConfigRepoConfigDataSourceTest {
         PartialConfig partialConfig = repoConfigDataSource.latestPartialConfigForMaterial(material);
         assertNotNull(partialConfig.getOrigin());
         RepoConfigOrigin repoConfigOrigin = new RepoConfigOrigin(configRepo, "7a8f");
-        assertThat(partialConfig.getOrigin(), is(repoConfigOrigin));
+        assertThat(partialConfig.getOrigin()).isEqualTo(repoConfigOrigin);
     }
 
     @Test
@@ -118,10 +117,10 @@ public class GoConfigRepoConfigDataSourceTest {
         RepoConfigOrigin repoConfigOrigin = new RepoConfigOrigin(configRepo, "7a8f");
 
         assertNotNull(partialConfig.getOrigin());
-        assertThat(partialConfig.getOrigin(), is(repoConfigOrigin));
+        assertThat(partialConfig.getOrigin()).isEqualTo(repoConfigOrigin);
 
         PipelineConfig pipe = partialConfig.getGroups().get(0).get(0);
-        assertThat(pipe.getOrigin(), is(repoConfigOrigin));
+        assertThat(pipe.getOrigin()).isEqualTo(repoConfigOrigin);
     }
 
     @Test
@@ -140,15 +139,15 @@ public class GoConfigRepoConfigDataSourceTest {
         RepoConfigOrigin repoConfigOrigin = new RepoConfigOrigin(configRepo, "7a8f");
 
         assertNotNull(partialConfig.getOrigin());
-        assertThat(partialConfig.getOrigin(), is(repoConfigOrigin));
+        assertThat(partialConfig.getOrigin()).isEqualTo(repoConfigOrigin);
 
         EnvironmentConfig environmentConfig = partialConfig.getEnvironments().get(0);
-        assertThat(environmentConfig.getOrigin(), is(repoConfigOrigin));
+        assertThat(environmentConfig.getOrigin()).isEqualTo(repoConfigOrigin);
     }
 
 
     @Test
-    public void shouldProvideParseContextWhenCallingPlugin() throws Exception {
+    public void shouldProvideParseContextWhenCallingPlugin() {
         ScmMaterialConfig material = git("http://my.git");
         ConfigRepoConfig repoConfig = ConfigRepoConfig.createConfigRepoConfig(material, "myplugin", "id");
         cruiseConfig.setConfigRepos(new ConfigReposConfig(repoConfig));
@@ -162,7 +161,7 @@ public class GoConfigRepoConfigDataSourceTest {
     }
 
     @Test
-    public void shouldProvideConfigurationInParseContextWhenCallingPlugin() throws Exception {
+    public void shouldProvideConfigurationInParseContextWhenCallingPlugin() {
         ScmMaterialConfig material = git("http://my.git");
         ConfigRepoConfig repoConfig = ConfigRepoConfig.createConfigRepoConfig(material, "myplugin", "id");
         cruiseConfig.setConfigRepos(new ConfigReposConfig(repoConfig));
@@ -186,8 +185,8 @@ public class GoConfigRepoConfigDataSourceTest {
 
         @Override
         public PartialConfig load(File configRepoCheckoutDirectory, PartialConfigLoadContext context) {
-           assertThat(context.configuration(), is(configuration));
-           assertThat(context.configuration().getProperty("key").getValue(), is("value"));
+           assertThat(context.configuration()).isEqualTo(configuration);
+           assertThat(context.configuration().getProperty("key").getValue()).isEqualTo("value");
             return mock(PartialConfig.class);
         }
 
@@ -198,7 +197,7 @@ public class GoConfigRepoConfigDataSourceTest {
     }
 
     @Test
-    public void shouldNotCallPluginLoadOnCheckout_WhenMaterialNotInWatchList() throws Exception {
+    public void shouldNotCallPluginLoadOnCheckout_WhenMaterialNotInWatchList() {
         ScmMaterialConfig material = git("http://my.git");
 
         repoConfigDataSource.onCheckoutComplete(material, folder, getModificationFor("7a8f"));
@@ -254,7 +253,7 @@ public class GoConfigRepoConfigDataSourceTest {
 
         assertTrue(repoConfigDataSource.latestParseHasFailedForMaterial(material));
 
-        assertFalse(serverHealthService.filterByScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
+        assertFalse(serverHealthService.logsSortedForScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
     }
 
     @Test
@@ -268,12 +267,12 @@ public class GoConfigRepoConfigDataSourceTest {
         HealthStateScope scope = HealthStateScope.forPartialConfigRepo(configRepoConfig);
         serverHealthService.update(ServerHealthState.error("Parse failed", "Bad config format", HealthStateType.general(scope)));
         // verify error health
-        assertFalse(serverHealthService.filterByScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
+        assertFalse(serverHealthService.logsSortedForScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
 
         // now this should fix health
         repoConfigDataSource.onCheckoutComplete(material, folder, getModificationFor("7a8f"));
 
-        assertTrue(serverHealthService.filterByScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
+        assertTrue(serverHealthService.logsSortedForScope(HealthStateScope.forPartialConfigRepo(configRepoConfig)).isEmpty());
     }
 
     private class BrokenConfigPlugin implements PartialConfigProvider {
@@ -307,7 +306,7 @@ public class GoConfigRepoConfigDataSourceTest {
         try {
             repoConfigDataSource.latestPartialConfigForMaterial(material);
         } catch (RuntimeException ex) {
-            assertThat(ex.getMessage(), is("Failed to initialize plugin"));
+            assertThat(ex.getMessage()).isEqualTo("Failed to initialize plugin");
         }
     }
 

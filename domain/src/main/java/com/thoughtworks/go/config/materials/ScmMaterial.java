@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,7 @@ public abstract class ScmMaterial extends AbstractMaterial implements SecretPara
     }
 
     /* Needed although there is a getUserName above */
+    @SuppressWarnings("unused")
     public String getUsername() {
         return userName;
     }
@@ -284,10 +285,6 @@ public abstract class ScmMaterial extends AbstractMaterial implements SecretPara
         int result = super.hashCode();
         result = 31 * result + (folder != null ? folder.hashCode() : 0);
         return result;
-    }
-
-    public static String changesetUrl(Modification modification, String baseUrl, final long id) {
-        return baseUrl + "/api/materials/" + id + "/changeset/" + modification.getRevision() + ".xml";
     }
 
     @Override

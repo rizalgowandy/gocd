@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.thoughtworks.go.server.service.result.ServerHealthStateOperationResul
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +30,7 @@ public class PipelineActiveCheckerTest {
     private PipelineIdentifier pipelineIdentifier;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         service = mock(StageService.class);
         pipelineIdentifier = new PipelineIdentifier("cruise", 1, "label-1");
         checker = new PipelineActiveChecker(service, pipelineIdentifier);
@@ -43,9 +42,8 @@ public class PipelineActiveCheckerTest {
 
         ServerHealthStateOperationResult result = new ServerHealthStateOperationResult();
         checker.check(result);
-        assertThat(result.getServerHealthState().isSuccess(), is(false));
-        assertThat(result.getServerHealthState().getDescription(),
-                is("Pipeline[name='cruise', counter='1', label='label-1'] is still in progress"));
+        assertThat(result.getServerHealthState().isSuccess()).isFalse();
+        assertThat(result.getServerHealthState().getDescription()).isEqualTo("Pipeline[name='cruise', counter='1', label='label-1'] is still in progress");
     }
 
     @Test
@@ -54,6 +52,6 @@ public class PipelineActiveCheckerTest {
 
         ServerHealthStateOperationResult result = new ServerHealthStateOperationResult();
         checker.check(result);
-        assertThat(result.getServerHealthState().isSuccess(), is(true));
+        assertThat(result.getServerHealthState().isSuccess()).isTrue();
     }
 }

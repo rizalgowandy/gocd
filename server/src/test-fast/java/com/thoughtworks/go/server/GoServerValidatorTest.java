@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GoServerValidatorTest {
     private ServerPortValidator serverPortValidator;
@@ -31,12 +30,12 @@ public class GoServerValidatorTest {
     private static final int PORT_TO_TRY = 8991;
 
     @Test
-    public void shouldValidatorServerBeforeStart() throws IOException, InterruptedException {
+    public void shouldValidatorServerBeforeStart() throws IOException {
         try {
             startServerOnPort(PORT_TO_TRY);
             serverPortValidator = new ServerPortValidator(PORT_TO_TRY);
             Validation validation = serverPortValidator.validate(new Validation());
-            assertThat(validation.isSuccessful(), is(false));
+            assertThat(validation.isSuccessful()).isFalse();
 
         } finally {
             shutDownServer();
@@ -44,10 +43,10 @@ public class GoServerValidatorTest {
     }
 
     @Test
-    public void shouldNotFailIfPortIsAvailable() throws IOException, InterruptedException {
+    public void shouldNotFailIfPortIsAvailable() {
         serverPortValidator = new ServerPortValidator(PORT_TO_TRY);
         Validation validation = serverPortValidator.validate(new Validation());
-        assertThat(validation.isSuccessful(), is(true));
+        assertThat(validation.isSuccessful()).isTrue();
     }
 
     private void shutDownServer() throws IOException {

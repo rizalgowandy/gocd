@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,43 +21,42 @@ import com.thoughtworks.go.util.SystemUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmailMessageDrafterTest {
     private String artifactRoot = "artifactFolder";
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         new SystemEnvironment().clearProperty(SystemEnvironment.ARTIFACT_WARNING_SIZE_LIMIT);
         new SystemEnvironment().clearProperty(SystemEnvironment.ARTIFACT_FULL_SIZE_LIMIT);
     }
 
     @Test
-    public void shouldDraftLowArtifactDiskSpaceEmail() throws Exception {
+    public void shouldDraftLowArtifactDiskSpaceEmail() {
         String size = "1234";
         int noDiskSpaceSize = 100;
         new SystemEnvironment().setProperty(SystemEnvironment.ARTIFACT_WARNING_SIZE_LIMIT, size);
         String email = "admin@mail.com";
         SendEmailMessage message = EmailMessageDrafter.lowArtifactsDiskSpaceMessage(new SystemEnvironment(), email, artifactRoot);
         String ip = SystemUtil.getFirstLocalNonLoopbackIpAddress();
-        assertThat(message, is(new SendEmailMessage(
+        assertThat(message).isEqualTo(new SendEmailMessage(
                 "Low artifacts disk space warning message from Go Server at " + ip,
                 lowArtifactDiskSpaceEmail(ip, size, noDiskSpaceSize), email
-        )));
+        ));
     }
 
     @Test
-    public void shouldDraftNoArtifactDiskSpaceEmail() throws Exception {
+    public void shouldDraftNoArtifactDiskSpaceEmail() {
         String size = "2345";
         new SystemEnvironment().setProperty(SystemEnvironment.ARTIFACT_FULL_SIZE_LIMIT, size);
         String email = "admin@mail.com";
         SendEmailMessage message = EmailMessageDrafter.noArtifactsDiskSpaceMessage(new SystemEnvironment(), email, artifactRoot);
         String ip = SystemUtil.getFirstLocalNonLoopbackIpAddress();
-        assertThat(message, is(new SendEmailMessage(
+        assertThat(message).isEqualTo(new SendEmailMessage(
                 "No artifacts disk space error message from Go Server at " + ip,
                 noArtifactDiskSpaceEmail(ip, size), email
-        )));
+        ));
     }
 
     private String lowArtifactDiskSpaceEmail(String ip, String size, int noDiskSpaceSize) {

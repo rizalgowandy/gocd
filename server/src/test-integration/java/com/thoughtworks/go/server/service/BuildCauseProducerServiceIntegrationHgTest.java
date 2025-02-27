@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import static com.thoughtworks.go.util.command.ProcessOutputStreamConsumer.inMemoryConsumer;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -120,11 +118,11 @@ public class BuildCauseProducerServiceIntegrationHgTest {
         scheduleHelper.autoSchedulePipelinesWithRealMaterials();
 
         Map<CaseInsensitiveString, BuildCause> afterLoad = pipelineScheduleQueue.toBeScheduled();
-        assertThat(afterLoad.size(), is(beforeLoad.size()));
+        assertThat(afterLoad.size()).isEqualTo(beforeLoad.size());
 
     }
 
-    private void prepareAPipelineWithHistory() throws SQLException {
+    private void prepareAPipelineWithHistory() {
         MaterialRevisions materialRevisions = new MaterialRevisions();
         List<Modification> modifications = this.hgMaterial.latestModification(workingFolder, subprocessExecutionContext);
         materialRevisions.addRevision(this.hgMaterial, modifications);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings({"unused", "PMD.UnusedPrivateField"})
 public class ApplicationInitializerTest {
     @Mock
     private ConfigElementImplementationRegistrar configElementImplementationRegistrar;
@@ -140,7 +140,7 @@ public class ApplicationInitializerTest {
     ApplicationInitializer initializer = new ApplicationInitializer();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         ApplicationContext context = mock(ApplicationContext.class);
         when(contextRefreshedEvent.getApplicationContext()).thenReturn(context);
         when(context.getParent()).thenReturn(null);
@@ -148,13 +148,13 @@ public class ApplicationInitializerTest {
     }
 
     @Test
-    public void shouldCallInitializeOfPluginZipInitializerOnlyAfterInitializeOfPluginInitializer() throws Exception {
-        assertThat(ReflectionUtil.getField(new Toggles(), "service"), is(featureToggleService));
+    public void shouldCallInitializeOfPluginZipInitializerOnlyAfterInitializeOfPluginInitializer() {
+        assertThat((Object) ReflectionUtil.getField(new Toggles(), "service")).isEqualTo(featureToggleService);
         verifyOrder(pluginsInitializer, pluginsZip);
     }
 
     @Test
-    public void shouldInitializeCcTrayAndDashboardActivityListenersAfterGoConfigServiceAndPipelineSqlMapDaoAreInitialized() throws Exception {
+    public void shouldInitializeCcTrayAndDashboardActivityListenersAfterGoConfigServiceAndPipelineSqlMapDaoAreInitialized() {
         verifyOrder(goConfigService, pipelineSqlMapDao, ccTrayActivityListener, dashboardActivityListener);
     }
     @Test
@@ -163,7 +163,7 @@ public class ApplicationInitializerTest {
     }
 
     @Test
-    public void shouldRunConfigCipherUpdaterBeforeInitializationOfOtherConfigRelatedServicesAndDatastores() throws Exception {
+    public void shouldRunConfigCipherUpdaterBeforeInitializationOfOtherConfigRelatedServicesAndDataStores() throws Exception {
         InOrder inOrder = inOrder(configCipherUpdater, configElementImplementationRegistrar, configRepository, goFileConfigDataSource, cachedGoConfig, goConfigService);
         inOrder.verify(configCipherUpdater).migrate();
         inOrder.verify(configElementImplementationRegistrar).initialize();
@@ -174,7 +174,7 @@ public class ApplicationInitializerTest {
     }
 
     private void verifyOrder(Initializer... initializers) {
-        InOrder inOrder = inOrder(initializers);
+        InOrder inOrder = inOrder((Object[]) initializers);
         for (Initializer initializer : initializers) {
             inOrder.verify(initializer).initialize();
         }
@@ -184,5 +184,16 @@ public class ApplicationInitializerTest {
         InOrder inOrder = inOrder(pluginsInitializer, pluginsZip);
         inOrder.verify(pluginsInitializer).initialize();
         inOrder.verify(pluginsZip).create();
+    }
+
+    @Test
+    public void shouldRaiseAppropriateExceptionToCauseCleanShutdownOnInitializationFailure() {
+        Throwable failureCause = new Error("Boom");
+        doThrow(failureCause).when(pluginsInitializer).initialize();
+
+        assertThatThrownBy(() -> initializer.onApplicationEvent(contextRefreshedEvent))
+            .isInstanceOf(ApplicationContextException.class)
+            .hasMessageContaining("Unable to initialize Go Server after initial load")
+            .hasCause(failureCause);
     }
 }

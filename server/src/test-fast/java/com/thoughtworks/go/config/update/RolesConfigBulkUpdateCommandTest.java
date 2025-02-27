@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,14 +42,14 @@ public class RolesConfigBulkUpdateCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldUpdateExistingGoCDRoles() throws Exception {
+    public void shouldUpdateExistingGoCDRoles() {
         RoleConfig role1 = new RoleConfig("foo", new RoleUser("user1"));
         List<String> userToAdd = List.of("user2");
 
@@ -71,12 +69,12 @@ public class RolesConfigBulkUpdateCommandTest {
 
         RoleConfig expectedRole1 = new RoleConfig("foo", new RoleUser("user1"), new RoleUser("user2"));
         RoleConfig expectedRole2 = new RoleConfig("bar");
-        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("foo")), is(equalTo(expectedRole1)));
-        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("bar")), is(equalTo(expectedRole2)));
+        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("foo"))).isEqualTo(expectedRole1);
+        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("bar"))).isEqualTo(expectedRole2);
     }
 
     @Test
-    public void currentUserShouldBeAnAdminToAddRole() throws Exception {
+    public void currentUserShouldBeAnAdminToAddRole() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         Username viewUser = mock(Username.class);
 
@@ -87,11 +85,11 @@ public class RolesConfigBulkUpdateCommandTest {
 
         assertFalse(command.canContinue(null));
         assertFalse(result.isSuccessful());
-        assertThat(result.httpCode(), is(403));
+        assertThat(result.httpCode()).isEqualTo(403);
     }
 
     @Test
-    public void shouldNotContinueIfExistingRoleIsDeleted() throws Exception {
+    public void shouldNotContinueIfExistingRoleIsDeleted() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
 

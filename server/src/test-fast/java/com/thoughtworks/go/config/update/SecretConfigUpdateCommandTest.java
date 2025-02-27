@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,14 +37,14 @@ public class SecretConfigUpdateCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldRaiseErrorWhenUpdatingNonExistentSecretConfig() throws Exception {
+    public void shouldRaiseErrorWhenUpdatingNonExistentSecretConfig() {
         cruiseConfig.getSecretConfigs().clear();
 
         SecretConfig secretConfig = new SecretConfig("foo", "docker");
@@ -55,14 +54,14 @@ public class SecretConfigUpdateCommandTest {
     }
 
     @Test
-    public void shouldUpdateExistingSecretConfig() throws Exception {
+    public void shouldUpdateExistingSecretConfig() {
         SecretConfig oldConfig = new SecretConfig("foo", "docker");
         SecretConfig newConfig = new SecretConfig("foo", "aws");
 
         cruiseConfig.getSecretConfigs().add(oldConfig);
         SecretConfigUpdateCommand command = new SecretConfigUpdateCommand(null, newConfig, null, null, null, null, null);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.getSecretConfigs().find("foo"), is(equalTo(newConfig)));
+        assertThat(cruiseConfig.getSecretConfigs().find("foo")).isEqualTo(newConfig);
     }
 
     @Test
@@ -81,7 +80,7 @@ public class SecretConfigUpdateCommandTest {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         SecretConfigUpdateCommand command = new SecretConfigUpdateCommand(goConfigService, newConfig, null, currentUser, result, entityHashingService, "bad-digest");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result.toString(), containsString("Someone has modified the configuration for"));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result.toString()).contains("Someone has modified the configuration for");
     }
 }

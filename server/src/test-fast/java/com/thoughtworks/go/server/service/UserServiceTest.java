@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,6 +141,7 @@ public class UserServiceTest {
         assertThat(models).isEqualTo(List.of(model(foo), model(bar), model(quux)));
     }
 
+    @SafeVarargs
     public static <T> Condition<T> anyOfObject(T... objects) {
         return new Condition<>() {
             @Override
@@ -230,7 +231,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldCreateNewUsers() throws Exception {
+    void shouldCreateNewUsers() {
         UserSearchModel foo = new UserSearchModel(new User("fooUser", "Mr Foo", "foo@cruise.com"), UserSourceType.PLUGIN);
 
         doNothing().when(userDao).saveOrUpdate(foo.getUser());
@@ -306,7 +307,7 @@ public class UserServiceTest {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
 
         when(userDao.enabledUsers()).thenReturn(List.of(new User("Jake")));
-        userService.enable(List.of("Jake"), result);
+        userService.enable(List.of("Jake"));
 
         assertThat(result.isSuccessful()).isTrue();
     }
@@ -671,7 +672,7 @@ public class UserServiceTest {
 
         verify(userDao, never()).disableUsers(usernames);
         assertThat(result.isSuccessful()).isFalse();
-        assertThat(result.message()).contains("There must be atleast one admin user enabled!");
+        assertThat(result.message()).contains("There must be at least one admin user enabled!");
     }
 
     @Test

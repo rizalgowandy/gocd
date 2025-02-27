@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,25 +34,24 @@ import java.lang.management.ThreadMXBean;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class KillAllChildProcessTaskBuilderTest {
     private BuilderFactory builderFactory;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         builderFactory = mock(BuilderFactory.class);
     }
 
     @Test
     @Timeout(value = 11, unit = MINUTES)
-    public void shouldKillAllChildProcessOnBuild() throws Exception {
+    public void shouldKillAllChildProcessOnBuild() {
         ProcessWrapper processWrapper = platformSpecificSleepCommand().withArg(String.valueOf(10 * 60)).withEncoding(UTF_8).execute(ProcessOutputStreamConsumer.inMemoryConsumer(), new EnvironmentVariableContext(),
             null);//10 mins
 
-        assertThat(processWrapper.isRunning(), is(true));
+        assertThat(processWrapper.isRunning()).isTrue();
 
         DefaultGoPublisher publisher = mock(DefaultGoPublisher.class);
         EnvironmentVariableContext environmentVariableContext = mock(EnvironmentVariableContext.class);
@@ -62,8 +61,8 @@ public class KillAllChildProcessTaskBuilderTest {
         Builder builder = new KillAllChildProcessTaskBuilder().createBuilder(builderFactory, new KillAllChildProcessTask(), null, null);
         builder.build(publisher, environmentVariableContext, null, null, null, UTF_8);
 
-        assertThat(processWrapper.waitForExit(), is(greaterThan(0)));
-        assertThat(getSystemTime() - before, is(lessThan(10 * 60 * 1000 * 1000 * 1000L)));//min = 10; sec = 60*min; mills = 1000*sec; micro = 1000*mills; nano = 1000*micro;
+        assertThat(processWrapper.waitForExit()).isGreaterThan(0);
+        assertThat(getSystemTime() - before).isLessThan(10 * 60 * 1000 * 1000 * 1000L);//min = 10; sec = 60*min; mills = 1000*sec; micro = 1000*mills; nano = 1000*micro;
     }
 
     private CommandLine platformSpecificSleepCommand() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class JobPresentationService {
     }
 
     public List<JobInstanceModel> jobInstanceModelFor(JobInstances jobInstances) {
-        ArrayList<JobInstanceModel> models = new ArrayList<>();
+        List<JobInstanceModel> models = new ArrayList<>();
         for (JobInstance jobInstance : jobInstances) {
             AgentInstance agentInstance = jobInstance.isAssignedToAgent() ? agentService.findAgentAndRefreshStatus(jobInstance.getAgentUuid()) : null;
             JobInstanceModel model;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import spark.RouteImpl
 import spark.route.HttpMethod
 
 import static com.thoughtworks.go.api.base.JsonUtils.toArrayString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class RouteEntryRepresenterTest {
   @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -180,6 +180,36 @@ public class SecretsExtensionTest {
             assertThatCode(() -> extension.lookupSecrets(PLUGIN_ID, new SecretConfig("file", "cd.go.secret.file"), secretsToLookup))
                     .isInstanceOf(SecretResolutionFailureException.class)
                     .hasMessage("Expected plugin to resolve secret param(s) `key1, key2, key3` using secret config `file` but plugin failed to resolve secret param(s) `key1, key2, key3`. Please make sure that secret(s) with the same name exists in your secret management tool.");
+        }
+
+        @Test
+        void shouldHandleAndBombIfSecretsResolutionFailsUnexpectedly() {
+            SecretsExtensionV1 secretsExtensionV1 = mock(SecretsExtensionV1.class);
+            extension = new SecretsExtension(pluginManager, extensionsRegistry, Map.of("1.0", secretsExtensionV1));
+            final Set<String> secretsToLookup = new LinkedHashSet<>(List.of("key1", "key2"));
+            final SecretConfig secretConfig = new SecretConfig("file", "cd.go.secret.file");
+
+            when(pluginManager.resolveExtensionVersion(PLUGIN_ID, SECRETS_EXTENSION, SUPPORTED_VERSIONS)).thenReturn(SecretsExtensionV1.VERSION);
+            when(secretsExtensionV1.lookupSecrets(PLUGIN_ID, secretConfig, secretsToLookup)).thenThrow(new RuntimeException("Ouch!"));
+
+            assertThatCode(() -> extension.lookupSecrets(PLUGIN_ID, secretConfig, secretsToLookup))
+                .isInstanceOf(SecretResolutionFailureException.class)
+                .hasMessage("Expected plugin to resolve secret param(s) `key1, key2` using secret config `file` but plugin failed to resolve any of the required secrets `key1, key2` due to a plugin issue `java.lang.RuntimeException: Ouch!`. Please check the plugin configuration or dependencies.");
+        }
+
+        @Test
+        void shouldRethrowSecretsResolutionFailureExceptionsFromExtension() {
+            SecretsExtensionV1 secretsExtensionV1 = mock(SecretsExtensionV1.class);
+            extension = new SecretsExtension(pluginManager, extensionsRegistry, Map.of("1.0", secretsExtensionV1));
+            final Set<String> secretsToLookup = new LinkedHashSet<>(List.of("key1", "key2"));
+            final SecretConfig secretConfig = new SecretConfig("file", "cd.go.secret.file");
+
+            when(pluginManager.resolveExtensionVersion(PLUGIN_ID, SECRETS_EXTENSION, SUPPORTED_VERSIONS)).thenReturn(SecretsExtensionV1.VERSION);
+            when(secretsExtensionV1.lookupSecrets(PLUGIN_ID, secretConfig, secretsToLookup)).thenThrow(new SecretResolutionFailureException("Plugin error message"));
+
+            assertThatCode(() -> extension.lookupSecrets(PLUGIN_ID, secretConfig, secretsToLookup))
+                .isInstanceOf(SecretResolutionFailureException.class)
+                .hasMessage("Plugin error message");
         }
     }
 }

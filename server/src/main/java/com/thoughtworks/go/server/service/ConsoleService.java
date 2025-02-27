@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.thoughtworks.go.domain.ConsoleStreamer;
 import com.thoughtworks.go.domain.JobIdentifier;
 import com.thoughtworks.go.domain.LocatableEntity;
 import com.thoughtworks.go.domain.exception.IllegalArtifactLocationException;
-import com.thoughtworks.go.server.dao.JobInstanceDao;
 import com.thoughtworks.go.server.view.artifacts.ArtifactDirectoryChooser;
 import com.thoughtworks.go.server.view.artifacts.BuildIdArtifactLocator;
 import com.thoughtworks.go.server.view.artifacts.PathBasedArtifactsLocator;
@@ -40,8 +39,9 @@ import static com.thoughtworks.go.util.ArtifactLogUtil.getConsoleOutputFolderAnd
 public class ConsoleService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ConsoleService.class);
-    private ArtifactDirectoryChooser chooser;
     public static final int DEFAULT_CONSOLE_LOG_LINE_BUFFER_SIZE = 1024;
+
+    private final ArtifactDirectoryChooser chooser;
     private ArtifactsDirHolder artifactsDirHolder;
 
 
@@ -50,7 +50,7 @@ public class ConsoleService {
     }
 
     @Autowired
-    public ConsoleService(ArtifactsDirHolder artifactsDirHolder, JobInstanceDao jobInstanceDao) {
+    public ConsoleService(ArtifactsDirHolder artifactsDirHolder) {
         this(new ArtifactDirectoryChooser());
         this.artifactsDirHolder = artifactsDirHolder;
     }
@@ -82,12 +82,13 @@ public class ConsoleService {
         return artifact.exists() ? artifact : chooser.temporaryConsoleFile(jobIdentifier);
     }
 
-    public void appendToConsoleLog(JobIdentifier jobIdentifier, String text) throws IllegalArtifactLocationException, IOException {
+    public void appendToConsoleLog(JobIdentifier jobIdentifier, String text) throws IllegalArtifactLocationException {
         updateConsoleLog(consoleLogFile(jobIdentifier), new ByteArrayInputStream(text.getBytes()));
     }
 
     public boolean updateConsoleLog(File dest, InputStream in) {
         File parentFile = dest.getParentFile();
+        //noinspection ResultOfMethodCallIgnored
         parentFile.mkdirs();
 
         LOGGER.trace("Updating console log [{}]", dest.getAbsolutePath());

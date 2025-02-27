@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static com.thoughtworks.go.util.SystemUtil.currentWorkingDirectory;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class BuildRepositoryMessageProducerTest {
@@ -92,10 +91,10 @@ public class BuildRepositoryMessageProducerTest {
         AgentRuntimeInfo agentRuntimeInfo = mock(AgentRuntimeInfo.class);
 
         when(oldImplementation.getCookie(agentRuntimeInfo)).thenReturn("cookie");
-        assertThat(producer.getCookie(agentRuntimeInfo), is("cookie"));
+        assertThat(producer.getCookie(agentRuntimeInfo)).isEqualTo("cookie");
 
         //should not cache
         when(oldImplementation.getCookie(agentRuntimeInfo)).thenReturn("cookie1");
-        assertThat(producer.getCookie(agentRuntimeInfo), is("cookie1"));
+        assertThat(producer.getCookie(agentRuntimeInfo)).isEqualTo("cookie1");
     }
 }

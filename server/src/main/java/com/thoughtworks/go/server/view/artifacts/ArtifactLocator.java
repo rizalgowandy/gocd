@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.thoughtworks.go.domain.LocatableEntity;
 import java.io.File;
 
 public interface ArtifactLocator {
-    File findArtifact(LocatableEntity locatableEntity, String artifactPath);
 
     boolean directoryExists(LocatableEntity locatableEntity);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ dependencies {
   compileOnly project.deps.lombok
   compileOnly project.deps.jetBrainsAnnotations
 
-  testImplementation project.deps.hamcrest
   testImplementation project.deps.mockitoCore
   testImplementation project.deps.mockitoJunit5
   testImplementation project(path: ':test:test-utils', configuration: 'runtimeElements')
+  testImplementation project.deps.junit5Api
+  testRuntimeOnly project.deps.junit5Engine
+  testRuntimeOnly project.deps.junit5PlatformLauncher
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -42,7 +44,7 @@ javadoc {
     windowTitle = 'GoCD Plugin Config Repo Contract'
     docTitle = 'GoCD Plugin Config Repo Contract'
     header = 'GoCD Plugin Config Repo Contract'
-    bottom = "Copyright &copy; ${Calendar.getInstance().get(Calendar.YEAR).toString()} Thoughtworks, Inc. GoCD Version: ${project.version}"
+    bottom = "Copyright &copy; Thoughtworks, Inc. GoCD Version: ${project.version}"
   }
 }
 
@@ -50,3 +52,5 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   archiveClassifier = 'javadoc'
   from javadoc.destinationDir
 }
+
+assemble.dependsOn sourcesJar, javadocJar

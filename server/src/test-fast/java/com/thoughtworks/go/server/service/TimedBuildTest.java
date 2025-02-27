@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,32 +25,30 @@ import com.thoughtworks.go.helper.PipelineConfigMother;
 import com.thoughtworks.go.server.domain.Username;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TimedBuildTest {
 
     @Test
-    public void shouldReturnEmptyBuildCauseIfThereIsNoModification_whenTriggeringOnlyForMaterialChange() throws Exception {
+    public void shouldReturnEmptyBuildCauseIfThereIsNoModification_whenTriggeringOnlyForMaterialChange() {
         MaterialRevisions someRevisions = new MaterialRevisions(new MaterialRevision(MaterialsMother.gitMaterial("git://url"), ModificationsMother.aCheckIn("1", "file1.txt")));
 
         BuildType timedBuild = new TimedBuild();
         PipelineConfig timerConfig = PipelineConfigMother.pipelineConfigWithTimer("Timer", "* * * * * ?", true);
         BuildCause buildCause = timedBuild.onEmptyModifications(timerConfig, someRevisions);
 
-        assertThat(buildCause, is(nullValue()));
+        assertThat(buildCause).isNull();
     }
 
     @Test
-    public void shouldReturnAForcedBuildCauseIfThereIsNoModification_whenTriggeringIrrespectiveOfMaterialChange() throws Exception {
+    public void shouldReturnAForcedBuildCauseIfThereIsNoModification_whenTriggeringIrrespectiveOfMaterialChange() {
         MaterialRevisions someRevisions = new MaterialRevisions(new MaterialRevision(MaterialsMother.gitMaterial("git://url"), ModificationsMother.aCheckIn("1", "file1.txt")));
 
         BuildType timedBuild = new TimedBuild();
         PipelineConfig timerConfig = PipelineConfigMother.pipelineConfigWithTimer("Timer", "* * * * * ?", false);
         BuildCause buildCause = timedBuild.onEmptyModifications(timerConfig, someRevisions);
 
-        assertThat(buildCause.getMaterialRevisions(), is(someRevisions));
-        assertThat(buildCause.getApprover(), is(Username.CRUISE_TIMER.getDisplayName()));
+        assertThat(buildCause.getMaterialRevisions()).isEqualTo(someRevisions);
+        assertThat(buildCause.getApprover()).isEqualTo(Username.CRUISE_TIMER.getDisplayName());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,26 +140,27 @@ public class GitMaterialConfig extends ScmMaterialConfig implements PasswordAwar
                 '}';
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         if (attributes == null) {
             return;
         }
         super.setConfigAttributes(attributes);
-        Map map = (Map) attributes;
+        Map<String, String> map = (Map<String, String>) attributes;
         if (map.containsKey(BRANCH)) {
-            String branchName = (String) map.get(BRANCH);
+            String branchName = map.get(BRANCH);
             this.branch = isBlank(branchName) ? DEFAULT_BRANCH : branchName;
         }
         if (map.containsKey("userName")) {
-            this.userName = (String) map.get("userName");
+            this.userName = map.get("userName");
         }
         if (map.containsKey(PASSWORD_CHANGED) && "1".equals(map.get(PASSWORD_CHANGED))) {
-            String passwordToSet = (String) map.get(PASSWORD);
+            String passwordToSet = map.get(PASSWORD);
             resetPassword(passwordToSet);
         }
         if (map.containsKey(URL)) {
-            this.url = new UrlArgument((String) map.get(URL));
+            this.url = new UrlArgument(map.get(URL));
         }
 
         this.shallowClone = "true".equals(map.get(SHALLOW_CLONE));
@@ -179,18 +180,6 @@ public class GitMaterialConfig extends ScmMaterialConfig implements PasswordAwar
     protected void appendCriteria(Map<String, Object> parameters) {
         parameters.put(ScmMaterialConfig.URL, url.originalArgument());
         parameters.put("branch", branch);
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        parameters.put("url", url);
-        parameters.put("branch", branch);
-        parameters.put("shallowClone", shallowClone);
-    }
-
-    @Override
-    protected String getLocation() {
-        return url.forDisplay();
     }
 
     /**

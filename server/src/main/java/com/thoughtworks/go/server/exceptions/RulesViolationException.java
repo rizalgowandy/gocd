@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public class RulesViolationException extends RuntimeException {
     }
 
     public static void throwSecretConfigNotFound(String entityType, String entityName, String secretConfigId) {
-        throw new RulesViolationException(format("%s '%s' is referring to none-existent secret config '%s'.", entityType, entityName, secretConfigId));
+        throw new RulesViolationException(format("%s '%s' is referring to non-existent secret config '%s'.", entityType, entityName, secretConfigId));
     }
 
     public static void throwCannotRefer(String entityType, String entityName, String secretConfigId) {

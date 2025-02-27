@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -245,7 +245,7 @@ public class JobRerunScheduleServiceTest {
 
         TestTransactionTemplate template = new TestTransactionTemplate(new TestTransactionSynchronizationManager()) {
             @Override
-            public Object execute(TransactionCallback action) {
+            public <T> T execute(TransactionCallback<T> action) {
                 if (requestNumber.get() == 0) {
                     try {
                         Thread.sleep(5000);//let the other thread try for 5 seconds

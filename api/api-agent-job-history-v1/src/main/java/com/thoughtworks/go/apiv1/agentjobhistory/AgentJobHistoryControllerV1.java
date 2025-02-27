@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,10 +116,10 @@ public class AgentJobHistoryControllerV1 extends ApiController implements SparkS
         }
     }
 
-    protected Integer getPageSize(Request request) {
-        Integer offset;
+    protected int getPageSize(Request request) {
+        int offset;
         try {
-            offset = Integer.valueOf(request.queryParamOrDefault("page_size", "50"));
+            offset = Integer.parseInt(request.queryParamOrDefault("page_size", "50"));
             if (offset < 10 || offset > 100) {
                 throw new BadRequestException(BAD_PAGE_SIZE_MSG);
             }
@@ -129,10 +129,10 @@ public class AgentJobHistoryControllerV1 extends ApiController implements SparkS
         return offset;
     }
 
-    private Integer getOffset(Request request) {
-        Integer offset;
+    private int getOffset(Request request) {
+        int offset;
         try {
-            offset = Integer.valueOf(request.queryParamOrDefault("offset", "0"));
+            offset = Integer.parseInt(request.queryParamOrDefault("offset", "0"));
             if (offset < 0) {
                 throw new BadRequestException(BAD_OFFSET_MSG);
             }

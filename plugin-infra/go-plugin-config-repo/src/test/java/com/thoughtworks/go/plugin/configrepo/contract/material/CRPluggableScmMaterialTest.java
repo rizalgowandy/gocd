@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CRPluggableScmMaterialTest extends AbstractCRTest<CRPluggableScmMaterial> {
@@ -68,7 +67,7 @@ public class CRPluggableScmMaterialTest extends AbstractCRTest<CRPluggableScmMat
     @Test
     public void shouldAppendTypeFieldWhenSerializingMaterials() {
         JsonObject jsonObject = (JsonObject) gson.toJsonTree(pluggableGit);
-        assertThat(jsonObject.get("type").getAsString(), is(CRPluggableScmMaterial.TYPE_NAME));
+        assertThat(jsonObject.get("type").getAsString()).isEqualTo(CRPluggableScmMaterial.TYPE_NAME);
     }
 
     @Test
@@ -77,8 +76,8 @@ public class CRPluggableScmMaterialTest extends AbstractCRTest<CRPluggableScmMat
         String json = gson.toJson(value);
 
         CRPluggableScmMaterial deserializedValue = (CRPluggableScmMaterial) gson.fromJson(json, CRMaterial.class);
-        assertThat("Deserialized value should equal to value before serialization",
-            deserializedValue, is(value));
+        assertThat(deserializedValue).describedAs("Deserialized value should equal to value before serialization")
+            .isEqualTo(value);
     }
 
     @Test

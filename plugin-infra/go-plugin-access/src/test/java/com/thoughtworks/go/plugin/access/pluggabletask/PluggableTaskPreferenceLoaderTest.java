@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PluggableTaskPreferenceLoaderTest {
@@ -45,14 +44,14 @@ public class PluggableTaskPreferenceLoaderTest {
     }
 
     @Test
-    public void shouldRegisterPluginListenerWithPluginManager() throws Exception {
+    public void shouldRegisterPluginListenerWithPluginManager() {
         PluginManager pluginManager = mock(PluginManager.class);
         PluggableTaskPreferenceLoader pluggableTaskPreferenceLoader = new PluggableTaskPreferenceLoader(pluginManager, taskExtension);
         verify(pluginManager).addPluginChangeListener(pluggableTaskPreferenceLoader);
     }
 
     @Test
-    public void shouldSetConfigForTheTaskCorrespondingToGivenPluginId() throws Exception {
+    public void shouldSetConfigForTheTaskCorrespondingToGivenPluginId() {
         final GoPluginDescriptor descriptor = mock(GoPluginDescriptor.class);
         String pluginId = "test-plugin-id";
         when(descriptor.id()).thenReturn(pluginId);
@@ -66,20 +65,20 @@ public class PluggableTaskPreferenceLoaderTest {
         when(taskExtension.canHandlePlugin(pluginId)).thenReturn(true);
 
         doAnswer(invocationOnMock -> {
-            final Action<Task> action = (Action<Task>) invocationOnMock.getArguments()[1];
+            @SuppressWarnings("unchecked") final Action<Task> action = (Action<Task>) invocationOnMock.getArguments()[1];
             action.execute(task, descriptor);
             return null;
-        }).when(taskExtension).doOnTask(eq(pluginId), any(Action.class));
+        }).when(taskExtension).doOnTask(eq(pluginId), any());
 
         PluggableTaskPreferenceLoader pluggableTaskPreferenceLoader = new PluggableTaskPreferenceLoader(pluginManager, taskExtension);
         pluggableTaskPreferenceLoader.pluginLoaded(descriptor);
-        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId), is(true));
-        assertThat(PluggableTaskConfigStore.store().preferenceFor(pluginId), is(new TaskPreference(task)));
+        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId)).isTrue();
+        assertThat(PluggableTaskConfigStore.store().preferenceFor(pluginId)).isEqualTo(new TaskPreference(task));
         verify(pluginManager).addPluginChangeListener(pluggableTaskPreferenceLoader);
     }
 
     @Test
-    public void shouldRemoveConfigForTheTaskCorrespondingToGivenPluginId() throws Exception {
+    public void shouldRemoveConfigForTheTaskCorrespondingToGivenPluginId() {
         final GoPluginDescriptor descriptor = mock(GoPluginDescriptor.class);
         String pluginId = "test-plugin-id";
         when(descriptor.id()).thenReturn(pluginId);
@@ -91,9 +90,9 @@ public class PluggableTaskPreferenceLoaderTest {
         PluggableTaskConfigStore.store().setPreferenceFor(pluginId, new TaskPreference(task));
         PluginManager pluginManager = mock(PluginManager.class);
         PluggableTaskPreferenceLoader pluggableTaskPreferenceLoader = new PluggableTaskPreferenceLoader(pluginManager, taskExtension);
-        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId), is(true));
+        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId)).isTrue();
         pluggableTaskPreferenceLoader.pluginUnLoaded(descriptor);
-        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId), is(false));
+        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId)).isFalse();
         verify(pluginManager).addPluginChangeListener(pluggableTaskPreferenceLoader);
     }
 
@@ -112,14 +111,14 @@ public class PluggableTaskPreferenceLoaderTest {
         when(taskExtension.canHandlePlugin(pluginId)).thenReturn(false);
 
         doAnswer(invocationOnMock -> {
-            final Action<Task> action = (Action<Task>) invocationOnMock.getArguments()[1];
+            @SuppressWarnings("unchecked") final Action<Task> action = (Action<Task>) invocationOnMock.getArguments()[1];
             action.execute(task, descriptor);
             return null;
-        }).when(taskExtension).doOnTask(eq(pluginId), any(Action.class));
+        }).when(taskExtension).doOnTask(eq(pluginId), any());
 
         PluggableTaskPreferenceLoader pluggableTaskPreferenceLoader = new PluggableTaskPreferenceLoader(pluginManager, taskExtension);
         pluggableTaskPreferenceLoader.pluginLoaded(descriptor);
-        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId), is(false));
+        assertThat(PluggableTaskConfigStore.store().hasPreferenceFor(pluginId)).isFalse();
         verify(pluginManager).addPluginChangeListener(pluggableTaskPreferenceLoader);
     }
 }

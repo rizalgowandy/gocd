@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,9 @@ public abstract class RuleAwarePluginProfiles<T extends RuleAwarePluginProfile> 
     public RuleAwarePluginProfiles() {
     }
 
+    @SafeVarargs
     public RuleAwarePluginProfiles(T... profiles) {
         super(Arrays.asList(profiles));
-    }
-
-    public RuleAwarePluginProfiles(List<T> profiles) {
-        super(profiles);
     }
 
     public T find(String profileId) {
@@ -53,16 +50,6 @@ public abstract class RuleAwarePluginProfiles<T extends RuleAwarePluginProfile> 
             }
         }
         return list;
-    }
-
-    public T findByPluginIdAndProfileId(String pluginId, String profileId) {
-        for (T profile : this) {
-            if (profile.getPluginId().equals(pluginId) && profile.getId().equals(profileId)) {
-                return profile;
-            }
-        }
-
-        return null;
     }
 
     @Override

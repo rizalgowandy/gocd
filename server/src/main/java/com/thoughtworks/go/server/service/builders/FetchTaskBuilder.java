@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public class FetchTaskBuilder implements TaskBuilder<AbstractFetchTask> {
 
             return new JobIdentifier(new StageIdentifier(currentPipeline.getName(), currentPipeline.getCounter(), currentPipeline.getLabel(), CaseInsensitiveString.str(task.getStage()), stageCounter), CaseInsensitiveString.str(task.getJob()));
         } else {
-            DependencyMaterialRevision revision = null;
+            DependencyMaterialRevision revision;
             if (pipelineNamePathFromAncestor.isAncestor()) {
                 BuildCause buildCause = currentPipeline.getBuildCause();
                 for (CaseInsensitiveString parentPipelineName : pipelineNamePathFromAncestor.pathToAncestor()) {

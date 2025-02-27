@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ public class DependencyMaterialUpdateNotifierTest {
     private MaterialConfigConverter materialConfigConverter;
     private MaterialUpdateService materialUpdateService;
     private ServerHealthService serverHealthService;
-    private Material dependencyMaterial = MaterialsMother.dependencyMaterial();
+    private final Material dependencyMaterial = MaterialsMother.dependencyMaterial();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigService = mock(GoConfigService.class);
         materialConfigConverter = mock(MaterialConfigConverter.class);
         materialUpdateService = mock(MaterialUpdateService.class);
@@ -52,11 +52,11 @@ public class DependencyMaterialUpdateNotifierTest {
 
     @Test
     public void shouldListenToConfigChange() {
-        EntityConfigChangedListener entityConfigChangedListener = mock(EntityConfigChangedListener.class);
+        EntityConfigChangedListener<?> entityConfigChangedListener = mock(EntityConfigChangedListener.class);
         notifier = new DependencyMaterialUpdateNotifier(goConfigService, materialConfigConverter, materialUpdateService, serverHealthService);
         notifier = spy(notifier);
 
-        when(notifier.pipelineConfigChangedListener()).thenReturn(entityConfigChangedListener);
+        doReturn(entityConfigChangedListener).when(notifier).pipelineConfigChangedListener();
 
         notifier.initialize();
 
@@ -88,7 +88,7 @@ public class DependencyMaterialUpdateNotifierTest {
     }
 
     @Test
-    public void shouldScheduleOnlyNewDepenedencyMaterialsForUpdateOnSubsequentConfigChanges() {
+    public void shouldScheduleOnlyNewDependencyMaterialsForUpdateOnSubsequentConfigChanges() {
         DependencyMaterial dependencyMaterialForP1S1 = MaterialsMother.dependencyMaterial("p1", "s1");
         Set<DependencyMaterialConfig> schedulableMaterialConfigs = Set.of((DependencyMaterialConfig) dependencyMaterialForP1S1.config());
         when(goConfigService.getSchedulableDependencyMaterials()).thenReturn(schedulableMaterialConfigs);

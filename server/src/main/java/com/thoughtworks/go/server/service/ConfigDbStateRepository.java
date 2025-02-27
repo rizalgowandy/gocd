@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ public class ConfigDbStateRepository extends HibernateDaoSupport {
     }
 
     private Object flushArtifactCleanupProhibitions() {
-        List<StageArtifactCleanupProhibited> existingEntries = (List<StageArtifactCleanupProhibited>) getHibernateTemplate().find("from StageArtifactCleanupProhibited");
-        HashMap<Map.Entry<String, String>, StageArtifactCleanupProhibited> persistentStateMap = new HashMap<>();
+        @SuppressWarnings("unchecked") List<StageArtifactCleanupProhibited> existingEntries = (List<StageArtifactCleanupProhibited>) getHibernateTemplate().find("from StageArtifactCleanupProhibited");
+        Map<Map.Entry<String, String>, StageArtifactCleanupProhibited> persistentStateMap = new HashMap<>();
         for (StageArtifactCleanupProhibited persistentState : existingEntries) {
             persistentState.setProhibited(false);
             persistentStateMap.put(new AbstractMap.SimpleEntry<>(persistentState.getPipelineName(), persistentState.getStageName()), persistentState);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class AccessTokenAuthenticationFilterTest {
     private SecurityAuthConfig authConfig;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         clock = new TestingClock();
         securityService = mock(SecurityService.class);
         accessTokenService = mock(AccessTokenService.class);

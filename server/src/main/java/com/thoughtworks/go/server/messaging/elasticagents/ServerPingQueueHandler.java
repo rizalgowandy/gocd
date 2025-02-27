@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,14 @@ public class ServerPingQueueHandler extends PluginMessageQueueHandler<ServerPing
     final static String QUEUE_NAME_PREFIX = ServerPingQueueHandler.class.getSimpleName() + ".";
 
     @Autowired
-    public ServerPingQueueHandler(final MessagingService messaging, final ElasticAgentPluginRegistry elasticAgentPluginRegistry, ElasticAgentExtension elasticAgentExtension, PluginManager pluginManager, final SystemEnvironment systemEnvironment) {
-        super(elasticAgentExtension, messaging, pluginManager, new QueueFactory() {
+    public ServerPingQueueHandler(final MessagingService<GoMessage> messaging, final ElasticAgentPluginRegistry elasticAgentPluginRegistry, ElasticAgentExtension elasticAgentExtension, PluginManager pluginManager, final SystemEnvironment systemEnvironment) {
+        super(elasticAgentExtension, messaging, pluginManager, new QueueFactory<ServerPingMessage>() {
             @Override
-            public PluginAwareMessageQueue create(GoPluginDescriptor pluginDescriptor) {
-                return new PluginAwareMessageQueue(messaging, pluginDescriptor.id(), QUEUE_NAME_PREFIX + pluginDescriptor.id(), systemEnvironment.get(SystemEnvironment.GO_ELASTIC_PLUGIN_SERVER_PING_THREADS), listener());
+            public PluginAwareMessageQueue<ServerPingMessage> create(GoPluginDescriptor pluginDescriptor) {
+                return new PluginAwareMessageQueue<>(messaging, pluginDescriptor.id(), QUEUE_NAME_PREFIX + pluginDescriptor.id(), systemEnvironment.get(SystemEnvironment.GO_ELASTIC_PLUGIN_SERVER_PING_THREADS), listener());
             }
 
-            public ListenerFactory listener() {
+            public ListenerFactory<ServerPingMessage> listener() {
                 return () -> new ServerPingListener(elasticAgentPluginRegistry);
             }
         });

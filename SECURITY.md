@@ -8,21 +8,34 @@ Since breaking changes are rare, and generally sign-posted well in advance, we e
 
 Having said this, wherever possible we will try and provide suggested mitigations or workarounds for older versions.
 
-## Reporting a Vulnerability
-
-Please report any issues to https://hackerone.com/gocd according to the listed policy.
-
 ## Baseline
 
-This represents the oldest version which has **no known exploitable vulnerabilities**. Users are strongly recommended to be on at least this version; and preferably the latest version. 
+This represents the oldest versions which have **no known exploitable vulnerabilities** of a given severity, as assessed by GoCD maintainers and/or NIST NVD via CVSS 4.0 or 3.1. Users are strongly recommended to be on at least these versions; and preferably the latest version. 
 
-| Baseline Version |
-| ---------------- |
-| `23.1.0`         |
+| Without known vulns             | Version                                            |
+| ------------------------------- | -------------------------------------------------- |
+| No >= **high** severity vulns   | [`24.5.0`](https://www.gocd.org/releases/#24-5-0)+ |
+| No >= **medium** severity vulns | [`24.5.0`](https://www.gocd.org/releases/#24-5-0)+ |
+| No known vulns of any severity  | [`24.5.0`](https://www.gocd.org/releases/#24-5-0)+ |
 
 Please note that this does *not* mean that there are zero potential vulnerabilities known from GoCD's dependencies
 in this or subsequent versions. However where such vulnerabilities exist, none have been confirmed to be exploitable via GoCD
 itself (without a prior non-GoCD breach).
+
+## Reporting a Vulnerability
+
+Please report any issues to https://hackerone.com/gocd according to the listed policy.
+
+## Disclosure policy
+
+GoCD does not have a formal disclosure policy for vulnerability details, however generally our practice has been
+
+| Severity                     | During fix/patch development     | Upon fix/patched release             | Detailed disclosure / published CVE         |
+| ---------------------------- | -------------------------------- | ------------------------------------ | ------------------------------------------- |
+| >= **high** severity vulns   | Limited _(*)_ or zero disclosure | Limited disclosure with mitigations. | 2-4 weeks after patched version's release.  |
+| <= **medium** severity vulns | Limited _(*)_ disclosure         | More detailed disclosure             | Immediately upon patched version's release. |
+
+_(*)_ - As an open-source project for ease of collaboration fixes _may_ be developed in the open (with somewhat obfuscated PR or commit comments) rather than entirely developed in private.
 
 ## How do I know if I am using a release with known vulnerabilities?
 
@@ -38,11 +51,9 @@ The GoCD team make a concerted effort to keep dependencies up-to-date wherever p
 still have some EOL dependencies with known vulnerabilities that GoCD is not vulnerable to, but which may create noise in scanner reports.
 
 While this is a moving target the GoCD team maintain documented suppressions with commentary via:
-- [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/) - Java & JavaScript dependencies
-  - [current suppressions](https://github.com/gocd/gocd/blob/master/buildSrc/dependency-check-suppress.xml)
-  - [build.gocd.org report off master](https://build.gocd.org/go/files/Security-Checks/latest/test/latest/dependency-check/dependency-check-report.html) (use _Guest_ login)
-- [Bundler Audit](https://github.com/rubysec/bundler-audit) - Ruby/JRuby dependencies
-  - [build.gocd.org report off master](https://build.gocd.org/go/files/Security-Checks/latest/test/latest/bundler-audit/cruise-output/console.log) 
+- [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/) - Java, JavaScript & Ruby/JRuby dependencies
+  - [current suppressions](https://github.com/gocd/gocd/blob/master/build-platform/dependency-check-suppress.xml)
+  - [build.gocd.org report off master](https://build.gocd.org/go/files/Security-Checks/latest/Security-Checks/latest/dependency-check/dependency-check-report.html) (use _Guest_ login)
 - [Trivy](https://trivy.dev/) - built container images (OS and packaged dependencies), especially server
-  - [current suppressions](https://github.com/gocd/gocd/blob/master/buildSrc/.trivyignore)
+  - [current suppressions](https://github.com/gocd/gocd/blob/master/build-platform/.trivyignore.yaml)
   - [build.gocd.org Security-Checks-Containers pipeline](https://build.gocd.org/) (use _Guest_ login)

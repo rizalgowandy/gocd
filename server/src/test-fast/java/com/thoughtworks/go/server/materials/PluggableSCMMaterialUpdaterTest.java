@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class PluggableSCMMaterialUpdaterTest {
     public void setup() {
         transactionTemplate = new TransactionTemplate(null) {
             @Override
-            public Object execute(TransactionCallback action) {
+            public <T> T execute(TransactionCallback<T> action) {
                 return action.doInTransaction(null);
             }
 
@@ -65,7 +65,7 @@ public class PluggableSCMMaterialUpdaterTest {
     }
 
     @Test
-    public void shouldUpdateToNewMaterialInstanceWhenConfigHas_Changed() throws Exception {
+    public void shouldUpdateToNewMaterialInstanceWhenConfigHas_Changed() {
         PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         MaterialInstance materialInstance = material.createMaterialInstance();
         materialInstance.setId(1);
@@ -85,7 +85,7 @@ public class PluggableSCMMaterialUpdaterTest {
     }
 
     @Test
-    public void shouldNotUpdateMaterialInstanceWhenConfigHas_NOT_Changed() throws Exception {
+    public void shouldNotUpdateMaterialInstanceWhenConfigHas_NOT_Changed() {
         PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         MaterialInstance materialInstance = material.createMaterialInstance();
 
@@ -99,7 +99,7 @@ public class PluggableSCMMaterialUpdaterTest {
     }
 
     @Test
-    public void shouldDelegateToSCMUpdaterToAddNewMaterial() throws Exception {
+    public void shouldDelegateToSCMUpdaterToAddNewMaterial() {
         PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         File file = new File("random");
 

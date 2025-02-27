@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class PipelineGroupsControllerV1Test implements SecurityServiceTrait, Controller
 
   @Override
   PipelineGroupsControllerV1 createControllerInstance() {
-    return new PipelineGroupsControllerV1(pipelineConfigsService, new ApiAuthenticationHelper(securityService, goConfigService), entityHashingService, securityService)
+    return new PipelineGroupsControllerV1(pipelineConfigsService, new ApiAuthenticationHelper(securityService, goConfigService), entityHashingService)
   }
 
   @Nested

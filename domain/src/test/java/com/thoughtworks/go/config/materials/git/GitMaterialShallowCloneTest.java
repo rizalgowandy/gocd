@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class GitMaterialShallowCloneTest {
     }
 
     @Test
-    void shouldGetLatestModificationWithShallowClone() throws IOException {
+    void shouldGetLatestModificationWithShallowClone() {
         GitMaterial material = new GitMaterial(repo.projectRepositoryUrl(), true);
         List<Modification> mods = material.latestModification(workingDir, context());
         assertThat(mods.size()).isEqualTo(1);
@@ -118,7 +118,7 @@ class GitMaterialShallowCloneTest {
     @Test
     void attributesShouldIncludeShallowFlag() {
         GitMaterial material = new GitMaterial(repo.projectRepositoryUrl(), true);
-        Map gitConfig = (Map) (material.getAttributes(false).get("git-configuration"));
+        @SuppressWarnings("unchecked") Map<String, ?> gitConfig = (Map<String, ?>) material.getAttributes(false).get("git-configuration");
         assertThat(gitConfig.get("shallow-clone")).isEqualTo(true);
     }
 

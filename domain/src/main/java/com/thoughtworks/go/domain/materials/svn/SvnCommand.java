@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import com.thoughtworks.go.domain.materials.Modification;
 import com.thoughtworks.go.domain.materials.Modifications;
 import com.thoughtworks.go.domain.materials.SCMCommand;
 import com.thoughtworks.go.domain.materials.ValidationBean;
+import com.thoughtworks.go.util.SafeSaxBuilder;
 import com.thoughtworks.go.util.SvnLogXmlParser;
 import com.thoughtworks.go.util.command.*;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.thoughtworks.go.util.ExceptionUtils.bomb;
@@ -49,13 +50,12 @@ public class SvnCommand extends SCMCommand implements Subversion {
     private boolean checkExternals;
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnCommand.class);
-    public static final String SVN_DATE_FORMAT_IN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     public static final String SVN_DATE_FORMAT_OUT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final String ERR_SVN_NOT_FOUND = "Failed to find 'svn' on your PATH. Please ensure 'svn' is executable by the Go Server and on the Go Agents where this material will be used.";
 
 
     private final SvnLogXmlParser svnLogXmlParser;
-    private final static ThreadLocal<SAXBuilder> saxBuilderThreadLocal = new ThreadLocal<>();
+    private final static ThreadLocal<SafeSaxBuilder> saxBuilderThreadLocal = new ThreadLocal<>();
 
     public SvnCommand(String materialFingerprint, String repositoryUrl) {
         this(materialFingerprint, repositoryUrl, null, null, false);
@@ -94,10 +94,10 @@ public class SvnCommand extends SCMCommand implements Subversion {
                 .withArg(repositoryUrl);
         ConsoleResult result = executeCommand(svnExternalCommand);
         String svnExternalConsoleOut = result.outputAsString();
-        SvnInfo remoteInfo = remoteInfo(new SAXBuilder());
+        SvnInfo remoteInfo = remoteInfo(new SafeSaxBuilder());
         String repoUrl = remoteInfo.getUrl();
         String repoRoot = remoteInfo.getRoot();
-        List<SvnExternal> svnExternalList = null;
+        List<SvnExternal> svnExternalList;
         try {
             svnExternalList = new SvnExternalParser().parse(svnExternalConsoleOut, repoUrl, repoRoot);
         } catch (RuntimeException e) {
@@ -147,21 +147,21 @@ public class SvnCommand extends SCMCommand implements Subversion {
     }
 
     private List<Modification> parseSvnLog(String output) {
-        SAXBuilder builder = getBuilder();
+        SafeSaxBuilder builder = getBuilder();
         SvnInfo svnInfo = remoteInfo(builder);
         return svnLogXmlParser.parse(output, svnInfo.getPath(), builder);
     }
 
-    private SAXBuilder getBuilder() {
-        SAXBuilder saxBuilder = saxBuilderThreadLocal.get();
+    private SafeSaxBuilder getBuilder() {
+        SafeSaxBuilder saxBuilder = saxBuilderThreadLocal.get();
         if (saxBuilder == null) {
-            saxBuilder = new SAXBuilder();
+            saxBuilder = new SafeSaxBuilder();
             saxBuilderThreadLocal.set(saxBuilder);
         }
         return saxBuilder;
     }
 
-    public SvnInfo remoteInfo(SAXBuilder builder) {
+    public SvnInfo remoteInfo(SafeSaxBuilder builder) {
         SvnInfo svnInfo = new SvnInfo();
         svnInfo.parse(executeCommand(svn(true)
                 .withArgs("info", "--xml", "--non-interactive")
@@ -288,14 +288,14 @@ public class SvnCommand extends SCMCommand implements Subversion {
         executeCommand(line);
     }
 
-    public HashMap<String, String> createUrlToRemoteUUIDMap(Set<SvnMaterial> svnMaterials) {
-        HashMap<String, String> urlToUUIDMap = new HashMap<>();
+    public Map<String, String> createUrlToRemoteUUIDMap(Set<SvnMaterial> svnMaterials) {
+        Map<String, String> urlToUUIDMap = new HashMap<>();
         for (SvnMaterial svnMaterial : svnMaterials) {
             CommandLine command = svnExecutable().withArgs("info", "--xml");
             addCredentials(command, new StringArgument(svnMaterial.getUserName()), new PasswordArgument(svnMaterial.passwordForCommandLine()));
             final String queryUrl = svnMaterial.urlForCommandLine();
             command.withArg(queryUrl);
-            ConsoleResult consoleResult = null;
+            ConsoleResult consoleResult;
             try {
                 consoleResult = executeCommand(command);
                 urlToUUIDMap.putAll(svnLogXmlParser.parseInfoToGetUUID(consoleResult.outputAsString(), queryUrl, getBuilder()));
@@ -311,7 +311,7 @@ public class SvnCommand extends SCMCommand implements Subversion {
         private String encodedUrl = "";
         private String root = "";
 
-        public void parse(String xmlOutput, SAXBuilder builder) {
+        public void parse(String xmlOutput, SafeSaxBuilder builder) {
             try {
                 Document document = builder.build(new StringReader(xmlOutput));
                 parseDOMTree(document);

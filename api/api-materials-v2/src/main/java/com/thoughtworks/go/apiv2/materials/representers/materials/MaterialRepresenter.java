@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,5 +21,5 @@ import com.thoughtworks.go.domain.materials.MaterialConfig;
 import java.util.function.Consumer;
 
 public interface MaterialRepresenter<T extends MaterialConfig> {
-    Consumer<OutputWriter> toJSON(T gitMaterialConfig);
+    Consumer<OutputWriter> toJSON(T materialConfig);
 }

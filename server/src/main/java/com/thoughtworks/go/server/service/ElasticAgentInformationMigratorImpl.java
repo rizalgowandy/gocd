@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class ElasticAgentInformationMigratorImpl implements ElasticAgentInformat
         LOG.debug("Migrating elastic agent configurations for plugin with id: '{}'", pluginId);
         Plugin plugin = pluginSqlMapDao.findPlugin(pluginId);
         String pluginConfiguration = plugin.getConfiguration();
-        HashMap<String, String> pluginSettings = (pluginConfiguration == null) ? new HashMap<>() : JsonHelper.fromJson(pluginConfiguration, HashMap.class);
+        Map<String, String> pluginSettings = pluginConfiguration == null ? new HashMap<>() : JsonHelper.<HashMap<String, String>>fromJson(pluginConfiguration, HashMap.class);
         ReplaceElasticAgentInformationCommand command = new ReplaceElasticAgentInformationCommand(clusterProfilesService, elasticProfileService, elasticAgentExtension, pluginDescriptor, pluginSettings);
 
         boolean updated = update(command, pluginDescriptor);

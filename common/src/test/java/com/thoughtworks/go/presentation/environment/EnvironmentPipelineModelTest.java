@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,49 +18,47 @@ package com.thoughtworks.go.presentation.environment;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class EnvironmentPipelineModelTest {
     @Test
     public void shouldUnderstandWhenAssociatedWithGivenEnvironment() {
         EnvironmentPipelineModel foo = new EnvironmentPipelineModel("foo", "env");
-        assertThat(foo.isAssociatedWithEnvironment("env"), is(true));
-        assertThat(foo.isAssociatedWithEnvironment("env2"), is(false));
-        assertThat(foo.isAssociatedWithEnvironment(null), is(false));
+        assertThat(foo.isAssociatedWithEnvironment("env")).isTrue();
+        assertThat(foo.isAssociatedWithEnvironment("env2")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironment(null)).isFalse();
         foo = new EnvironmentPipelineModel("foo");
-        assertThat(foo.isAssociatedWithEnvironment("env"), is(false));
-        assertThat(foo.isAssociatedWithEnvironment("env2"), is(false));
-        assertThat(foo.isAssociatedWithEnvironment(null), is(false));
+        assertThat(foo.isAssociatedWithEnvironment("env")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironment("env2")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironment(null)).isFalse();
     }
 
 
     @Test
     public void shouldUnderstandWhenAssociatedWithADifferentEnvironment() {
         EnvironmentPipelineModel foo = new EnvironmentPipelineModel("foo", "env");
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env"), is(false));
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env2"), is(true));
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan(null), is(true));
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env2")).isTrue();
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan(null)).isTrue();
         foo = new EnvironmentPipelineModel("foo");
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env"), is(false));
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env2"), is(false));
-        assertThat(foo.isAssociatedWithEnvironmentOtherThan(null), is(false));
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan("env2")).isFalse();
+        assertThat(foo.isAssociatedWithEnvironmentOtherThan(null)).isFalse();
     }
 
     @Test
     public void hasEnvironmentAssociated_shouldReturnTrueWhenAPipelineIsAssociatedWithAnEnvironment() {
         EnvironmentPipelineModel foo = new EnvironmentPipelineModel("foo");
-        assertThat(foo.hasEnvironmentAssociated(), is(false));
+        assertThat(foo.hasEnvironmentAssociated()).isFalse();
     }
 
     @Test
     public void hasEnvironmentAssociated_shouldReturnFalseWhenAPipelineIsNotAssociatedWithAnEnvironment() {
         EnvironmentPipelineModel foo = new EnvironmentPipelineModel("foo","env-name");
-        assertThat(foo.hasEnvironmentAssociated(), is(true));
+        assertThat(foo.hasEnvironmentAssociated()).isTrue();
     }
 
     @Test
@@ -69,11 +67,11 @@ public class EnvironmentPipelineModelTest {
         EnvironmentPipelineModel bar = new EnvironmentPipelineModel("bar");
         EnvironmentPipelineModel baz = new EnvironmentPipelineModel("baz");
 
-        List<EnvironmentPipelineModel> models = Stream.of(foo, bar, baz).sorted().collect(Collectors.toList());
+        List<EnvironmentPipelineModel> models = Stream.of(foo, bar, baz).sorted().toList();
 
-        assertThat(models.get(0), is(bar));
-        assertThat(models.get(1), is(baz));
-        assertThat(models.get(2), is(foo));
+        assertThat(models.get(0)).isEqualTo(bar);
+        assertThat(models.get(1)).isEqualTo(baz);
+        assertThat(models.get(2)).isEqualTo(foo);
     }
 
     @Test
@@ -83,12 +81,12 @@ public class EnvironmentPipelineModelTest {
         EnvironmentPipelineModel Third = new EnvironmentPipelineModel("Third");
         EnvironmentPipelineModel second = new EnvironmentPipelineModel("second");
 
-        List<EnvironmentPipelineModel> models = Stream.of(first, First, Third, second).sorted().collect(Collectors.toList());
+        List<EnvironmentPipelineModel> models = Stream.of(first, First, Third, second).sorted().toList();
 
-        assertThat(models.get(0), is(first));
-        assertThat(models.get(1), is(First));
-        assertThat(models.get(2), is(second));
-        assertThat(models.get(3), is(Third));
+        assertThat(models.get(0)).isEqualTo(first);
+        assertThat(models.get(1)).isEqualTo(First);
+        assertThat(models.get(2)).isEqualTo(second);
+        assertThat(models.get(3)).isEqualTo(Third);
     }
 
 }

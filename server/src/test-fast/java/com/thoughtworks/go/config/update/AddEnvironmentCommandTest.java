@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,7 @@ public class AddEnvironmentCommandTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
         environmentName = new CaseInsensitiveString("Dev");
@@ -58,7 +57,7 @@ public class AddEnvironmentCommandTest {
     }
 
     @Test
-    public void shouldAddTheSpecifiedEnvironment() throws Exception {
+    public void shouldAddTheSpecifiedEnvironment() {
         AddEnvironmentCommand command = new AddEnvironmentCommand(goConfigService, environmentConfig, currentUser, actionFailed, result);
         assertFalse(cruiseConfig.getEnvironments().hasEnvironmentNamed(environmentName));
         command.update(cruiseConfig);
@@ -66,38 +65,38 @@ public class AddEnvironmentCommandTest {
     }
 
     @Test
-    public void shouldValidateInvalidPipelineName() throws Exception {
+    public void shouldValidateInvalidPipelineName() {
         environmentConfig.addPipeline(new CaseInsensitiveString("Invalid-pipeline-name"));
         AddEnvironmentCommand command = new AddEnvironmentCommand(goConfigService, environmentConfig, currentUser, actionFailed, result);
         command.update(cruiseConfig);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.unprocessableEntity("Could not add environment Dev Environment 'Dev' refers to an unknown pipeline 'Invalid-pipeline-name'.");
 
-        assertThat(command.isValid(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.isValid(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    public void shouldValidateDuplicateEnvironmentVariables() throws Exception {
+    public void shouldValidateDuplicateEnvironmentVariables() {
         environmentConfig.addEnvironmentVariable("foo", "bar");
         environmentConfig.addEnvironmentVariable("foo", "baz");
         AddEnvironmentCommand command = new AddEnvironmentCommand(goConfigService, environmentConfig, currentUser, actionFailed, result);
         command.update(cruiseConfig);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
 
-        assertThat(command.isValid(cruiseConfig), is(false));
+        assertThat(command.isValid(cruiseConfig)).isFalse();
         expectedResult.unprocessableEntity("Could not add environment Dev Environment Variable name 'foo' is not unique for environment 'Dev'., Environment Variable name 'foo' is not unique for environment 'Dev'.");
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    public void shouldNotContinueIfEnvironmentWithSameNameAlreadyExists() throws Exception {
+    public void shouldNotContinueIfEnvironmentWithSameNameAlreadyExists() {
         AddEnvironmentCommand command = new AddEnvironmentCommand(goConfigService, environmentConfig, currentUser, actionFailed, result);
         when(goConfigService.hasEnvironmentNamed(environmentName)).thenReturn(true);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.conflict(EntityType.Environment.alreadyExists(environmentName));
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

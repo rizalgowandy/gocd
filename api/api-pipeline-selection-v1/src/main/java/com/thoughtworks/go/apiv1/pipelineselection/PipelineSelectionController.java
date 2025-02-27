@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import spark.Response;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -152,7 +153,7 @@ public class PipelineSelectionController extends ApiController implements SparkS
     }
 
     private String calcPipelinesDataEtag(Username username, List<PipelineConfigs> pipelineConfigs) {
-        final HashMap<String, List<CaseInsensitiveString>> pipelinesDataSegment = new HashMap<>();
+        final Map<String, List<CaseInsensitiveString>> pipelinesDataSegment = new HashMap<>();
         for (PipelineConfigs group : pipelineConfigs) {
             final List<PipelineConfig> pipelines = group.getPipelines();
             if (!pipelines.isEmpty()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class ExecTask extends AbstractTask implements CommandTask {
     }
 
     @Override
-    protected void setTaskConfigAttributes(Map attributeMap) {
+    protected void setTaskConfigAttributes(Map<String, ?> attributeMap) {
         if (attributeMap.containsKey(COMMAND)) {
             command = (String) attributeMap.get(COMMAND);
         }
@@ -189,7 +189,7 @@ public class ExecTask extends AbstractTask implements CommandTask {
 
     @Override
     public List<TaskProperty> getPropertiesForDisplay() {
-        ArrayList<TaskProperty> taskProperties = new ArrayList<>();
+        List<TaskProperty> taskProperties = new ArrayList<>();
         taskProperties.add(new TaskProperty("Command", command));
         String arguments = arguments();
         if (!arguments.isEmpty()) {

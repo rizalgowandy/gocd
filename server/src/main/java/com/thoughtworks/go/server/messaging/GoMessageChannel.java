@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,6 @@ package com.thoughtworks.go.server.messaging;
 import com.thoughtworks.go.server.messaging.activemq.JMSMessageListenerAdapter;
 
 public interface GoMessageChannel<T extends GoMessage> {
-    JMSMessageListenerAdapter addListener(GoMessageListener<T> listener);
+    JMSMessageListenerAdapter<T> addListener(GoMessageListener<T> listener);
     void post(T message);
 }

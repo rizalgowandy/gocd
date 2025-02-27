@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -264,13 +264,14 @@ public class PackageDefinition implements Serializable, Validatable, ParamsAttri
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         if (attributes == null) {
             return;
         }
-        Map map = (Map) attributes;
-        name = (String) map.get("name");
+        Map<String, String> map = (Map<String, String>) attributes;
+        name = map.get("name");
         if (map.containsKey(Configuration.CONFIGURATION) && packageRepository != null) {
             configuration.setConfigAttributes(map.get(Configuration.CONFIGURATION), getSecureKeyInfoProvider());
         }
@@ -306,7 +307,7 @@ public class PackageDefinition implements Serializable, Validatable, ParamsAttri
         configuration.clearEmptyConfigurations();
     }
 
-    public void validateNameUniqueness(HashMap<String, PackageDefinition> nameMap) {
+    public void validateNameUniqueness(Map<String, PackageDefinition> nameMap) {
         String errorMessageForDuplicateName = String.format("You have defined multiple packages called '%s'. Package names are case-insensitive and must be unique within a repository.", name);
         PackageDefinition repoWithSameFieldValue = nameMap.get(name.toLowerCase());
         if (repoWithSameFieldValue == null) {

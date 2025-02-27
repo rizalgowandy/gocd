@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 public abstract class ClassAttributeCache<K, T> {
     private final ConcurrentMap<K, T> valueCache = new ConcurrentHashMap<>();
@@ -38,26 +37,26 @@ public abstract class ClassAttributeCache<K, T> {
 
     abstract T loadValues(K key);
 
-    public static class FieldCache extends ClassAttributeCache<Class, List<Field>> {
+    public static class FieldCache extends ClassAttributeCache<Class<?>, List<Field>> {
         @Override
-        List<Field> loadValues(Class klass) {
+        List<Field> loadValues(Class<?> klass) {
             List<Field> fields = new ArrayList<>();
             populateValueInto(klass, fields);
             return fields;
         }
 
-        void populateValueInto(Class klass, List<Field> fields) {
-            fields.addAll(Arrays.stream(klass.getDeclaredFields()).filter(field -> !field.isSynthetic()).collect(Collectors.toList()));
-            Class superClass = klass.getSuperclass();
+        void populateValueInto(Class<?> klass, List<Field> fields) {
+            fields.addAll(Arrays.stream(klass.getDeclaredFields()).filter(field -> !field.isSynthetic()).toList());
+            Class<?> superClass = klass.getSuperclass();
             if (superClass != Object.class) {
                 populateValueInto(superClass, fields);
             }
         }
     }
 
-    public static class AssignableCache extends ClassAttributeCache<Map.Entry<Class, Class>, Boolean> {
+    public static class AssignableCache extends ClassAttributeCache<Map.Entry<Class<?>, Class<?>>, Boolean> {
         @Override
-        Boolean loadValues(Map.Entry<Class, Class> entry) {
+        Boolean loadValues(Map.Entry<Class<?>, Class<?>> entry) {
             return entry.getKey().isAssignableFrom(entry.getValue());
         }
     }

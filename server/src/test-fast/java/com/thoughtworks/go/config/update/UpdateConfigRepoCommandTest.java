@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 package com.thoughtworks.go.config.update;
 
 import com.thoughtworks.go.config.BasicCruiseConfig;
-import com.thoughtworks.go.config.CaseInsensitiveString;
 import com.thoughtworks.go.config.exceptions.EntityType;
 import com.thoughtworks.go.config.remote.ConfigRepoConfig;
 import com.thoughtworks.go.helper.GoConfigMother;
 import com.thoughtworks.go.plugin.access.configrepo.ConfigRepoExtension;
-import com.thoughtworks.go.server.domain.Username;
 import com.thoughtworks.go.server.service.EntityHashingService;
 import com.thoughtworks.go.server.service.SecurityService;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
@@ -32,14 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateConfigRepoCommandTest {
-    private Username currentUser;
     private BasicCruiseConfig cruiseConfig;
     private ConfigRepoConfig oldConfigRepo;
     private ConfigRepoConfig newConfigRepo;
@@ -58,8 +54,7 @@ public class UpdateConfigRepoCommandTest {
     private ConfigRepoExtension configRepoExtension;
 
     @BeforeEach
-    public void setup() throws Exception {
-        currentUser = new Username(new CaseInsensitiveString("user"));
+    public void setup() {
         cruiseConfig = new GoConfigMother().defaultCruiseConfig();
         oldConfigRepoId = "old-repo";
         newConfigRepoId = "new-repo";
@@ -71,8 +66,8 @@ public class UpdateConfigRepoCommandTest {
     }
 
     @Test
-    public void shouldUpdateTheSpecifiedConfigRepo() throws Exception {
-        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(securityService, entityHashingService, oldConfigRepoId, newConfigRepo, digest, currentUser, result, configRepoExtension);
+    public void shouldUpdateTheSpecifiedConfigRepo() {
+        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(entityHashingService, oldConfigRepoId, newConfigRepo, digest, result, configRepoExtension);
 
         assertNull(cruiseConfig.getConfigRepos().getConfigRepo(newConfigRepoId));
         command.update(cruiseConfig);
@@ -80,29 +75,29 @@ public class UpdateConfigRepoCommandTest {
     }
 
     @Test
-    public void shouldNotContinueIfDigestIsStale() throws Exception {
-        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(securityService, entityHashingService, oldConfigRepoId, newConfigRepo, digest, currentUser, result, configRepoExtension);
+    public void shouldNotContinueIfDigestIsStale() {
+        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(entityHashingService, oldConfigRepoId, newConfigRepo, digest, result, configRepoExtension);
         when(entityHashingService.hashForEntity(oldConfigRepo)).thenReturn("some-hash");
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.stale(EntityType.ConfigRepo.staleConfig(oldConfigRepoId));
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     public void isValid_shouldValidateConfigRepo() {
         newConfigRepo.setRepo(git("foobar.git", "master"));
         cruiseConfig.getConfigRepos().add(newConfigRepo);
-        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(securityService, entityHashingService, oldConfigRepoId, newConfigRepo, digest, currentUser, result, configRepoExtension);
+        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(entityHashingService, oldConfigRepoId, newConfigRepo, digest, result, configRepoExtension);
         when(configRepoExtension.canHandlePlugin(newConfigRepo.getPluginId())).thenReturn(true);
 
         command.update(cruiseConfig);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(newConfigRepo.errors().size(), is(2));
-        assertThat(newConfigRepo.errors().on("material"), is("You have defined multiple configuration repositories with the same repository - 'foobar.git'."));
-        assertThat(newConfigRepo.errors().on("id"), is("You have defined multiple configuration repositories with the same id - 'new-repo'."));
+        assertThat(newConfigRepo.errors().size()).isEqualTo(2);
+        assertThat(newConfigRepo.errors().on("material")).isEqualTo("You have defined multiple configuration repositories with the same repository - 'foobar.git'.");
+        assertThat(newConfigRepo.errors().on("id")).isEqualTo("You have defined multiple configuration repositories with the same id - 'new-repo'.");
     }
 
     @Test
@@ -110,10 +105,10 @@ public class UpdateConfigRepoCommandTest {
         ConfigRepoConfig configRepo = new ConfigRepoConfig();
         configRepo.setId("");
 
-        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(securityService, entityHashingService, oldConfigRepoId, configRepo, digest, currentUser, result, configRepoExtension);
+        UpdateConfigRepoCommand command = new UpdateConfigRepoCommand(entityHashingService, oldConfigRepoId, configRepo, digest, result, configRepoExtension);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(configRepo.errors().on("id"), is("Configuration repository id not specified"));
+        assertThat(configRepo.errors().on("id")).isEqualTo("Configuration repository id not specified");
     }
 
     @Test
@@ -123,9 +118,9 @@ public class UpdateConfigRepoCommandTest {
 
         when(configRepoExtension.canHandlePlugin(configRepo.getPluginId())).thenReturn(false);
 
-        CreateConfigRepoCommand command = new CreateConfigRepoCommand(securityService, configRepo, currentUser, result, configRepoExtension);
+        CreateConfigRepoCommand command = new CreateConfigRepoCommand(configRepo, configRepoExtension);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(configRepo.errors().on("plugin_id"), is("Invalid plugin id: invalid_id"));
+        assertThat(configRepo.errors().on("plugin_id")).isEqualTo("Invalid plugin id: invalid_id");
     }
 }

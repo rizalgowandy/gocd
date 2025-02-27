@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,7 +174,7 @@ class ConfigConverterTest {
 
     @Test
     void shouldMigratePluggableTask() {
-        ArrayList<CRConfigurationProperty> configs = new ArrayList<>();
+        List<CRConfigurationProperty> configs = new ArrayList<>();
         configs.add(new CRConfigurationProperty("k", "m", null));
         CRPluggableTask pluggableTask = new CRPluggableTask(CRRunIf.any, null,
                 new CRPluginConfiguration("myplugin", "1"), configs);
@@ -1280,7 +1280,7 @@ class ConfigConverterTest {
     }
 
     @Test
-    void shouldConvertParametersWhenPassed() throws Exception {
+    void shouldConvertParametersWhenPassed() {
         CRPipeline crPipeline = buildPipeline();
         crPipeline.addParameter(new CRParameter("param", "value"));
         PipelineConfig pipeline = configConverter.toPipelineConfig(crPipeline, context, new SCMs());
@@ -1289,7 +1289,7 @@ class ConfigConverterTest {
     }
 
     @Test
-    void shouldConvertTemplateNameWhenGiven() throws Exception {
+    void shouldConvertTemplateNameWhenGiven() {
         CRPipeline crPipeline = buildPipeline();
         crPipeline.setTemplate("template");
 
@@ -1300,7 +1300,7 @@ class ConfigConverterTest {
     }
 
     @Test
-    void shouldConvertParamConfigWhenPassed() throws Exception {
+    void shouldConvertParamConfigWhenPassed() {
         PipelineConfig pipeline = new PipelineConfig();
         pipeline.setName("p1");
         pipeline.addParam(new ParamConfig("param", "value"));

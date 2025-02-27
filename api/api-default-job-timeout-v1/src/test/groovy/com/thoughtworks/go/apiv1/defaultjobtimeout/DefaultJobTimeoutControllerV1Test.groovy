@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class DefaultJobTimeoutControllerV1Test implements SecurityServiceTrait, Control
 
   @Override
   DefaultJobTimeoutControllerV1 createControllerInstance() {
-    new DefaultJobTimeoutControllerV1(new ApiAuthenticationHelper(securityService, goConfigService), entityHashingService, serverConfigService)
+    new DefaultJobTimeoutControllerV1(new ApiAuthenticationHelper(securityService, goConfigService), serverConfigService)
   }
 
   @Nested

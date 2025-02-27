@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,13 +184,13 @@ public class FetchPluggableArtifactTask extends AbstractFetchTask {
     }
 
     @Override
-    protected void setFetchTaskAttributes(Map attributeMap) {
+    protected void setFetchTaskAttributes(Map<String, ?> attributeMap) {
         this.artifactId = (String) attributeMap.get(ARTIFACT_ID);
         if (StringUtils.isBlank(this.artifactId)) {
             return;
         }
 
-        final Map<String, Object> userSpecifiedConfiguration = (Map<String, Object>) attributeMap.get(CONFIGURATION);
+        @SuppressWarnings("unchecked") final Map<String, Object> userSpecifiedConfiguration = (Map<String, Object>) attributeMap.get(CONFIGURATION);
         if (userSpecifiedConfiguration == null) {
             return;
         }
@@ -198,7 +198,7 @@ public class FetchPluggableArtifactTask extends AbstractFetchTask {
         final String pluginId = (String) attributeMap.get("pluginId");
         if (StringUtils.isBlank(pluginId)) {
             for (String key : userSpecifiedConfiguration.keySet()) {
-                Map<String, String> configurationMetadata = (Map<String, String>) userSpecifiedConfiguration.get(key);
+                @SuppressWarnings("unchecked") Map<String, String> configurationMetadata = (Map<String, String>) userSpecifiedConfiguration.get(key);
                 if (configurationMetadata != null) {
                     boolean isSecure = Boolean.parseBoolean(configurationMetadata.get("isSecure"));
                     if (configuration.getProperty(key) == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,24 @@ import org.springframework.transaction.support.TransactionSynchronization;
 
 public class TestTransactionTemplate extends TransactionTemplate {
 
+    public TestTransactionTemplate(TestTransactionSynchronizationManager synchronizationManager) {
+        super(new ActualTransactionTemplate(synchronizationManager));
+    }
+
+    @Override
+    public Object executeWithExceptionHandling(com.thoughtworks.go.server.transaction.TransactionCallback action) throws Exception {
+        return super.executeWithExceptionHandling(action);
+    }
 
     private static class ActualTransactionTemplate extends org.springframework.transaction.support.TransactionTemplate {
-        private TestTransactionSynchronizationManager synchronizationManager;
+        private final TestTransactionSynchronizationManager synchronizationManager;
 
         private ActualTransactionTemplate(TestTransactionSynchronizationManager synchronizationManager) {
             this.synchronizationManager = synchronizationManager;
         }
 
-        @Override public Object execute(TransactionCallback action) throws TransactionException {
-            Object o = null;
+        @Override public <T> T execute(TransactionCallback<T> action) throws TransactionException {
+            T o;
             try {
                 o = action.doInTransaction(null);
                 synchronizationManager.executeAfterCompletion(TransactionSynchronization.STATUS_COMMITTED);
@@ -43,17 +51,5 @@ public class TestTransactionTemplate extends TransactionTemplate {
             }
             return o;
         }
-    }
-
-    public TestTransactionTemplate(TestTransactionSynchronizationManager synchronizationManager) {
-        super(new ActualTransactionTemplate(synchronizationManager));
-    }
-
-    @Override public Object execute(TransactionCallback action) {
-        return super.execute(action);
-    }
-
-    @Override public Object executeWithExceptionHandling(com.thoughtworks.go.server.transaction.TransactionCallback action) throws Exception {
-        return super.executeWithExceptionHandling(action);
     }
 }

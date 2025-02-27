@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,60 +20,54 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PackageRevisionTest {
 
     @Test
-    public void shouldAcceptDataKeyMadeUpOfAlpahNumericAndUnderScoreCharacters() throws Exception {
+    public void shouldAcceptDataKeyMadeUpOfAlphaNumericAndUnderScoreCharacters() {
         PackageRevision packageRevision = new PackageRevision("rev123", new Date(), "loser");
         packageRevision.addData("HELLO_WORLD123", "value");
-        assertThat(packageRevision.getDataFor("HELLO_WORLD123"), is("value"));
+        assertThat(packageRevision.getDataFor("HELLO_WORLD123")).isEqualTo("value");
     }
 
     @Test
-    public void shouldThrowExceptionWhenDataKeyIsNullOrEmpty() throws Exception {
+    public void shouldThrowExceptionWhenDataKeyIsNullOrEmpty() {
         PackageRevision packageRevision = new PackageRevision("rev123", new Date(), "loser");
-        try {
-            packageRevision.addData(null, "value");
-        } catch (InvalidPackageRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key names cannot be null or empty."));
-        }
-        try {
-            packageRevision.addData("", "value");
-        } catch (InvalidPackageRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key names cannot be null or empty."));
-        }
+
+        assertThatThrownBy(() -> packageRevision.addData(null, "value"))
+                .isInstanceOf(InvalidPackageRevisionDataException.class)
+                .hasMessage("Key names cannot be null or empty.");
+
+        assertThatThrownBy(() -> packageRevision.addData("", "value"))
+                .isInstanceOf(InvalidPackageRevisionDataException.class)
+                .hasMessage("Key names cannot be null or empty.");
     }
 
     @Test
-    public void shouldThrowExceptionIfDataKeyContainsCharactersOtherThanAlphaNumericAndUnderScoreCharacters() throws Exception {
+    public void shouldThrowExceptionIfDataKeyContainsCharactersOtherThanAlphaNumericAndUnderScoreCharacters() {
         PackageRevision packageRevision = new PackageRevision("rev123", new Date(), "loser");
-        try {
-            packageRevision.addData("HEL-LO-WORLD", "value");
-            fail("should have thrown exception");
-        } catch (InvalidPackageRevisionDataException e) {
-            assertThat(e.getMessage(), is("Key 'HEL-LO-WORLD' is invalid. Key names should consists of only alphanumeric characters and/or underscores."));
-        }
+
+        assertThatThrownBy(() -> packageRevision.addData("HEL-LO-WORLD", "value"))
+                .isInstanceOf(InvalidPackageRevisionDataException.class)
+                .hasMessage("Key 'HEL-LO-WORLD' is invalid. Key names should consists of only alphanumeric characters and/or underscores.");
     }
 
     @Test
-    public void shouldNotAllowDataWhenKeyIsInvalid() throws Exception {
+    public void shouldNotAllowDataWhenKeyIsInvalid() {
         assertForInvalidKey("", "Key names cannot be null or empty.");
         assertForInvalidKey("!key", "Key '!key' is invalid. Key names should consists of only alphanumeric characters and/or underscores.");
     }
 
     private void assertForInvalidKey(String key, String expectedMessage) {
-        HashMap<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put(key, "value");
-        try {
-            new PackageRevision(null, null, null, data);
-            fail("should have thrown exception");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), is(expectedMessage));
-        }
+
+        assertThatThrownBy(() -> new PackageRevision(null, null, null, data))
+                .isInstanceOf(InvalidPackageRevisionDataException.class)
+                .hasMessage(expectedMessage);
     }
 }

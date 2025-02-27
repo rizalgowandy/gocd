@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.thoughtworks.go.helper.ModificationsMother.modifySomeFiles;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
@@ -135,20 +135,20 @@ public class ScheduleServiceRunOnAllAgentIntegrationTest {
         } catch (CannotScheduleException e) {
 
         }
-        List<ServerHealthState> stateList = serverHealthService.filterByScope(HealthStateScope.forStage("blahPipeline", "blahStage"));
-        assertThat(stateList.size(), is(1));
-        assertThat(stateList.get(0).getMessage(), is("Failed to trigger stage [blahStage] pipeline [blahPipeline]"));
-        assertThat(stateList.get(0).getDescription(), is("Could not find matching agents to run job [job2] of stage [blahStage]."));
+        List<ServerHealthState> stateList = serverHealthService.logsSortedForScope(HealthStateScope.forStage("blahPipeline", "blahStage"));
+        assertThat(stateList.size()).isEqualTo(1);
+        assertThat(stateList.get(0).getMessage()).isEqualTo("Failed to trigger stage [blahStage] pipeline [blahPipeline]");
+        assertThat(stateList.get(0).getDescription()).isEqualTo("Could not find matching agents to run job [job2] of stage [blahStage].");
     }
 
     @Test
     public void shouldUpdateServerHealthWhenSchedulePipelineFails() {
         pipelineScheduleQueue.schedule(new CaseInsensitiveString("blahPipeline"), saveMaterials(modifySomeFiles(goConfigService.pipelineConfigNamed(new CaseInsensitiveString("blahPipeline")))));
         scheduleService.autoSchedulePipelinesFromRequestBuffer();
-        List<ServerHealthState> stateList = serverHealthService.filterByScope(HealthStateScope.forStage("blahPipeline", "blahStage"));
-        assertThat(stateList.size(), is(1));
-        assertThat(stateList.get(0).getMessage(), is("Failed to trigger stage [blahStage] pipeline [blahPipeline]"));
-        assertThat(stateList.get(0).getDescription(), is("Could not find matching agents to run job [job2] of stage [blahStage]."));
+        List<ServerHealthState> stateList = serverHealthService.logsSortedForScope(HealthStateScope.forStage("blahPipeline", "blahStage"));
+        assertThat(stateList.size()).isEqualTo(1);
+        assertThat(stateList.get(0).getMessage()).isEqualTo("Failed to trigger stage [blahStage] pipeline [blahPipeline]");
+        assertThat(stateList.get(0).getDescription()).isEqualTo("Could not find matching agents to run job [job2] of stage [blahStage].");
     }
 
     private BuildCause saveMaterials(BuildCause buildCause) {
@@ -157,8 +157,8 @@ public class ScheduleServiceRunOnAllAgentIntegrationTest {
     }
 
     private Pipeline manualSchedule(String pipelineName) {
-        final HashMap<String, String> revisions = new HashMap<>();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         buildCauseProducer.manualProduceBuildCauseAndSave(pipelineName, new Username(new CaseInsensitiveString("some user name")),
                 new ScheduleOptions(revisions, environmentVariables, new HashMap<>()), new ServerHealthStateOperationResult());
         scheduleService.autoSchedulePipelinesFromRequestBuffer();

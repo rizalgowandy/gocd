@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -226,7 +226,7 @@ public class ArtifactsServiceTest {
     }
 
     @Test
-    void shouldProvideArtifactUrlForAJob() throws Exception {
+    void shouldProvideArtifactUrlForAJob() {
         assumeArtifactsRoot(fakeRoot);
         ArtifactsService artifactsService = new ArtifactsService(resolverService, stageService, artifactsDirHolder, zipUtil);
         JobIdentifier oldId = new JobIdentifier("cruise", 1, "1.1", "dev", "2", "linux-firefox");

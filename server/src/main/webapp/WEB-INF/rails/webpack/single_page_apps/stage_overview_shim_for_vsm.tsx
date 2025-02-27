@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,16 @@ $(() => {
     // @ts-ignore
     const state = window.stageOverviewStateForVSM;
 
-    if (state.model()) {
-      const ele = document.getElementById(`stage-overview-container-for-pipeline-${state.getPipelineName()}-${state.getPipelineCounter()}-stage-${state.getStageName()}-${state.getStageCounter()}`)!;
-      ele.innerHTML = "";
-
-      state.hide();
-    }
+    const stageOverviewContainer = document.getElementById(`stage-overview-container-for-pipeline-${state.getPipelineName()}-${state.getPipelineCounter()}-stage-${state.getStageName()}-${state.getStageCounter()}`)!;
+    m.mount(stageOverviewContainer, null);
+    state.hide();
   }
 
   document.getElementById("vsm-container")!.onclick = closeStageOverview;
 
   // @ts-ignore
   window.getStageOverviewFor = (pipelineName: string, pipelineCounter: string | number, stageName: string, stageCounter: string | number, status: string, currentStageIndex: string, totalNumberOfStages: string, canEdit: boolean, templateName: string) => {
+    window.event?.stopPropagation();
     closeStageOverview();
     const repeatInterval = 9999999;
 
@@ -50,13 +48,17 @@ $(() => {
     // @ts-ignore
     StageOverviewViewModel.initialize(pipelineName, pipelineCounter, stageName, stageCounter, status, repeatInterval).then((result) => window.stageOverviewStateForVSM.model(result));
 
+    // Has to match div ID in Graph_Renderer.renderPipelineInstance
     const stageOverviewContainer = document.getElementById(`stage-overview-container-for-pipeline-${pipelineName}-${pipelineCounter}-stage-${stageName}-${stageCounter}`)!;
     const stageInstanceFromDashboard = {
       status
     };
 
+    // Needs to match logic within Graph_Renderer.sanitizeVsmNodeId which creates the elements being searched for
+    const sanitizeVsmNodeId = (id: string) => id.replace(/\./g, '_id-');
+
     // @ts-ignore
-    const totalWidth = new Array(...document.querySelector(`#${CSS.escape(pipelineName)}`).classList).indexOf("current") !== -1 ? 237 : 192;
+    const totalWidth = new Array(...document.getElementById(sanitizeVsmNodeId(pipelineName)).classList).indexOf("current") !== -1 ? 237 : 192;
     const spaceBetweenStages = 4;
     const initialLeftPosition = -36;
 

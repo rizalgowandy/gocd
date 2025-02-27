@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class BackupFilterTest {
     private PrintWriter writer;
 
     @BeforeEach
-    public void setUp() throws ServletException, IOException {
+    public void setUp() throws IOException {
         ServletHelper.init();
 
         res = mock(HttpServletResponse.class);

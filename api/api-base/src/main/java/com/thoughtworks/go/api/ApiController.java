@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,14 +60,6 @@ public abstract class ApiController implements ControllerMethods, SparkControlle
     protected void setContentType(Request req, Response res) {
         res.raw().setCharacterEncoding("utf-8");
         res.type(mimeType);
-    }
-
-    protected void setEncryptedContentType(Request req, Response res) {
-        res.type("application/octet-stream");
-    }
-
-    protected String messageJson(Exception ex) {
-        return messageJson(ex.getMessage());
     }
 
     protected String messageJson(String message) {
@@ -134,10 +126,10 @@ public abstract class ApiController implements ControllerMethods, SparkControlle
         };
     }
 
-    protected Integer getPageSize(Request request) {
-        Integer offset;
+    protected int getPageSize(Request request) {
+        int offset;
         try {
-            offset = Integer.valueOf(request.queryParamOrDefault("page_size", DEFAULT_PAGE_SIZE));
+            offset = Integer.parseInt(request.queryParamOrDefault("page_size", DEFAULT_PAGE_SIZE));
             if (offset < 10 || offset > 100) {
                 throw new BadRequestException(BAD_PAGE_SIZE_MSG);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,15 @@ import com.thoughtworks.go.config.AuthConfig;
 import com.thoughtworks.go.config.CaseInsensitiveString;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class StageAuthorizationRepresenter {
 
     public static void toJSON(OutputWriter jsonWriter, AuthConfig authConfig) {
-        ArrayList<String> usersErrors = new ArrayList<>();
+        List<String> usersErrors = new ArrayList<>();
         authConfig.getUsers().forEach(r -> usersErrors.addAll(r.errors().getAllOn("name")));
-        ArrayList<String> rolesErrors = new ArrayList<>();
+        List<String> rolesErrors = new ArrayList<>();
         authConfig.getRoles().forEach(r -> rolesErrors.addAll(r.errors().getAllOn("name")));
 
         if (!usersErrors.isEmpty() || !rolesErrors.isEmpty()) {

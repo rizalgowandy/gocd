@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,8 @@ import java.util.Map;
 
 import static com.thoughtworks.go.i18n.LocalizedMessage.forbiddenToEdit;
 import static com.thoughtworks.go.serverhealth.HealthStateType.forbidden;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,36 +47,36 @@ public class RuleAwarePluginProfileCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldNotContinueWithConfigSaveIfUserIsUnauthorized() throws Exception {
+    public void shouldNotContinueWithConfigSaveIfUserIsUnauthorized() {
         SecretConfig securityAuthConfig = new SecretConfig("ldap", "cd.go.ldap");
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(false);
 
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        RuleAwarePluginProfileCommand command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
-        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("foo"), nullValue());
+        RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
+        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("foo")).isNull();
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result.message(), equalTo("Unauthorized to edit."));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result.message()).isEqualTo("Unauthorized to edit.");
     }
 
     @Test
-    public void shouldContinueWithConfigSaveIfUserIsAuthorized() throws Exception {
+    public void shouldContinueWithConfigSaveIfUserIsAuthorized() {
         SecretConfig securityAuthConfig = new SecretConfig("ldap", "cd.go.ldap");
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
 
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        RuleAwarePluginProfileCommand command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
-        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("ldap"), nullValue());
+        RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
+        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("ldap")).isNull();
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
-        assertThat(result.httpCode(), is(200));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
+        assertThat(result.httpCode()).isEqualTo(200);
     }
 
     @Test
@@ -86,22 +85,22 @@ public class RuleAwarePluginProfileCommandTest {
         SecretConfig securityAuthConfig = new SecretConfig(null, "some-plugin", new ConfigurationProperty(new ConfigurationKey("key"), new ConfigurationValue("value")));
         cruiseConfig.getSecretConfigs().add(securityAuthConfig);
 
-        RuleAwarePluginProfileCommand command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
+        RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
         assertThatThrownBy(() -> command.isValid(cruiseConfig))
                 .hasMessageContaining(EntityType.ElasticProfile.idCannotBeBlank());
     }
 
     @Test
-    public void shouldContinueWithConfigSaveIfUserIsAdmin() throws Exception {
+    public void shouldContinueWithConfigSaveIfUserIsAdmin() {
         SecretConfig securityAuthConfig = new SecretConfig("ldap", "cd.go.ldap");
 
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
 
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        RuleAwarePluginProfileCommand command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
-        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("ldap"), nullValue());
+        RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> command = new StubSecretConfigCommand(goConfigService, securityAuthConfig, currentUser, result);
+        assertThat(cruiseConfig.server().security().securityAuthConfigs().find("ldap")).isNull();
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     private class StubSecretConfigCommand extends RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> {
@@ -111,7 +110,7 @@ public class RuleAwarePluginProfileCommandTest {
         }
 
         @Override
-        public void update(CruiseConfig preprocessedConfig) throws Exception {
+        public void update(CruiseConfig preprocessedConfig) {
 
         }
 

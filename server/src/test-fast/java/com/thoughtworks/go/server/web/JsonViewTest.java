@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,14 @@ import java.util.Map;
 
 import static com.thoughtworks.go.server.web.JsonRenderer.render;
 import static com.thoughtworks.go.server.web.JsonView.asMap;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JsonViewTest {
 
-    private GoRequestContext requestContext = mock(GoRequestContext.class);
+    private final GoRequestContext requestContext = mock(GoRequestContext.class);
 
     @Test
     public void testShouldReturnOutputWithoutWhitespaceThatIsNotAllowedInHeaders() throws Exception {
@@ -49,14 +48,14 @@ public class JsonViewTest {
     }
 
     @Test
-    public void testShouldRenderEmptyMap() throws Exception {
+    public void testShouldRenderEmptyMap() {
         JsonView view = new JsonView();
-        String json = view.renderJson(new LinkedHashMap());
+        String json = view.renderJson(new LinkedHashMap<>());
         assertThatJson("{}").isEqualTo(json);
     }
 
     @Test
-    public void testShouldRenderAllKeyValuePairsFromMap() throws Exception {
+    public void testShouldRenderAllKeyValuePairsFromMap() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("key1", "value1");
         map.put("key2", "value2");
@@ -66,7 +65,7 @@ public class JsonViewTest {
     }
 
     @Test
-    public void testShouldRenderNestedMaps() throws Exception {
+    public void testShouldRenderNestedMaps() {
         Map<String, Object> map = new LinkedHashMap<>();
         Map<String, Object> nestedMap = new LinkedHashMap<>();
         nestedMap.put("keyA", "valueA");
@@ -78,8 +77,8 @@ public class JsonViewTest {
     }
 
     @Test
-    public void testShouldRenderArray() throws Exception {
-        List list = new ArrayList();
+    public void testShouldRenderArray() {
+        List<Object> list = new ArrayList<>();
         Map<String, Object> nestedMap = new LinkedHashMap<>();
         nestedMap.put("key1", "value1");
         list.add(nestedMap);
@@ -91,8 +90,8 @@ public class JsonViewTest {
     }
 
     @Test
-    public void testShouldRenderFakeMapsWithoutTheSurroundingMap() throws Exception {
-        List list = new ArrayList();
+    public void testShouldRenderFakeMapsWithoutTheSurroundingMap() {
+        List<Object> list = new ArrayList<>();
         Map<String, Object> nestedMap = new LinkedHashMap<>();
         nestedMap.put("key1", "value1");
         list.add(nestedMap);
@@ -110,7 +109,7 @@ public class JsonViewTest {
         when(requestContext.getFullRequestPath()).thenReturn("http://something/context");
 
         String json = render(url, requestContext);
-        assertThat(json, is("\"http://something/context/foo/bar/baz\""));
+        assertThat(json).isEqualTo("\"http://something/context/foo/bar/baz\"");
     }
 
 

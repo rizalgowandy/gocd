@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import com.thoughtworks.go.config.materials.tfs.TfsMaterialConfig;
 import com.thoughtworks.go.domain.materials.MaterialConfig;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -45,7 +46,7 @@ public class MaterialsRepresenter {
     public static void toJSON(OutputWriter jsonWriter, MaterialConfig materialConfig) {
         if (!materialConfig.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 errorMapping.put("materialName", "name");
                 errorMapping.put("folder", "destination");
                 errorMapping.put("autoUpdate", "auto_update");
@@ -104,11 +105,12 @@ public class MaterialsRepresenter {
         PLUGIN(PluggableSCMMaterialConfig.class, new PluggableScmMaterialRepresenter());
 
         private final Class<? extends MaterialConfig> type;
-        private final MaterialRepresenter representer;
+        private final MaterialRepresenter<MaterialConfig> representer;
 
-        Materials(Class<? extends MaterialConfig> type, MaterialRepresenter representer) {
+        @SuppressWarnings("unchecked")
+        Materials(Class<? extends MaterialConfig> type, MaterialRepresenter<?> representer) {
             this.type = type;
-            this.representer = representer;
+            this.representer = (MaterialRepresenter<MaterialConfig>) representer;
         }
     }
 }

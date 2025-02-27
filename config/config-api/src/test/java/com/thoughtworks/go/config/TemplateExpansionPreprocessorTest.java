@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,44 +22,43 @@ import com.thoughtworks.go.helper.StageConfigMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateExpansionPreprocessorTest {
     private TemplateExpansionPreprocessor preprocessor;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         preprocessor = new TemplateExpansionPreprocessor();
     }
 
     @Test
-    public void shouldNotThrowAnExceptionWhenAPipelineHasAtLeastOneStage() throws Exception {
+    public void shouldNotThrowAnExceptionWhenAPipelineHasAtLeastOneStage() {
         PipelineConfig pipelineConfig = pipelineConfigWithGivenStages("foo");
         preprocessor.process(new BasicCruiseConfig(new BasicPipelineConfigs(pipelineConfig)));
     }
 
     @Test
-    public void shouldNotExpandWhenTemplateAssociatedWithPipelineDoesNotExist() throws Exception {
+    public void shouldNotExpandWhenTemplateAssociatedWithPipelineDoesNotExist() {
         PipelineConfig pipelineConfig = new PipelineConfig(new CaseInsensitiveString("p"), new MaterialConfigs());
         pipelineConfig.templatize(new CaseInsensitiveString("does_not_exist"));
         preprocessor.process(new BasicCruiseConfig(new BasicPipelineConfigs(pipelineConfig)));
-        assertThat(pipelineConfig.hasTemplateApplied(), is(false));
+        assertThat(pipelineConfig.hasTemplateApplied()).isFalse();
     }
 
     @Test
-    public void shouldValidatePipelineToCheckItDoesNotAllowBothTemplateAndStages() throws Exception {
+    public void shouldValidatePipelineToCheckItDoesNotAllowBothTemplateAndStages() {
         PipelineConfig pipelineConfig = new PipelineConfig(new CaseInsensitiveString("p"), new MaterialConfigs());
         pipelineConfig.templatize(new CaseInsensitiveString("template"));
         pipelineConfig.addStageWithoutValidityAssertion(new StageConfig(new CaseInsensitiveString("stage"), new JobConfigs()));
         preprocessor.process(new BasicCruiseConfig(new BasicPipelineConfigs(pipelineConfig)));
-        assertThat(pipelineConfig.hasTemplateApplied(), is(false));
-        assertThat(pipelineConfig.errors().on("stages"), is("Cannot add stages to pipeline 'p' which already references template 'template'"));
-        assertThat(pipelineConfig.errors().on("template"), is("Cannot set template 'template' on pipeline 'p' because it already has stages defined"));
+        assertThat(pipelineConfig.hasTemplateApplied()).isFalse();
+        assertThat(pipelineConfig.errors().on("stages")).isEqualTo("Cannot add stages to pipeline 'p' which already references template 'template'");
+        assertThat(pipelineConfig.errors().on("template")).isEqualTo("Cannot set template 'template' on pipeline 'p' because it already has stages defined");
     }
 
     @Test
-    public void shouldCloneStagesSoThatMutationDoesnotAffectTemplate() throws Exception {
+    public void shouldCloneStagesSoThatMutationDoesnotAffectTemplate() {
         PipelineConfig pipelineConfig = new PipelineConfig(new CaseInsensitiveString("pipelineName"), new MaterialConfigs(MaterialConfigsMother.hgMaterialConfig("http://google.com")));
         pipelineConfig.setTemplateName(new CaseInsensitiveString("templateName"));
         PipelineTemplateConfig template = new PipelineTemplateConfig();
@@ -78,11 +77,11 @@ public class TemplateExpansionPreprocessorTest {
         jobConfigFromPipeline.setVariables(jobVariablesConfigFromPipeline);
 
 
-        assertThat(stageConfigFromPipeline.getVariables().isEmpty(), is(false));
-        assertThat(jobConfigFromPipeline.getVariables().isEmpty(), is(false));
+        assertThat(stageConfigFromPipeline.getVariables().isEmpty()).isFalse();
+        assertThat(jobConfigFromPipeline.getVariables().isEmpty()).isFalse();
 
-        assertThat(stageConfigFromTemplate.getVariables().isEmpty(), is(true));
-        assertThat(jobConfigFromTemplate.getVariables().isEmpty(), is(true));
+        assertThat(stageConfigFromTemplate.getVariables().isEmpty()).isTrue();
+        assertThat(jobConfigFromTemplate.getVariables().isEmpty()).isTrue();
     }
 
     private PipelineConfig pipelineConfigWithGivenStages(String... stageNames) {

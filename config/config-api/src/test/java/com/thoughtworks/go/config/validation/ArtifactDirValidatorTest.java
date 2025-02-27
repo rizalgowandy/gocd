@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class ArtifactDirValidatorTest {
     @Test
-    public void shouldThrowExceptionWhenUserProvidesDot() throws Exception {
+    public void shouldThrowExceptionWhenUserProvidesDot() {
         CruiseConfig cruiseConfig = new BasicCruiseConfig();
         cruiseConfig.setServerConfig(new ServerConfig(".", null));
 
@@ -82,7 +82,7 @@ public class ArtifactDirValidatorTest {
 
 
     @Test
-    public void shouldNotThrowExceptionWhenUserProvidesValidPath() throws Exception {
+    public void shouldNotThrowExceptionWhenUserProvidesValidPath() {
         File file = new File("");
         CruiseConfig cruiseConfig = new BasicCruiseConfig();
         cruiseConfig.setServerConfig(new ServerConfig(file.getAbsolutePath() + "/logs", null));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,20 @@ import com.thoughtworks.go.helper.ModificationsMother;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModificationSummariesTest {
     @Test
     public void shouldGetLatestRevisionGivenMultipleRevisions() {
         ModificationSummaries summaries = new ModificationSummaries(ModificationsMother.multipleModifications());
         String latest = summaries.latestRevision();
-        assertThat(latest, is(ModificationsMother.currentRevision()));
+        assertThat(latest).isEqualTo(ModificationsMother.currentRevision());
     }
 
     @Test
     public void shouldHandleEmptyRevisions() {
         ModificationSummaries summaries = new ModificationSummaries();
         String latest = summaries.latestRevision();
-        assertThat(latest, is(StringUtils.EMPTY));
+        assertThat(latest).isEqualTo(StringUtils.EMPTY);
     }
 }

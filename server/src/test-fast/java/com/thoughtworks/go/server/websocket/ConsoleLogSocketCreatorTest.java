@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class ConsoleLogSocketCreatorTest {
     private ConsoleLogSocketCreator creator;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         restfulService = mock(RestfulService.class);
 
         request = mock(JettyServerUpgradeRequest.class);
@@ -38,7 +38,7 @@ public class ConsoleLogSocketCreatorTest {
     }
 
     @Test
-    public void createWebSocketParsesJobIdentifierFromURI() throws Exception {
+    public void createWebSocketParsesJobIdentifierFromURI() {
         when(request.getRequestPath()).thenReturn("/console-websocket/pipe/pipeLabel/stage/stageCount/job");
         creator.createWebSocket(request, mock(JettyServerUpgradeResponse.class));
 

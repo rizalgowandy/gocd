@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.thoughtworks.go.server.service.plugins.processor.authorization.AuthorizationRequestProcessor.Request.INVALIDATE_CACHE_REQUEST;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +51,7 @@ public class AuthorizationRequestProcessorTest {
     private SecurityAuthConfigs securityAuthConfigsSpy;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         when(pluginDescriptor.id()).thenReturn("cd.go.authorization.github");
         lenient().when(goConfigService.security()).thenReturn(securityConfig);
         securityAuthConfigsSpy = spy(new SecurityAuthConfigs());
@@ -60,7 +59,7 @@ public class AuthorizationRequestProcessorTest {
     }
 
     @Test
-    public void shouldProcessInvalidateCacheRequest() throws Exception {
+    public void shouldProcessInvalidateCacheRequest() {
         PluginRoleService pluginRoleService = mock(PluginRoleService.class);
 
         GoApiRequest request = new DefaultGoApiRequest(INVALIDATE_CACHE_REQUEST.requestName(), "1.0", null);
@@ -68,7 +67,7 @@ public class AuthorizationRequestProcessorTest {
 
         GoApiResponse response = authorizationRequestProcessor.process(pluginDescriptor, request);
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         verify(pluginRoleService).invalidateRolesFor("cd.go.authorization.github");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobResultTopic extends GoMessageTopic<JobResultMessage> {
     @Autowired
-    public JobResultTopic(MessagingService messaging) {
+    public JobResultTopic(MessagingService<GoMessage> messaging) {
         super(messaging, "job-result");
     }
 }

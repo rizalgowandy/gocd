@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,21 +26,17 @@ import com.thoughtworks.go.plugin.infra.PluginRequestProcessorRegistry;
 import com.thoughtworks.go.plugin.infra.plugininfo.GoPluginDescriptor;
 import com.thoughtworks.go.server.service.ConsoleService;
 import com.thoughtworks.go.server.service.plugins.processor.console.ConsoleLogRequestProcessor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.thoughtworks.go.server.service.plugins.processor.console.ConsoleLogRequestProcessor.APPEND_TO_CONSOLE_LOG;
 import static com.thoughtworks.go.server.service.plugins.processor.console.ConsoleLogRequestProcessor.VERSION_1;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,12 +48,8 @@ public class ConsoleLogRequestProcessorV1Test {
     @Mock
     private GoPluginDescriptor pluginDescriptor;
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
-    void shouldRouteMessageToConsoleService() throws IOException, IllegalArtifactLocationException {
+    void shouldRouteMessageToConsoleService() throws IllegalArtifactLocationException {
         Map<String, String> requestMap = new HashMap<>();
         requestMap.put("pipelineName", "p1");
         requestMap.put("pipelineCounter", "1");
@@ -72,7 +64,7 @@ public class ConsoleLogRequestProcessorV1Test {
         final ConsoleLogRequestProcessor processor = new ConsoleLogRequestProcessor(pluginRequestProcessorRegistry, consoleService);
         final GoApiResponse response = processor.process(pluginDescriptor, goApiRequest);
 
-        assertThat(response.responseCode(), is(DefaultGoApiResponse.SUCCESS_RESPONSE_CODE));
+        assertThat(response.responseCode()).isEqualTo(DefaultGoApiResponse.SUCCESS_RESPONSE_CODE);
 
         final JobIdentifier jobIdentifier = new JobIdentifier("p1", 1, null, "s1", "2", "j1");
         verify(consoleService).appendToConsoleLog(jobIdentifier, "message1");
@@ -86,9 +78,9 @@ public class ConsoleLogRequestProcessorV1Test {
         final ConsoleLogRequestProcessor processor = new ConsoleLogRequestProcessor(pluginRequestProcessorRegistry, consoleService);
         final GoApiResponse response = processor.process(pluginDescriptor, goApiRequest);
 
-        assertThat(response.responseCode(), is(DefaultGoApiResponse.INTERNAL_ERROR));
+        assertThat(response.responseCode()).isEqualTo(DefaultGoApiResponse.INTERNAL_ERROR);
 
-        final Map responseContents = new Gson().fromJson(response.responseBody(), Map.class);
-        assertThat((String) responseContents.get("message"), containsString("Error:"));
+        @SuppressWarnings("unchecked") final Map<String, String> responseContents = new Gson().fromJson(response.responseBody(), Map.class);
+        assertThat(responseContents.get("message")).contains("Error:");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.thoughtworks.go.helper.GoConfigMother.configWithPipelines;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PipelineSchedulerTest {
@@ -105,11 +104,11 @@ public class PipelineSchedulerTest {
     }
 
     @Test
-    public void shouldAddErrorIfPipelineisNotFound() throws Exception {
+    public void shouldAddErrorIfPipelineIsNotFound() {
         when(configService.hasPipelineNamed(new CaseInsensitiveString("invalid"))).thenReturn(false);
         OperationResult operationResult = mock(OperationResult.class);
-        final HashMap<String, String> revisions = new HashMap<>();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         scheduler.manualProduceBuildCauseAndSave("invalid", Username.ANONYMOUS, new ScheduleOptions(revisions, environmentVariables, new HashMap<>()), operationResult);
         verify(operationResult).notFound("Pipeline 'invalid' not found", "Pipeline 'invalid' not found", HealthStateType.general(
                 HealthStateScope.forPipeline("invalid")));
@@ -120,7 +119,7 @@ public class PipelineSchedulerTest {
         when(configService.hasPipelineNamed(new CaseInsensitiveString("blahPipeline"))).thenReturn(true);
         when(configService.hasVariableInScope("blahPipeline", "blahVariable")).thenReturn(false);
         OperationResult operationResult = mock(OperationResult.class);
-        final HashMap<String, String> revisions = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
         scheduler.manualProduceBuildCauseAndSave("blahPipeline", Username.ANONYMOUS, new ScheduleOptions(revisions, Map.of("blahVariable", "blahValue"), new HashMap<>()), operationResult);
         verifyNoMoreInteractions(buildCauseProducerService);
         verify(operationResult).notFound("Variable 'blahVariable' has not been configured for pipeline 'blahPipeline'", "Variable 'blahVariable' has not been configured for pipeline 'blahPipeline'",
@@ -135,34 +134,34 @@ public class PipelineSchedulerTest {
         when(configService.hasVariableInScope("blahPipeline", "blahVariable")).thenReturn(true);
         OperationResult operationResult = mock(OperationResult.class);
         Map<String, String> variables = Map.of("blahVariable", "blahValue");
-        final HashMap<String, String> revisions = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
         scheduler.manualProduceBuildCauseAndSave("blahPipeline", Username.ANONYMOUS, new ScheduleOptions(revisions, variables, new HashMap<>()), operationResult);
         verify(buildCauseProducerService).manualSchedulePipeline(Username.ANONYMOUS, pipelineConfig.name(), new ScheduleOptions(new HashMap<>(), variables, new HashMap<>()),
                 operationResult);
     }
 
     @Test
-    public void shouldUpdateOperationResultTo404WhenAnInvalidMaterialIsSpecified() throws Exception {
+    public void shouldUpdateOperationResultTo404WhenAnInvalidMaterialIsSpecified() {
         when(configService.hasPipelineNamed(new CaseInsensitiveString("pipeline"))).thenReturn(true);
         when(configService.findMaterial(new CaseInsensitiveString("pipeline"), "invalid-material")).thenReturn(null);
         HttpOperationResult result = new HttpOperationResult();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         scheduler.manualProduceBuildCauseAndSave("pipeline", Username.ANONYMOUS, new ScheduleOptions(Map.of("invalid-material", "blah-revision"), environmentVariables, new HashMap<>()), result);
-        assertThat(result.httpCode(), is(404));
-        assertThat(result.message(), is("material with fingerprint [invalid-material] not found in pipeline [pipeline]"));
+        assertThat(result.httpCode()).isEqualTo(404);
+        assertThat(result.message()).isEqualTo("material with fingerprint [invalid-material] not found in pipeline [pipeline]");
     }
 
     @Test
-    public void shouldNotAcceptEmptyRevision() throws Exception {
+    public void shouldNotAcceptEmptyRevision() {
         when(configService.hasPipelineNamed(new CaseInsensitiveString("pipeline"))).thenReturn(true);
         MaterialConfig materialConfig = mock(MaterialConfig.class);
         when(configService.findMaterial(new CaseInsensitiveString("pipeline"), "invalid-material")).thenReturn(materialConfig);
 
         HttpOperationResult result = new HttpOperationResult();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         scheduler.manualProduceBuildCauseAndSave("pipeline", Username.ANONYMOUS, new ScheduleOptions(Map.of("invalid-material", ""), environmentVariables, new HashMap<>()), result);
-        assertThat(result.httpCode(), is(406));
-        assertThat(result.message(), is("material with fingerprint [invalid-material] has empty revision"));
+        assertThat(result.httpCode()).isEqualTo(406);
+        assertThat(result.message()).isEqualTo("material with fingerprint [invalid-material] has empty revision");
     }
 
     @Test
@@ -170,15 +169,15 @@ public class PipelineSchedulerTest {
         ArgumentCaptor<ConfigChangedListener> captor = ArgumentCaptor.forClass(ConfigChangedListener.class);
         PipelineConfig newPipeline = mock(PipelineConfig.class);
         String pipelineName = "newly-added-pipeline";
-        ArrayList<PipelineConfig> pipelineConfigs = new ArrayList<>();
+        List<PipelineConfig> pipelineConfigs = new ArrayList<>();
         pipelineConfigs.add(newPipeline);
         when(configService.getAllPipelineConfigs()).thenReturn(pipelineConfigs);
         doNothing().when(configService).register(captor.capture());
         scheduler.initialize();
         List<ConfigChangedListener> listeners = captor.getAllValues();
-        assertThat(listeners.contains(scheduler), is(true));
-        assertThat(listeners.get(1) instanceof EntityConfigChangedListener, is(true));
-        EntityConfigChangedListener<PipelineConfig> entityConfigChangedListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
+        assertThat(listeners.contains(scheduler)).isTrue();
+        assertThat(listeners.get(1) instanceof EntityConfigChangedListener).isTrue();
+        @SuppressWarnings("unchecked") EntityConfigChangedListener<PipelineConfig> entityConfigChangedListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
 
 
         when(newPipeline.name()).thenReturn(new CaseInsensitiveString(pipelineName));
@@ -194,9 +193,9 @@ public class PipelineSchedulerTest {
         doNothing().when(configService).register(captor.capture());
         scheduler.initialize();
         List<ConfigChangedListener> listeners = captor.getAllValues();
-        assertThat(listeners.contains(scheduler), is(true));
-        assertThat(listeners.get(1) instanceof EntityConfigChangedListener, is(true));
-        EntityConfigChangedListener<PipelineConfig> entityConfigChangedListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
+        assertThat(listeners.contains(scheduler)).isTrue();
+        assertThat(listeners.get(1) instanceof EntityConfigChangedListener).isTrue();
+        @SuppressWarnings("unchecked") EntityConfigChangedListener<PipelineConfig> entityConfigChangedListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
 
         PipelineConfig newPipeline = mock(PipelineConfig.class);
         String pipelineName = "deleted-pipeline";
@@ -223,9 +222,9 @@ public class PipelineSchedulerTest {
         scheduler.initialize();
         List<ConfigChangedListener> listeners = captor.getAllValues();
         listeners.get(0).onConfigChange(cruiseConfig);
-        assertThat(listeners.contains(scheduler), is(true));
-        assertThat(listeners.get(2) instanceof EntityConfigChangedListener, is(true));
-        EntityConfigChangedListener<ConfigRepoConfig> entityConfigChangedListener = (EntityConfigChangedListener<ConfigRepoConfig>) listeners.get(2);
+        assertThat(listeners.contains(scheduler)).isTrue();
+        assertThat(listeners.get(2) instanceof EntityConfigChangedListener).isTrue();
+        @SuppressWarnings("unchecked") EntityConfigChangedListener<ConfigRepoConfig> entityConfigChangedListener = (EntityConfigChangedListener<ConfigRepoConfig>) listeners.get(2);
 
         //both should get scheduled
         scheduler.checkPipelines();

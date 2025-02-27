@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -60,44 +58,44 @@ public class ClusterProfilesServiceIntegrationTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         configHelper.onTearDown();
     }
 
     @Test
-    public void shouldCreateANewClusterProfile() throws Exception {
+    public void shouldCreateANewClusterProfile() {
         String clusterId = "cluster1";
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         ClusterProfile clusterProfile = new ClusterProfile(clusterId, "pluginid");
 
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(0));
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(0);
 
         clusterProfilesService.create(clusterProfile, new Username("Bob"), result);
 
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId), is(clusterProfile));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId)).isEqualTo(clusterProfile);
     }
 
     @Test
-    public void shouldNotAllowCreationANewClusterProfileWithSameName() throws Exception {
+    public void shouldNotAllowCreationANewClusterProfileWithSameName() {
         String clusterId = "cluster1";
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         ClusterProfile clusterProfile = new ClusterProfile(clusterId, "pluginid");
 
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(0));
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(0);
 
         clusterProfilesService.create(clusterProfile, new Username("Bob"), result);
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(clusterProfile.getAllErrors(), hasSize(0));
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId), is(clusterProfile));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(clusterProfile.getAllErrors()).hasSize(0);
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId)).isEqualTo(clusterProfile);
 
         clusterProfilesService.create(clusterProfile, new Username("Bob"), result);
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(result.isSuccessful(), is(false));
-        assertThat(clusterProfile.getAllErrors(), hasSize(1));
-        assertThat(clusterProfile.errors().get("id").get(0), is("Cluster Profile id 'cluster1' is not unique"));
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(clusterProfile.getAllErrors()).hasSize(1);
+        assertThat(clusterProfile.errors().get("id").get(0)).isEqualTo("Cluster Profile id 'cluster1' is not unique");
     }
 
     @Test
@@ -108,13 +106,13 @@ public class ClusterProfilesServiceIntegrationTest {
 
         clusterProfilesService.create(clusterProfile, new Username("Bob"), new HttpLocalizedOperationResult());
 
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId), is(clusterProfile));
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId)).isEqualTo(clusterProfile);
 
         clusterProfilesService.delete(clusterProfile, new Username("Bob"), result);
 
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(0));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(0);
     }
 
     @Test
@@ -129,13 +127,13 @@ public class ClusterProfilesServiceIntegrationTest {
 
         clusterProfilesService.create(clusterProfile, new Username("Bob"), new HttpLocalizedOperationResult());
 
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId), is(clusterProfile));
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId)).isEqualTo(clusterProfile);
 
         clusterProfilesService.update(newClusterProfile, new Username("Bob"), result);
 
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(clusterProfilesService.getPluginProfiles().size(), is(1));
-        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId), is(newClusterProfile));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(clusterProfilesService.getPluginProfiles().size()).isEqualTo(1);
+        assertThat(clusterProfilesService.getPluginProfiles().find(clusterId)).isEqualTo(newClusterProfile);
     }
 }

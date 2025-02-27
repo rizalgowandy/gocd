@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.thoughtworks.go.config.EnvironmentConfig
 import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class EnvironmentsRepresenterTest {
 
@@ -48,7 +48,7 @@ class EnvironmentsRepresenterTest {
           [
             "_links"               : [
               "doc" : [
-                "href": "https://api.go.cd/current/#environment-config"
+                "href": "https://api.gocd.org/current/#environment-config"
               ],
               "find": [
                 "href": "http://test.host/go/api/admin/environments/:name"
@@ -69,7 +69,7 @@ class EnvironmentsRepresenterTest {
               [
                 "_links": [
                   "doc" : [
-                    "href": "https://api.go.cd/current/#pipelines"
+                    "href": "https://api.gocd.org/current/#pipelines"
                   ],
                   "find": [
                     "href": "/api/admin/pipelines/:pipeline_name"
@@ -83,7 +83,7 @@ class EnvironmentsRepresenterTest {
               [
                 "_links": [
                   "doc" : [
-                    "href": "https://api.go.cd/current/#pipelines"
+                    "href": "https://api.gocd.org/current/#pipelines"
                   ],
                   "find": [
                     "href": "/api/admin/pipelines/:pipeline_name"
@@ -99,7 +99,7 @@ class EnvironmentsRepresenterTest {
           [
             "_links"               : [
               "doc" : [
-                "href": "https://api.go.cd/current/#environment-config"
+                "href": "https://api.gocd.org/current/#environment-config"
               ],
               "find": [
                 "href": "http://test.host/go/api/admin/environments/:name"
@@ -120,7 +120,7 @@ class EnvironmentsRepresenterTest {
               [
                 "_links": [
                   "doc" : [
-                    "href": "https://api.go.cd/current/#pipelines"
+                    "href": "https://api.gocd.org/current/#pipelines"
                   ],
                   "find": [
                     "href": "/api/admin/pipelines/:pipeline_name"
@@ -137,7 +137,7 @@ class EnvironmentsRepresenterTest {
       ],
       "_links"   : [
         "doc" : [
-          "href": "https://api.go.cd/current/#environment-config"
+          "href": "https://api.gocd.org/current/#environment-config"
         ],
         "self": [
           "href": "http://test.host/go/api/admin/environments"
@@ -156,7 +156,7 @@ class EnvironmentsRepresenterTest {
       ],
       "_links"   : [
         "doc" : [
-          "href": "https://api.go.cd/current/#environment-config"
+          "href": "https://api.gocd.org/current/#environment-config"
         ],
         "self": [
           "href": "http://test.host/go/api/admin/environments"

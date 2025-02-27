@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import com.thoughtworks.go.helper.ConfigFileFixture;
 import com.thoughtworks.go.util.ConfigElementImplementationRegistryMother;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CruiseConfigTest {
 
@@ -48,21 +46,21 @@ public class CruiseConfigTest {
 
         ConfigElementImplementationRegistry registry = ConfigElementImplementationRegistryMother.withNoPlugins();
         CruiseConfig config = new MagicalGoConfigXmlLoader(new ConfigCache(), registry).loadConfigHolder(ConfigFileFixture.withJob(jobXml + jobXml2)).config;
-        assertThat(config.getAllResources(), hasItem(new ResourceConfig("one")));
-        assertThat(config.getAllResources(), hasItem(new ResourceConfig("two")));
-        assertThat(config.getAllResources(), hasItem(new ResourceConfig("three")));
-        assertThat(config.getAllResources().size(), is(3));
+        assertThat(config.getAllResources()).contains(new ResourceConfig("one"));
+        assertThat(config.getAllResources()).contains(new ResourceConfig("two"));
+        assertThat(config.getAllResources()).contains(new ResourceConfig("three"));
+        assertThat(config.getAllResources().size()).isEqualTo(3);
     }
 
     @Test
-    public void shouldReturnTrueIfUserIsAdmin() throws Exception {
+    public void shouldReturnTrueIfUserIsAdmin() {
         CruiseConfig config = ConfigMigrator.loadWithMigration(ConfigFileFixture.STAGE_AUTH_WITH_ADMIN_AND_AUTH).config;
-        assertThat(config.isAdministrator("admin"), is(true));
+        assertThat(config.isAdministrator("admin")).isTrue();
     }
 
     @Test
-    public void shouldReturnfalseIfUserIsNotAdmin() throws Exception {
+    public void shouldReturnfalseIfUserIsNotAdmin() {
         CruiseConfig config = ConfigMigrator.loadWithMigration(ConfigFileFixture.STAGE_AUTH_WITH_ADMIN_AND_AUTH).config;
-        assertThat(config.isAdministrator("pavan"), is(false));
+        assertThat(config.isAdministrator("pavan")).isFalse();
     }
 }

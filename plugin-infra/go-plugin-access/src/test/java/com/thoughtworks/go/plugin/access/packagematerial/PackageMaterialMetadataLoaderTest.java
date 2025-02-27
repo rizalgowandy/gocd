@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import com.thoughtworks.go.plugin.infra.plugininfo.GoPluginDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PackageMaterialMetadataLoaderTest {
@@ -35,7 +33,7 @@ public class PackageMaterialMetadataLoaderTest {
     private PluginManager pluginManager;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         pluginDescriptor = GoPluginDescriptor.builder().id("plugin-id").isBundledPlugin(true).build();
         pluginManager = mock(PluginManager.class);
         packageRepositoryExtension = mock(PackageRepositoryExtension.class);
@@ -56,8 +54,8 @@ public class PackageMaterialMetadataLoaderTest {
 
         metadataLoader.fetchRepositoryAndPackageMetaData(pluginDescriptor);
 
-        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id()).getRepositoryConfiguration(), is(expectedRepoConfigurations));
-        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id()).getPackageConfiguration(), is(expectedPackageConfigurations));
+        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id()).getRepositoryConfiguration()).isEqualTo(expectedRepoConfigurations);
+        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id()).getPackageConfiguration()).isEqualTo(expectedPackageConfigurations);
     }
 
     @Test
@@ -66,10 +64,10 @@ public class PackageMaterialMetadataLoaderTest {
         try {
             metadataLoader.fetchRepositoryAndPackageMetaData(pluginDescriptor);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Plugin[plugin-id] returned null repository configuration"));
+            assertThat(e.getMessage()).isEqualTo("Plugin[plugin-id] returned null repository configuration");
         }
-        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), nullValue());
-        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), nullValue());
+        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
+        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
     }
 
     @Test
@@ -78,20 +76,20 @@ public class PackageMaterialMetadataLoaderTest {
         try {
             metadataLoader.fetchRepositoryAndPackageMetaData(pluginDescriptor);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Plugin[plugin-id] returned null repository configuration"));
+            assertThat(e.getMessage()).isEqualTo("Plugin[plugin-id] returned null repository configuration");
         }
-        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), nullValue());
-        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), nullValue());
+        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
+        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
     }
 
     @Test
-    public void shouldRegisterAsPluginFrameworkStartListener() throws Exception {
+    public void shouldRegisterAsPluginFrameworkStartListener() {
         metadataLoader = new PackageMaterialMetadataLoader(pluginManager, packageRepositoryExtension);
         verify(pluginManager).addPluginChangeListener(metadataLoader);
     }
 
     @Test
-    public void shouldFetchMetadataOnPluginLoadedCallback() throws Exception {
+    public void shouldFetchMetadataOnPluginLoadedCallback() {
         PackageMaterialMetadataLoader spy = spy(metadataLoader);
         doNothing().when(spy).fetchRepositoryAndPackageMetaData(pluginDescriptor);
         when(packageRepositoryExtension.canHandlePlugin(pluginDescriptor.id())).thenReturn(true);
@@ -100,7 +98,7 @@ public class PackageMaterialMetadataLoaderTest {
     }
 
     @Test
-    public void shouldNotTryToFetchMetadataOnPluginLoadedCallback() throws Exception {
+    public void shouldNotTryToFetchMetadataOnPluginLoadedCallback() {
         PackageMaterialMetadataLoader spy = spy(metadataLoader);
         when(packageRepositoryExtension.canHandlePlugin(pluginDescriptor.id())).thenReturn(false);
         spy.pluginLoaded(pluginDescriptor);
@@ -108,12 +106,12 @@ public class PackageMaterialMetadataLoaderTest {
     }
 
     @Test
-    public void shouldRemoveMetadataOnPluginUnLoadedCallback() throws Exception {
+    public void shouldRemoveMetadataOnPluginUnLoadedCallback() {
         RepositoryMetadataStore.getInstance().addMetadataFor(pluginDescriptor.id(), new PackageConfigurations());
         PackageMetadataStore.getInstance().addMetadataFor(pluginDescriptor.id(), new PackageConfigurations());
         when(packageRepositoryExtension.canHandlePlugin(pluginDescriptor.id())).thenReturn(true);
         metadataLoader.pluginUnLoaded(pluginDescriptor);
-        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), is(nullValue()));
-        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id()), is(nullValue()));
+        assertThat(RepositoryMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
+        assertThat(PackageMetadataStore.getInstance().getMetadata(pluginDescriptor.id())).isNull();
     }
 }

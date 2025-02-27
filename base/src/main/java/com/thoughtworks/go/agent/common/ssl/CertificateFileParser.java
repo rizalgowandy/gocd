@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.List;
 public class CertificateFileParser {
 
     public List<X509Certificate> certificates(File certFile) throws IOException, CertificateException {
-        ArrayList<X509Certificate> certs = new ArrayList<>();
+        List<X509Certificate> certs = new ArrayList<>();
 
         if (certFile != null && certFile.exists() && certFile.canRead()) {
             try (FileInputStream fis = new FileInputStream(certFile)) {

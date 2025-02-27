@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class AgentStatusChangeNotifierTest {
     private AgentStatusChangeNotifier agentStatusChangeNotifier;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         agentStatusChangeNotifier = new AgentStatusChangeNotifier(notificationPluginRegistry, pluginNotificationService);
     }
 

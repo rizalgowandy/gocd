@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,59 +22,57 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CcTrayCacheTest {
     private CcTrayCache cache;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         cache = new CcTrayCache();
     }
 
     @Test
-    public void shouldNotBeAbleToFindAnItemWhichDoesNotExistInCache() throws Exception {
+    public void shouldNotBeAbleToFindAnItemWhichDoesNotExistInCache() {
         assertNull(cache.get("something-which-does-not-exist"));
     }
 
     @Test
-    public void shouldBeAbleToPutAnItemIntoCache() throws Exception {
+    public void shouldBeAbleToPutAnItemIntoCache() {
         ProjectStatus status = new ProjectStatus("item1", "Sleeping", "last-build-status", "last-build-label", new Date(), "web-url");
 
         cache.put(status);
 
-        assertThat(cache.get("item1"), is(status));
+        assertThat(cache.get("item1")).isEqualTo(status);
     }
 
     @Test
-    public void shouldBeAbleToPutMultipleItemsIntoCache() throws Exception {
+    public void shouldBeAbleToPutMultipleItemsIntoCache() {
         ProjectStatus status1 = new ProjectStatus("item1", "Sleeping", "last-build-status", "last-build-label", new Date(), "web-url");
         ProjectStatus status2 = new ProjectStatus("item2", "Sleeping", "last-build-status", "last-build-label", new Date(), "web-url");
         ProjectStatus status3 = new ProjectStatus("item3", "Sleeping", "last-build-status", "last-build-label", new Date(), "web-url");
 
         cache.putAll(List.of(status1, status2, status3));
 
-        assertThat(cache.get("item1"), is(status1));
-        assertThat(cache.get("item2"), is(status2));
-        assertThat(cache.get("item3"), is(status3));
+        assertThat(cache.get("item1")).isEqualTo(status1);
+        assertThat(cache.get("item2")).isEqualTo(status2);
+        assertThat(cache.get("item3")).isEqualTo(status3);
     }
 
     @Test
-    public void shouldBeAbleToReplaceAnItemInCache() throws Exception {
+    public void shouldBeAbleToReplaceAnItemInCache() {
         ProjectStatus firstStatus = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus nextStatus = new ProjectStatus("item1", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
 
         cache.put(firstStatus);
         cache.put(nextStatus);
 
-        assertThat(cache.get("item1"), is(nextStatus));
+        assertThat(cache.get("item1")).isEqualTo(nextStatus);
     }
 
     @Test
-    public void shouldBeAbleToReplaceMultipleItemsInCache() throws Exception {
+    public void shouldBeAbleToReplaceMultipleItemsInCache() {
         ProjectStatus firstStatusOfItem1 = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus nextStatusOfItem1 = new ProjectStatus("item1", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
 
@@ -89,13 +87,13 @@ public class CcTrayCacheTest {
 
         cache.putAll(List.of(nextStatusOfItem1, status2, nextStatusOfItem3));
 
-        assertThat(cache.get("item1"), is(nextStatusOfItem1));
-        assertThat(cache.get("item2"), is(status2));
-        assertThat(cache.get("item3"), is(nextStatusOfItem3));
+        assertThat(cache.get("item1")).isEqualTo(nextStatusOfItem1);
+        assertThat(cache.get("item2")).isEqualTo(status2);
+        assertThat(cache.get("item3")).isEqualTo(nextStatusOfItem3);
     }
 
     @Test
-    public void shouldBeAbleToClearExistingCacheAndReplaceAllItemsInIt() throws Exception {
+    public void shouldBeAbleToClearExistingCacheAndReplaceAllItemsInIt() {
         ProjectStatus status1 = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus status2 = new ProjectStatus("item2", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
         ProjectStatus status3 = new ProjectStatus("item3", "Sleeping 3", "last-build-status 3", "last-build-label 3", new Date(), "web-url 3");
@@ -108,15 +106,15 @@ public class CcTrayCacheTest {
 
         cache.replaceAllEntriesInCacheWith(List.of(status3, status4, status5));
 
-        assertThat(cache.get("item1"), is(nullValue()));
-        assertThat(cache.get("item2"), is(nullValue()));
-        assertThat(cache.get("item3"), is(status3));
-        assertThat(cache.get("item4"), is(status4));
-        assertThat(cache.get("item5"), is(status5));
+        assertThat(cache.get("item1")).isNull();
+        assertThat(cache.get("item2")).isNull();
+        assertThat(cache.get("item3")).isEqualTo(status3);
+        assertThat(cache.get("item4")).isEqualTo(status4);
+        assertThat(cache.get("item5")).isEqualTo(status5);
     }
 
     @Test
-    public void shouldProvideAnOrderedListOfAllItemsInCache() throws Exception {
+    public void shouldProvideAnOrderedListOfAllItemsInCache() {
         ProjectStatus status1 = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus status2 = new ProjectStatus("item2", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
         ProjectStatus status3 = new ProjectStatus("item3", "Sleeping 3", "last-build-status 3", "last-build-label 3", new Date(), "web-url 3");
@@ -124,13 +122,13 @@ public class CcTrayCacheTest {
         cache.replaceAllEntriesInCacheWith(List.of(status1, status2, status3));
         List<ProjectStatus> allProjects = cache.allEntriesInOrder();
 
-        assertThat(allProjects.get(0), is(status1));
-        assertThat(allProjects.get(1), is(status2));
-        assertThat(allProjects.get(2), is(status3));
+        assertThat(allProjects.get(0)).isEqualTo(status1);
+        assertThat(allProjects.get(1)).isEqualTo(status2);
+        assertThat(allProjects.get(2)).isEqualTo(status3);
     }
 
     @Test
-    public void shouldContainChangedEntryInOrderedListAfterAPut() throws Exception {
+    public void shouldContainChangedEntryInOrderedListAfterAPut() {
         ProjectStatus status1 = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus status2 = new ProjectStatus("item2", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
         ProjectStatus status3 = new ProjectStatus("item3", "Sleeping 3", "last-build-status 3", "last-build-label 3", new Date(), "web-url 3");
@@ -138,20 +136,20 @@ public class CcTrayCacheTest {
 
         cache.replaceAllEntriesInCacheWith(List.of(status1, status2, status3));
         List<ProjectStatus> allProjects = cache.allEntriesInOrder();
-        assertThat(allProjects.get(1), is(status2));
+        assertThat(allProjects.get(1)).isEqualTo(status2);
 
 
         cache.put(status2_changed);
         allProjects = cache.allEntriesInOrder();
 
 
-        assertThat(allProjects.get(0), is(status1));
-        assertThat(allProjects.get(1), is(status2_changed));
-        assertThat(allProjects.get(2), is(status3));
+        assertThat(allProjects.get(0)).isEqualTo(status1);
+        assertThat(allProjects.get(1)).isEqualTo(status2_changed);
+        assertThat(allProjects.get(2)).isEqualTo(status3);
     }
 
     @Test
-    public void shouldContainChangedEntriesInOrderedListAfterAPutAll() throws Exception {
+    public void shouldContainChangedEntriesInOrderedListAfterAPutAll() {
         ProjectStatus status1 = new ProjectStatus("item1", "Sleeping 1", "last-build-status 1", "last-build-label 1", new Date(), "web-url 1");
         ProjectStatus status2 = new ProjectStatus("item2", "Sleeping 2", "last-build-status 2", "last-build-label 2", new Date(), "web-url 2");
         ProjectStatus status3 = new ProjectStatus("item3", "Sleeping 3", "last-build-status 3", "last-build-label 3", new Date(), "web-url 3");
@@ -166,8 +164,8 @@ public class CcTrayCacheTest {
         List<ProjectStatus> allProjects = cache.allEntriesInOrder();
 
 
-        assertThat(allProjects.get(0), is(status1_changed));
-        assertThat(allProjects.get(1), is(status2_changed));
-        assertThat(allProjects.get(2), is(status3));
+        assertThat(allProjects.get(0)).isEqualTo(status1_changed);
+        assertThat(allProjects.get(1)).isEqualTo(status2_changed);
+        assertThat(allProjects.get(2)).isEqualTo(status3);
     }
 }

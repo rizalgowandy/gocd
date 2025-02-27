@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:map";
+
 $icon-hover-color: #1c435c;
 $dashboard-tab-bg: #fff;
 $dashboard-tab-name: #1c435c;
@@ -403,11 +405,11 @@ button {
 }
 
 .icon_edit {
-  @include icon-before($type: pencil);
-
   cursor: pointer;
   color: $icon-color;
   display: none;
+
+  @include icon-before($type: pencil);
 
   .current & {
     color: $go-primary;
@@ -419,8 +421,12 @@ button {
   @include sort-cursor;
   @include grip-icon;
 
-  font-size: 12px;
-  color: #9b9b9b;
+  // stylelint-disable no-duplicate-selectors
+  & {
+    font-size: 12px;
+    color: #9b9b9b;
+  }
+  // stylelint-enable
 
   &:active {
     @include sort-cursor-active;
@@ -428,32 +434,32 @@ button {
 }
 
 .revert {
-  @include icon-before($type: xmark);
-
   position: absolute;
   right: 5px;
   top: 2px;
   cursor: pointer;
+
+  @include icon-before($type: xmark);
 }
 
 .icon_alert {
-  @include icon-before($type: exclamation-circle);
-
   margin-right: 10px;
   font-size: 150%;
-  color: map-get($foundation-palette, alert);
+  color: map.get($foundation-palette, alert);
+
+  @include icon-before($type: exclamation-circle);
 }
 
 .icon_tabs-list {
-  @include icon-before($type: chevron-down);
-
   font-size: 14px;
+
+  @include icon-before($type: chevron-down);
 }
 
 .dropdown-btn {
-  @include icon-before($type: caret-down);
-
   cursor: pointer;
+
+  @include icon-before($type: caret-down);
 
   &.deny-action {
     cursor: not-allowed;

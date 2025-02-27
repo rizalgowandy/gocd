@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
@@ -101,13 +100,13 @@ public class MaterialDatabaseDependencyUpdaterTest {
 
         List<Modification> modification = materialRepository.findLatestModification(dependencyMaterial).getMaterialRevision(0).getModifications();
 
-        assertThat(modification.size(), is(1));
-        assertThat(modification.get(0).getRevision(), is("pipeline-name/9/stage-name/0"));
-        assertThat(modification.get(0).getPipelineLabel(), is("LABEL-9"));
+        assertThat(modification.size()).isEqualTo(1);
+        assertThat(modification.get(0).getRevision()).isEqualTo("pipeline-name/9/stage-name/0");
+        assertThat(modification.get(0).getPipelineLabel()).isEqualTo("LABEL-9");
     }
 
     @Test
-    public void shouldUpdateServerHealthIfCheckFails() throws Exception {
+    public void shouldUpdateServerHealthIfCheckFails() {
         DependencyMaterial dependencyMaterial = new DependencyMaterial(new CaseInsensitiveString("pipeline-name"), new CaseInsensitiveString("stage-name"));
 
         RuntimeException runtimeException = new RuntimeException("Description of error");
@@ -123,7 +122,7 @@ public class MaterialDatabaseDependencyUpdaterTest {
         }
 
         HealthStateType scope = HealthStateType.general(HealthStateScope.forMaterial(dependencyMaterial));
-        ServerHealthState state = ServerHealthState.errorWithHtml("Modification check failed for material: pipeline-name [ stage-name ]\nNo pipelines are affected by this material, perhaps this material is unused.", "Description of error", scope);
+        ServerHealthState state = ServerHealthState.errorWithHtml("Modification check failed for material: pipeline-name [ stage-name ]\nNo pipelines affected, may only affect configuration repositories.", "Description of error", scope);
         verify(healthService).update(state);
     }
 
@@ -155,7 +154,7 @@ public class MaterialDatabaseDependencyUpdaterTest {
 
         List<Modification> newModifications = materialRepository.findModificationsSince(dependencyMaterial, new MaterialRevision(dependencyMaterial, modification));
 
-        assertThat(newModifications.size(), is(0));
+        assertThat(newModifications.size()).isEqualTo(0);
     }
 
     private void stubStageServiceGetHistoryAfter(DependencyMaterial material, int pipelineCounter, Stages... stageses) {
@@ -190,7 +189,7 @@ public class MaterialDatabaseDependencyUpdaterTest {
 
         MaterialRevisions materialRevisions = materialRepository.findLatestModification(dependencyMaterial);
 
-        assertThat("materialRevisions.isEmpty()", materialRevisions.isEmpty(), is(true));
+        assertThat(materialRevisions.isEmpty()).isTrue();
     }
 
     @Test
@@ -207,9 +206,9 @@ public class MaterialDatabaseDependencyUpdaterTest {
 
         List<Modification> newModifications = materialRepository.findModificationsSince(dependencyMaterial, new MaterialRevision(dependencyMaterial, modification));
 
-        assertThat(newModifications.size(), is(1));
-        assertThat(newModifications.get(0).getRevision(), is("pipeline-name/10/stage-name/0"));
-        assertThat(newModifications.get(0).getPipelineLabel(), is("LABEL-10"));
+        assertThat(newModifications.size()).isEqualTo(1);
+        assertThat(newModifications.get(0).getRevision()).isEqualTo("pipeline-name/10/stage-name/0");
+        assertThat(newModifications.get(0).getPipelineLabel()).isEqualTo("LABEL-10");
     }
 
     @Test
@@ -223,8 +222,8 @@ public class MaterialDatabaseDependencyUpdaterTest {
         for (Integer revision : new int[]{9, 10, 11, 12, 13}) {
             String stageLocator = String.format("pipeline-name/%s/stage-name/0", revision);
             Modification modification = materialRepository.findModificationWithRevision(dependencyMaterial, stageLocator);
-            assertThat(modification.getRevision(), is(stageLocator));
-            assertThat(modification.getPipelineLabel(), is(String.format("LABEL-%s", revision)));
+            assertThat(modification.getRevision()).isEqualTo(stageLocator);
+            assertThat(modification.getPipelineLabel()).isEqualTo(String.format("LABEL-%s", revision));
         }
     }
 
@@ -269,7 +268,7 @@ public class MaterialDatabaseDependencyUpdaterTest {
     private void stubStageServiceGetHistory(Stages... stageses) {
         DependencyMaterial dependencyMaterial = new DependencyMaterial(new CaseInsensitiveString("pipeline-name"), new CaseInsensitiveString("stage-name"));
         for (int i = 0; i < stageses.length; i++) {
-            ArrayList<Modification> mods = new ArrayList<>();
+            List<Modification> mods = new ArrayList<>();
             for (Stage stage : stageses[i]) {
                 StageIdentifier id = stage.getIdentifier();
                 mods.add(new Modification(stage.completedDate(), id.stageLocator(), id.getPipelineLabel(), stage.getPipelineId()));

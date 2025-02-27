@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,14 @@ package com.thoughtworks.go.plugin.access.authorization.v2;
 import com.thoughtworks.go.plugin.domain.common.VerifyConnectionResponse;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class VerifyConnectionResponseDTOTest {
 
     @Test
-    public void shouldDeserializeSuccessResponseFromJSON() throws Exception {
+    public void shouldDeserializeSuccessResponseFromJSON() {
         String json = """
                 {
                   "status": "success",
@@ -35,13 +34,13 @@ public class VerifyConnectionResponseDTOTest {
 
         VerifyConnectionResponse response = VerifyConnectionResponseDTO.fromJSON(json).response();
 
-        assertThat(response.getStatus(), is("success"));
-        assertThat(response.getMessage(), is("Connection check passed"));
+        assertThat(response.getStatus()).isEqualTo("success");
+        assertThat(response.getMessage()).isEqualTo("Connection check passed");
         assertNull(response.getValidationResult());
     }
 
     @Test
-    public void shouldDeserializeFailureResponseFromJSON() throws Exception {
+    public void shouldDeserializeFailureResponseFromJSON() {
         String json = """
                 {
                   "status": "failure",
@@ -50,13 +49,13 @@ public class VerifyConnectionResponseDTOTest {
 
         VerifyConnectionResponse response = VerifyConnectionResponseDTO.fromJSON(json).response();
 
-        assertThat(response.getStatus(), is("failure"));
-        assertThat(response.getMessage(), is("Connection check failed"));
+        assertThat(response.getStatus()).isEqualTo("failure");
+        assertThat(response.getMessage()).isEqualTo("Connection check failed");
         assertNull(response.getValidationResult());
     }
 
     @Test
-    public void shouldDeserializeValidationFailedResponseFromJSON() throws Exception {
+    public void shouldDeserializeValidationFailedResponseFromJSON() {
         String json = """
                 {
                   "status": "validation-failed",
@@ -73,10 +72,10 @@ public class VerifyConnectionResponseDTOTest {
 
         VerifyConnectionResponse response = VerifyConnectionResponseDTO.fromJSON(json).response();
 
-        assertThat(response.getStatus(), is("validation-failed"));
-        assertThat(response.getMessage(), is("Validation failed"));
+        assertThat(response.getStatus()).isEqualTo("validation-failed");
+        assertThat(response.getMessage()).isEqualTo("Validation failed");
         assertFalse(response.getValidationResult().isSuccessful());
-        assertThat(response.getValidationResult().getErrors().get(0), is(new com.thoughtworks.go.plugin.domain.common.ValidationError("url", "URL cannot be blank")));
-        assertThat(response.getValidationResult().getErrors().get(1), is(new com.thoughtworks.go.plugin.domain.common.ValidationError("password", "Password cannot be blank")));
+        assertThat(response.getValidationResult().getErrors().get(0)).isEqualTo(new com.thoughtworks.go.plugin.domain.common.ValidationError("url", "URL cannot be blank"));
+        assertThat(response.getValidationResult().getErrors().get(1)).isEqualTo(new com.thoughtworks.go.plugin.domain.common.ValidationError("password", "Password cannot be blank"));
     }
 }

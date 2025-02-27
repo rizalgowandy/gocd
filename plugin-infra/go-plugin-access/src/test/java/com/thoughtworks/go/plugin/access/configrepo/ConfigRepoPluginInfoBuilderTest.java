@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +38,7 @@ public class ConfigRepoPluginInfoBuilderTest {
     private ConfigRepoExtension extension;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         extension = mock(ConfigRepoExtension.class);
 
         PluginSettingsConfiguration value = new PluginSettingsConfiguration();
@@ -49,7 +48,7 @@ public class ConfigRepoPluginInfoBuilderTest {
     }
 
     @Test
-    public void shouldBuildPluginInfo() throws Exception {
+    public void shouldBuildPluginInfo() {
         GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id("plugin1").build();
         when(extension.getPluginSettingsView("plugin1")).thenReturn("some-html");
         when(extension.getCapabilities("plugin1")).thenReturn(new Capabilities(true, true, true, true));
@@ -61,21 +60,21 @@ public class ConfigRepoPluginInfoBuilderTest {
         );
         PluginView pluginView = new PluginView("some-html");
 
-        assertThat(pluginInfo.getDescriptor(), is(descriptor));
-        assertThat(pluginInfo.getExtensionName(), is("configrepo"));
-        assertThat(pluginInfo.getPluginSettings(), is(new PluggableInstanceSettings(pluginConfigurations, pluginView)));
-        assertThat(pluginInfo.getCapabilities(), is(new Capabilities(true, true, true, true)));
+        assertThat(pluginInfo.getDescriptor()).isEqualTo(descriptor);
+        assertThat(pluginInfo.getExtensionName()).isEqualTo("configrepo");
+        assertThat(pluginInfo.getPluginSettings()).isEqualTo(new PluggableInstanceSettings(pluginConfigurations, pluginView));
+        assertThat(pluginInfo.getCapabilities()).isEqualTo(new Capabilities(true, true, true, true));
     }
 
     @Test
-    public void shouldContinueWithBuildingPluginInfoIfPluginSettingsIsNotProvidedByPlugin() throws Exception {
+    public void shouldContinueWithBuildingPluginInfoIfPluginSettingsIsNotProvidedByPlugin() {
         GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id("plugin1").build();
         doThrow(new RuntimeException("foo")).when(extension).getPluginSettingsConfiguration("plugin1");
 
         ConfigRepoPluginInfo pluginInfo = new ConfigRepoPluginInfoBuilder(extension).pluginInfoFor(descriptor);
 
-        assertThat(pluginInfo.getDescriptor(), is(descriptor));
-        assertThat(pluginInfo.getExtensionName(), is("configrepo"));
+        assertThat(pluginInfo.getDescriptor()).isEqualTo(descriptor);
+        assertThat(pluginInfo.getExtensionName()).isEqualTo("configrepo");
         assertNull(pluginInfo.getPluginSettings());
     }
 }

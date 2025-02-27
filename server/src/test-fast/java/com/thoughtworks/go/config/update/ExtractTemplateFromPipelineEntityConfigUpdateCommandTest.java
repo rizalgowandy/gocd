@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 class ExtractTemplateFromPipelineEntityConfigUpdateCommandTest {
 
     @Test
-    void shouldUpdateConfigWhenCurrentUserIsGroupAdmin() throws Exception {
+    void shouldUpdateConfigWhenCurrentUserIsGroupAdmin() {
         SecurityService securityService = mock(SecurityService.class);
         Username currentUser = new Username("bob");
         when(securityService.isUserGroupAdmin(currentUser)).thenReturn(true);
@@ -56,7 +56,7 @@ class ExtractTemplateFromPipelineEntityConfigUpdateCommandTest {
     }
 
     @Test
-    void shouldUpdateConfigWhenCurrentUserIsNotGroupAdmin() throws Exception {
+    void shouldUpdateConfigWhenCurrentUserIsNotGroupAdmin() {
         SecurityService securityService = mock(SecurityService.class);
         Username currentUser = new Username("bob");
         when(securityService.isUserGroupAdmin(currentUser)).thenReturn(false);

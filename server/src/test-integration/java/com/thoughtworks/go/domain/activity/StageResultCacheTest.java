@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -47,24 +46,25 @@ import static org.hamcrest.Matchers.is;
         "classpath:/spring-all-servlet.xml",
 })
 public class StageResultCacheTest {
+    private static final GoConfigFileHelper configFileHelper = new GoConfigFileHelper();
+
     @Autowired private StageDao stageDao;
     @Autowired private GoConfigDao goConfigDao;
     @Autowired private StageStatusTopic stageStatusTopic;
-    @Autowired private MessagingService messagingService;
+    @Autowired private MessagingService<GoMessage> messagingService;
     @Autowired private StageResultCache stageResultCache;
 	@Autowired private DatabaseAccessHelper dbHelper;
     @Autowired private MaterialRepository materialRepository;
     @Autowired private TransactionTemplate transactionTemplate;
 
     private PipelineWithTwoStages pipelineFixture;
-    private static GoConfigFileHelper configFileHelper = new GoConfigFileHelper();
 
     @BeforeEach
     public void setUp(@TempDir Path tempDir) throws Exception {
 
         dbHelper.onSetUp();
         configFileHelper.onSetUp();
-        configFileHelper.usingEmptyConfigFileWithLicenseAllowsUnlimitedAgents();
+        GoConfigFileHelper.usingEmptyConfigFileWithLicenseAllowsUnlimitedAgents();
         configFileHelper.usingCruiseConfigDao(goConfigDao);
 
         pipelineFixture = new PipelineWithTwoStages(materialRepository, transactionTemplate, tempDir);
@@ -81,10 +81,10 @@ public class StageResultCacheTest {
     public void shouldReturnUnknownForStageWithNoHistory() {
         StageConfigIdentifier stage = new StageConfigIdentifier("cruise", "dev");
 
-        assertThat(stageResultCache.previousResult(stage), is(StageResult.Unknown));
+        assertThat(stageResultCache.previousResult(stage)).isEqualTo(StageResult.Unknown);
 
         stageResultCache.updateCache(stage, StageResult.Passed);
-        assertThat(stageResultCache.previousResult(stage), is(StageResult.Unknown));
+        assertThat(stageResultCache.previousResult(stage)).isEqualTo(StageResult.Unknown);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class StageResultCacheTest {
         stageResultCache.updateCache(stage, StageResult.Failed);
 
         stageResultCache.updateCache(stage, StageResult.Passed);
-        assertThat(stageResultCache.previousResult(stage), is(StageResult.Failed));
+        assertThat(stageResultCache.previousResult(stage)).isEqualTo(StageResult.Failed);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class StageResultCacheTest {
         StageConfigIdentifier stage = new StageConfigIdentifier(pipelineFixture.pipelineName, pipelineFixture.ftStage);
         stageResultCache.updateCache(stage, StageResult.Failed);
         StageResult stageResult = stageResultCache.previousResult(stage);
-        assertThat(stageResult, is(StageResult.Passed));
+        assertThat(stageResult).isEqualTo(StageResult.Passed);
     }
 
     @Test
@@ -116,17 +116,17 @@ public class StageResultCacheTest {
         StageIdentifier identifier = pipeline.getFirstStage().getIdentifier();
 
         cache.onMessage(new StageStatusMessage(identifier, StageState.Passed, StageResult.Passed));
-        assertThat(stub.message, is(new StageResultMessage(identifier, StageEvent.Passes, Username.BLANK)));
+        assertThat(stub.message).isEqualTo(new StageResultMessage(identifier, StageEvent.Passes, Username.BLANK));
 
         cache.onMessage(new StageStatusMessage(identifier, StageState.Failed, StageResult.Failed));
-        assertThat(stub.message, is(new StageResultMessage(identifier, StageEvent.Breaks, Username.BLANK)));
+        assertThat(stub.message).isEqualTo(new StageResultMessage(identifier, StageEvent.Breaks, Username.BLANK));
     }
 
 
-    private class StageResultTopicStub extends StageResultTopic {
+    private static class StageResultTopicStub extends StageResultTopic {
         private StageResultMessage message;
 
-        public StageResultTopicStub(MessagingService messaging) {
+        public StageResultTopicStub(MessagingService<GoMessage> messaging) {
             super(messaging);
         }
 

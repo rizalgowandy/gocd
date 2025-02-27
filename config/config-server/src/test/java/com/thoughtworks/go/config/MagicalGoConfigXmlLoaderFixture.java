@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.thoughtworks.go.config.registry.ConfigElementImplementationRegistry;
 import com.thoughtworks.go.util.ConfigElementImplementationRegistryMother;
 import com.thoughtworks.go.util.GoConstants;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class MagicalGoConfigXmlLoaderFixture {
@@ -30,7 +29,7 @@ public class MagicalGoConfigXmlLoaderFixture {
             toMaterials(xmlMaterials);
             fail("Should not be valid");
         } catch (Exception expected) {
-            assertThat(expected.getMessage(), containsString(message));
+            assertThat(expected.getMessage()).contains(message);
         }
     }
 

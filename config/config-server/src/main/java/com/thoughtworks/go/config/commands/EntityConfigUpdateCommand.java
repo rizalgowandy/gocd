@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ public interface EntityConfigUpdateCommand<T> extends CheckedUpdateCommand {
     /**
      * Perform the actual update. Passed a deep clone of the current cruise config.
      */
-    void update(CruiseConfig preprocessedConfig) throws Exception;
+    void update(CruiseConfig preprocessedConfig);
 
     /**
      * Called after {@link #update(CruiseConfig)} used to validate the new config.

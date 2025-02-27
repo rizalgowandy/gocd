@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.thoughtworks.go.helper.MaterialsMother.packageMaterial;
 import static com.thoughtworks.go.helper.MaterialsMother.pluggableSCMMaterial;
@@ -100,7 +96,7 @@ class BuildAssignmentServiceTest {
     private BuildAssignmentService buildAssignmentService;
     private TransactionTemplate transactionTemplate;
     private SchedulingContext schedulingContext;
-    private ArrayList<JobPlan> jobPlans;
+    private List<JobPlan> jobPlans;
     private Agent elasticAgent;
     private AgentInstance elasticAgentInstance;
     private ElasticProfile elasticProfile1;
@@ -110,7 +106,7 @@ class BuildAssignmentServiceTest {
     private AgentInstance regularAgentInstance;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         transactionTemplate = dummy();
         buildAssignmentService = new BuildAssignmentService(goConfigService, jobInstanceService, scheduleService, agentService,
                 environmentConfigService, transactionTemplate, scheduledPipelineLoader, pipelineService, builderFactory,
@@ -124,7 +120,7 @@ class BuildAssignmentServiceTest {
         elasticProfile1 = new ElasticProfile(elasticProfileId1, "prod-cluster");
         elasticProfile2 = new ElasticProfile(elasticProfileId2, "prod-cluster");
         jobPlans = new ArrayList<>();
-        HashMap<String, ElasticProfile> profiles = new HashMap<>();
+        Map<String, ElasticProfile> profiles = new HashMap<>();
         profiles.put(elasticProfile1.getId(), elasticProfile1);
         profiles.put(elasticProfile2.getId(), elasticProfile2);
         schedulingContext = new DefaultSchedulingContext("me", new Agents(elasticAgent), profiles);
@@ -228,7 +224,7 @@ class BuildAssignmentServiceTest {
         JobPlan jobPlan3 = getJobPlan(irrelevantPipeline.getName(), irrelevantPipeline.get(0).name(), irrelevantPipeline.get(0).getJobs().first());
 
         //need to get hold of original jobPlans in the tests
-        jobPlans = (ArrayList<JobPlan>) buildAssignmentService.jobPlans();
+        jobPlans = buildAssignmentService.jobPlans();
 
         jobPlans.add(jobPlan1);
         jobPlans.add(jobPlan2);
@@ -264,7 +260,7 @@ class BuildAssignmentServiceTest {
         JobPlan jobPlan3 = getJobPlan(irrelevantPipeline.getName(), irrelevantPipeline.get(0).name(), irrelevantPipeline.get(0).getJobs().first());
 
         //need to get hold of original jobPlans in the tests
-        jobPlans = (ArrayList<JobPlan>) buildAssignmentService.jobPlans();
+        jobPlans = buildAssignmentService.jobPlans();
 
         jobPlans.add(jobPlan1);
         jobPlans.add(jobPlan2);
@@ -519,7 +515,7 @@ class BuildAssignmentServiceTest {
     }
 
     @Test
-    void shouldFailTheJobWhenRulesViolationErrorOccursForElasticConfiguration() throws IOException, IllegalArtifactLocationException {
+    void shouldFailTheJobWhenRulesViolationErrorOccursForElasticConfiguration() throws IllegalArtifactLocationException {
         PipelineConfig pipelineWithElasticJob = PipelineConfigMother.pipelineWithElasticJob(elasticProfileId1);
         JobPlan jobPlan = new InstanceFactory().createJobPlan(pipelineWithElasticJob.first().getJobs().first(), schedulingContext);
         jobPlans.add(jobPlan);
@@ -547,7 +543,7 @@ class BuildAssignmentServiceTest {
     }
 
     @Test
-    void shouldFailTheJobWhenSecretResolutionErrorOccursForElasticConfiguration() throws IOException, IllegalArtifactLocationException {
+    void shouldFailTheJobWhenSecretResolutionErrorOccursForElasticConfiguration() throws IllegalArtifactLocationException {
         PipelineConfig pipelineWithElasticJob = PipelineConfigMother.pipelineWithElasticJob(elasticProfileId1);
         JobPlan jobPlan = new InstanceFactory().createJobPlan(pipelineWithElasticJob.first().getJobs().first(), schedulingContext);
         jobPlans.add(jobPlan);

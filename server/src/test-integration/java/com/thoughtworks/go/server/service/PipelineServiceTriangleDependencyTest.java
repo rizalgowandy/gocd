@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,13 +57,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.thoughtworks.go.domain.config.CaseInsensitiveStringMother.str;
 import static com.thoughtworks.go.helper.GoConfigMother.createPipelineConfigWithMaterialConfig;
 import static com.thoughtworks.go.helper.ModificationsMother.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -91,13 +91,13 @@ public class PipelineServiceTriangleDependencyTest {
     @Autowired private DependencyMaterialUpdateNotifier notifier;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         pipelineTimeline = mock(PipelineTimeline.class);
         pipelineDao = mock(PipelineSqlMapDao.class);
         materialRepository = mock(MaterialRepository.class);
         TestTransactionSynchronizationManager mockTransactionSynchronizationManager = new TestTransactionSynchronizationManager();
         TransactionTemplate mockTransactionTemplate = new TestTransactionTemplate(mockTransactionSynchronizationManager);
-        service = new PipelineService(pipelineDao, mock(StageService.class), mock(PipelineLockService.class), pipelineTimeline, materialRepository, mockTransactionTemplate, systemEnvironment, null,
+        service = new PipelineService(pipelineDao, mock(StageService.class), mock(PipelineLockService.class), pipelineTimeline, materialRepository, mockTransactionTemplate, systemEnvironment,
                 materialConfigConverter);
         first = oneModifiedFile("1");
         third = oneModifiedFile("3");
@@ -122,13 +122,13 @@ public class PipelineServiceTriangleDependencyTest {
         pipelineConfig.addMaterialConfig(onDirOne);
         pipelineConfig.addMaterialConfig(onDirTwo);
 
-        HashMap<Material, String> materialToCommit = new HashMap<>();
+        Map<Material, String> materialToCommit = new HashMap<>();
         materialToCommit.put(new MaterialConfigConverter().toMaterial(onDirOne), "abc");
         materialToCommit.put(new MaterialConfigConverter().toMaterial(onDirTwo), "abc");
         MaterialRevisions revs = ModificationsMother.getMaterialRevisions(materialToCommit);
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(new PipelineConfigDependencyGraph(pipelineConfig), revs);
-        assertThat(finalRevisions.getRevisions(), is(revs.getRevisions()));
+        assertThat(finalRevisions.getRevisions()).isEqualTo(revs.getRevisions());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class PipelineServiceTriangleDependencyTest {
     private Pipeline stubPipelineSaveForStatusListener(StageStatusListener stageStatusListener, JobStatusListener jobStatusListener) {
         StageDao stageDao = mock(StageDao.class);
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
-        when(serverHealthService.logs()).thenReturn(new ServerHealthStates());
+        when(serverHealthService.logsSorted()).thenReturn(new ServerHealthStates());
         JobInstanceService jobInstanceService = new JobInstanceService(mock(JobInstanceDao.class), mock(JobResultTopic.class), mock(JobStatusCache.class),
                 actualTransactionTemplate, transactionSynchronizationManager, null, null, goConfigService, null, serverHealthService, jobStatusListener);
 
@@ -180,7 +180,7 @@ public class PipelineServiceTriangleDependencyTest {
 
         stageService.addStageStatusListener(stageStatusListener);
 
-        service = new PipelineService(pipelineDao, stageService, mock(PipelineLockService.class), pipelineTimeline, materialRepository, actualTransactionTemplate,systemEnvironment, null, materialConfigConverter);
+        service = new PipelineService(pipelineDao, stageService, mock(PipelineLockService.class), pipelineTimeline, materialRepository, actualTransactionTemplate,systemEnvironment, materialConfigConverter);
         Pipeline pipeline = PipelineMother.pipeline("cruise", savedStage);
         when(pipelineDao.save(pipeline)).thenReturn(pipeline);
         when(materialRepository.findMaterialRevisionsForPipeline(9L)).thenReturn(MaterialRevisions.EMPTY);
@@ -232,7 +232,7 @@ public class PipelineServiceTriangleDependencyTest {
         when(materialRepository.findMaterialRevisionsForPipeline(10)).thenReturn(expected);
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(expected));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(expected);
     }
 
     @Test
@@ -260,7 +260,7 @@ public class PipelineServiceTriangleDependencyTest {
         when(materialRepository.findMaterialRevisionsForPipeline(10)).thenReturn(expected);
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(expected));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(expected);
     }
 
     @Test
@@ -286,7 +286,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("second", 2, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -316,7 +316,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("second", 4, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -346,7 +346,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("third", 3, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -375,7 +375,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("second", 2, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -405,7 +405,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("third", 3, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -440,7 +440,7 @@ public class PipelineServiceTriangleDependencyTest {
         expected.addRevision(builder.depInstance("third", 3, date).getRevision());
 
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(graph, actual);
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -497,7 +497,7 @@ public class PipelineServiceTriangleDependencyTest {
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1, new PipelineConfigDependencyGraph(up0)),
                 new PipelineConfigDependencyGraph(up0));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(expected));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(expected);
     }
 
     @Test
@@ -528,7 +528,7 @@ public class PipelineServiceTriangleDependencyTest {
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1, new PipelineConfigDependencyGraph(common)));
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(dependencyGraph, actual);
 
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -573,7 +573,7 @@ public class PipelineServiceTriangleDependencyTest {
                 new PipelineConfigDependencyGraph(common, new PipelineConfigDependencyGraph(commonsParent)));
         MaterialRevisions finalRevisions = service.getRevisionsBasedOnDependencies(dependencyGraph, actual);
 
-        assertThat(finalRevisions, is(expected));
+        assertThat(finalRevisions).isEqualTo(expected);
         for (int i = 0; i < expected.numberOfRevisions(); i++) {
             assertSame(finalRevisions.getMaterialRevision(i), actual.getMaterialRevision(i));
         }
@@ -596,7 +596,7 @@ public class PipelineServiceTriangleDependencyTest {
         when(pipelineDao.findBuildCauseOfPipelineByNameAndCounter("up1", 1)).thenReturn(BuildCause.createManualForced(expectedIfPegged, new Username(str("loser"))));
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(actual));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(actual);
     }
 
     @Test
@@ -632,7 +632,7 @@ public class PipelineServiceTriangleDependencyTest {
 
         secondHgRevision.addRevision(up1Modification);
 
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(secondHgRevision));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(secondHgRevision);
     }
 
     @Test
@@ -652,7 +652,7 @@ public class PipelineServiceTriangleDependencyTest {
         when(pipelineDao.findBuildCauseOfPipelineByNameAndCounter("up1", 1)).thenReturn(BuildCause.createManualForced(expected, new Username(str("loser"))));
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(actual));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(actual);
     }
 
     @Test
@@ -685,7 +685,7 @@ public class PipelineServiceTriangleDependencyTest {
         when(materialRepository.findMaterialRevisionsForPipeline(5)).thenReturn(uppestRevision);
 
         PipelineConfigDependencyGraph dependencyGraph = new PipelineConfigDependencyGraph(current, new PipelineConfigDependencyGraph(up1, new PipelineConfigDependencyGraph(up0)));
-        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual), is(expected));
+        assertThat(service.getRevisionsBasedOnDependencies(dependencyGraph, actual)).isEqualTo(expected);
     }
 
     @Test

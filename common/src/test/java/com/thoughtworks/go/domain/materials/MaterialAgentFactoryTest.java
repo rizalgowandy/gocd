@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.IOException;
 
 import static com.thoughtworks.go.domain.materials.MaterialAgent.NO_OP;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class MaterialAgentFactoryTest {
@@ -49,7 +46,7 @@ public class MaterialAgentFactoryTest {
     private SCMExtension scmExtension;
 
     @Test
-    public void shouldCreateMaterialAgent_withAgentsUuidAsSubprocessExecutionContextNamespace() throws IOException {
+    public void shouldCreateMaterialAgent_withAgentsUuidAsSubprocessExecutionContextNamespace() {
         String agentUuid = "uuid-01783738";
         MaterialAgentFactory factory = new MaterialAgentFactory(new InMemoryStreamConsumer(), tempWorkingDirectory,
                 new AgentIdentifier("host", "1.1.1.1", agentUuid), scmExtension);
@@ -57,10 +54,10 @@ public class MaterialAgentFactoryTest {
 
         MaterialAgent agent = factory.createAgent(new MaterialRevision(gitMaterial));
 
-        assertThat(agent, is(instanceOf(AbstractMaterialAgent.class)));
+        assertThat(agent).isInstanceOf(AbstractMaterialAgent.class);
 
         SubprocessExecutionContext execCtx = ReflectionUtil.getField(agent, "execCtx");
-        assertThat(execCtx.getProcessNamespace("fingerprint"), is(CachedDigestUtils.sha256Hex(String.format("%s%s%s", "fingerprint", agentUuid, gitMaterial.workingdir(tempWorkingDirectory)))));
+        assertThat(execCtx.getProcessNamespace("fingerprint")).isEqualTo(CachedDigestUtils.sha256Hex(String.format("%s%s%s", "fingerprint", agentUuid, gitMaterial.workingdir(tempWorkingDirectory))));
     }
 
     @Test
@@ -70,7 +67,7 @@ public class MaterialAgentFactoryTest {
         MaterialAgentFactory factory = new MaterialAgentFactory(null, workingDirectory, null, scmExtension);
         MaterialAgent agent = factory.createAgent(revision);
 
-        assertThat(agent, is(NO_OP));
+        assertThat(agent).isEqualTo(NO_OP);
     }
 
     @Test
@@ -80,9 +77,9 @@ public class MaterialAgentFactoryTest {
         MaterialAgentFactory factory = new MaterialAgentFactory(null, workingDirectory, null, scmExtension);
         MaterialAgent agent = factory.createAgent(revision);
 
-        assertThat(agent instanceof PluggableSCMMaterialAgent, is(true));
-        assertThat(ReflectionUtil.getField(agent, "scmExtension"), is(scmExtension));
-        assertThat(ReflectionUtil.getField(agent, "revision"), is(revision));
-        assertThat(ReflectionUtil.getField(agent, "workingDirectory"), is(workingDirectory));
+        assertThat(agent instanceof PluggableSCMMaterialAgent).isTrue();
+        assertThat((Object) ReflectionUtil.getField(agent, "scmExtension")).isEqualTo(scmExtension);
+        assertThat((Object) ReflectionUtil.getField(agent, "revision")).isEqualTo(revision);
+        assertThat((Object) ReflectionUtil.getField(agent, "workingDirectory")).isEqualTo(workingDirectory);
     }
 }

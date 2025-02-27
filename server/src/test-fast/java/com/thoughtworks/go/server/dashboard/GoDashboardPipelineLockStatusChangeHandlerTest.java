@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ public class GoDashboardPipelineLockStatusChangeHandlerTest {
     private GoDashboardPipelineLockStatusChangeHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         handler = new GoDashboardPipelineLockStatusChangeHandler(cacheUpdateService);
     }
 
     @Test
-    public void shouldHandlePipelineLockStatusChangeByRefreshingPipelineInCache() throws Exception {
+    public void shouldHandlePipelineLockStatusChangeByRefreshingPipelineInCache() {
         handler.call(PipelineLockStatusChangeListener.Event.lock("pipeline1"));
 
         verify(cacheUpdateService).updateCacheForPipeline(new CaseInsensitiveString("pipeline1"));

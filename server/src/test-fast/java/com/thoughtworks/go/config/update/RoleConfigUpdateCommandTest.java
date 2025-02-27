@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,7 +40,7 @@ public class RoleConfigUpdateCommandTest {
     private EntityHashingService entityHashingService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
@@ -50,18 +48,18 @@ public class RoleConfigUpdateCommandTest {
     }
 
     @Test
-    public void shouldUpdateExistingRole() throws Exception {
+    public void shouldUpdateExistingRole() {
         PluginRoleConfig oldRole = new PluginRoleConfig("foo", "ldap");
         PluginRoleConfig updatedRole = new PluginRoleConfig("foo", "github");
 
         cruiseConfig.server().security().getRoles().add(oldRole);
         RoleConfigCommand command = new RoleConfigUpdateCommand(null, updatedRole, null, null, null, null);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("foo")), is(equalTo(updatedRole)));
+        assertThat(cruiseConfig.server().security().getRoles().findByName(new CaseInsensitiveString("foo"))).isEqualTo(updatedRole);
     }
 
     @Test
-    public void currentUserShouldBeAnAdminToAddRole() throws Exception {
+    public void currentUserShouldBeAnAdminToAddRole() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         Username viewUser = new Username("view");
 
@@ -71,7 +69,7 @@ public class RoleConfigUpdateCommandTest {
 
         assertFalse(command.canContinue(null));
         assertFalse(result.isSuccessful());
-        assertThat(result.httpCode(), is(403));
+        assertThat(result.httpCode()).isEqualTo(403);
     }
 
     @Test
@@ -86,12 +84,12 @@ public class RoleConfigUpdateCommandTest {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         RoleConfigCommand command = new RoleConfigUpdateCommand(goConfigService, updatedRole, currentUser, result, entityHashingService, "bad-digest");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result.message(), is(EntityType.Role.staleConfig(updatedRole.getName())));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result.message()).isEqualTo(EntityType.Role.staleConfig(updatedRole.getName()));
     }
 
     @Test
-    public void shouldNotContinueIfExistingRoleIsDeleted() throws Exception {
+    public void shouldNotContinueIfExistingRoleIsDeleted() {
         PluginRoleConfig updatedRole = new PluginRoleConfig("foo", "github");
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
 
@@ -99,8 +97,8 @@ public class RoleConfigUpdateCommandTest {
 
         RoleConfigCommand command = new RoleConfigUpdateCommand(goConfigService, updatedRole, currentUser, result, entityHashingService, "bad-digest");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
         assertFalse(result.isSuccessful());
-        assertThat(result.httpCode(), is(404));
+        assertThat(result.httpCode()).isEqualTo(404);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ class PasswordBasedPluginAuthenticationProviderTest {
         }
 
         @Test
-        void shouldRelyOnTheAuthConfigOrderWhileAuthenticatingUser() throws Exception {
+        void shouldRelyOnTheAuthConfigOrderWhileAuthenticatingUser() {
             SecurityAuthConfig sha1Passwords = new SecurityAuthConfig("sha1Passwords", "file");
             SecurityAuthConfig corporateLDAP = new SecurityAuthConfig("corporateLDAP", "ldap");
             SecurityAuthConfig bcryptPasswords = new SecurityAuthConfig("bcryptPasswords", "file");
@@ -161,7 +161,7 @@ class PasswordBasedPluginAuthenticationProviderTest {
         }
 
         @Test
-        void authenticateUserShouldReceiveAuthConfigAndCorrespondingRoleConfigs() throws Exception {
+        void authenticateUserShouldReceiveAuthConfigAndCorrespondingRoleConfigs() {
             SecurityAuthConfig corporateLDAP = new SecurityAuthConfig("corporateLDAP", "ldap");
             SecurityAuthConfig internalLDAP = new SecurityAuthConfig("internalLDAP", "ldap");
             PluginRoleConfig admin = new PluginRoleConfig("admin", "corporateLDAP", new ConfigurationProperty());
@@ -291,7 +291,7 @@ class PasswordBasedPluginAuthenticationProviderTest {
         }
 
         @Test
-        void shouldTryToReAuthenticateUserAgainWhenPreviouslyAuthenticatedAuthConfigIsDeleted() throws Exception {
+        void shouldTryToReAuthenticateUserAgainWhenPreviouslyAuthenticatedAuthConfigIsDeleted() {
             addPluginSupportingPasswordBasedAuthentication(PLUGIN_ID_1);
             addPluginSupportingPasswordBasedAuthentication(PLUGIN_ID_2);
 

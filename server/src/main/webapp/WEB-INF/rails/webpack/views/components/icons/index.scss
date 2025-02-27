@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:color";
 @import "../../global/common";
 
 $global-icon-size: 16px;
@@ -33,7 +34,7 @@ $console-icon-color: #fff;
   background: $icon-bg;
 
   &:hover {
-    color: lighten($icon-color, 100%);
+    color: color.adjust($icon-color, $lightness: 100%);
     transition: $transition;
     background: $icon-color;
   }
@@ -100,9 +101,9 @@ $console-icon-color: #fff;
 }
 
 .spinner {
-  @include icon-before($type: $fa-var-spinner);
-
   animation: spin 1500ms linear infinite;
+
+  @include icon-before($type: $fa-var-spinner);
 }
 
 @keyframes spin {
@@ -124,9 +125,9 @@ $console-icon-color: #fff;
 }
 
 .minus {
-  @include icon-before($type: $fa-var-minus);
-
   font-size: 7px;
+
+  @include icon-before($type: $fa-var-minus);
 }
 
 .plus {

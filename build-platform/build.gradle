@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 plugins {
   id 'java-platform'
-  id 'maven-publish'
 }
 
 description = 'Internal platform constraining dependency resolution for GoCD'
@@ -31,10 +30,9 @@ dependencies {
   // This is following https://docs.gradle.org/current/userguide/platforms.html#sub:bom_import
   api enforcedPlatform(project.deps.slf4jBom)
   api enforcedPlatform(project.deps.jacksonBom)
-  api enforcedPlatform(project.deps.jaxbBom)
+  api platform(project.deps.jaxbBom)
 
   constraints {
-    api project.deps.angusActivation
     api project.deps.commonsCodec
     api project.deps.commonsIO
     api project.deps.commonsPool
@@ -47,10 +45,4 @@ dependencies {
   api enforcedPlatform(project.deps.junit5Bom)
   api enforcedPlatform(project.deps.mockitoBom)
   api enforcedPlatform(project.deps.testcontainersBom)
-}
-
-publishing {
-  publications {
-    maven(MavenPublication)
-  }
 }

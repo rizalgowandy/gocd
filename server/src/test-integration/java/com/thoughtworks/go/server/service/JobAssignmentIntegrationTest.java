@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -78,7 +76,7 @@ public class JobAssignmentIntegrationTest {
     }
 
     @Test
-    public void shouldAssignJobToRemoteAgent() throws UnknownHostException {
+    public void shouldAssignJobToRemoteAgent() {
         AgentInstance local = setupLocalAgent();
         AgentInstance remote = setupRemoteAgent();
         fixture.createPipelineWithFirstStageScheduled();
@@ -90,11 +88,11 @@ public class JobAssignmentIntegrationTest {
         assignmentService.onTimer();
 
         Work work = assignmentService.assignWorkToAgent(remote);
-        assertThat(work, instanceOf(BuildWork.class));
+        assertThat(work).isInstanceOf(BuildWork.class);
     }
 
     @Test
-    public void shouldNotAssignJobToRemoteAgentIfReachedLimit() throws UnknownHostException {
+    public void shouldNotAssignJobToRemoteAgentIfReachedLimit() {
         AgentInstance local = setupLocalAgent();
         AgentInstance remote = setupRemoteAgent();
         AgentInstance remote2 = setupRemoteAgent();
@@ -105,11 +103,11 @@ public class JobAssignmentIntegrationTest {
         assignmentService.assignWorkToAgent(local);
         assignmentService.assignWorkToAgent(remote);
         Work work = assignmentService.assignWorkToAgent(remote2);
-        assertThat(work, instanceOf(NoWork.class));
+        assertThat(work).isInstanceOf(NoWork.class);
     }
 
     @Test
-    public void shouldAssignJobToLocalAgentEvenReachedLimit() throws UnknownHostException {
+    public void shouldAssignJobToLocalAgentEvenReachedLimit() {
         AgentInstance local = setupLocalAgent();
         AgentInstance remote = setupRemoteAgent();
         fixture.createPipelineWithFirstStageScheduled();
@@ -118,7 +116,7 @@ public class JobAssignmentIntegrationTest {
 
         assignmentService.assignWorkToAgent(remote);
         Work work = assignmentService.assignWorkToAgent(local);
-        assertThat(work, instanceOf(BuildWork.class));
+        assertThat(work).isInstanceOf(BuildWork.class);
     }
 
     private AgentInstance setupRemoteAgent() {
@@ -129,7 +127,7 @@ public class JobAssignmentIntegrationTest {
         return instance;
     }
 
-    private AgentInstance setupLocalAgent() throws UnknownHostException {
+    private AgentInstance setupLocalAgent() {
         Agent agent = AgentMother.localAgent();
         agentService.saveOrUpdate(agent);
         return AgentInstance.createFromAgent(agent, systemEnvironment, agentStatusChangeListener());

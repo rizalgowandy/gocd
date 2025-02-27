@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,6 @@ public interface AuthorizationMessageConverter {
     String verifyConnectionRequestBody(Map<String, String> configuration);
 
     String authenticateUserRequestBody(String username, String password, List<SecurityAuthConfig> authConfigs, List<PluginRoleConfig> roleConfigs);
-
-    String authenticateUserRequestBody(String username, List<SecurityAuthConfig> authConfigs, List<PluginRoleConfig> roleConfigs);
 
     AuthenticationResponse getAuthenticatedUserFromResponseBody(String responseBody);
 

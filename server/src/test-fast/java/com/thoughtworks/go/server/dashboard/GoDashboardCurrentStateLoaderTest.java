@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,9 @@ import com.thoughtworks.go.server.service.PipelinePauseService;
 import com.thoughtworks.go.server.service.PipelineUnlockApiService;
 import com.thoughtworks.go.server.service.SchedulingCheckerService;
 import com.thoughtworks.go.util.Clock;
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -50,9 +48,7 @@ import java.util.*;
 import static com.thoughtworks.go.config.CaseInsensitiveString.str;
 import static com.thoughtworks.go.presentation.pipelinehistory.PipelineInstanceModels.createPipelineInstanceModels;
 import static com.thoughtworks.go.presentation.pipelinehistory.PreparingToScheduleInstance.PreparingToScheduleBuildCause;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,16 +75,16 @@ public class GoDashboardCurrentStateLoaderTest {
     private GoDashboardCurrentStateLoader loader;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         loader = new GoDashboardCurrentStateLoader(pipelineSqlMapDao, triggerMonitor, pipelinePauseService,
                 pipelineLockService, pipelineUnlockApiService, schedulingCheckerService, permissionsAuthority, new TimeStampBasedCounter(mock(Clock.class)));
 
         goConfigMother = new GoConfigMother();
-        config = goConfigMother.defaultCruiseConfig();
+        config = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldMatchExistingPipelinesInConfigWithAllLoadedActivePipelines() throws Exception {
+    public void shouldMatchExistingPipelinesInConfigWithAllLoadedActivePipelines() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig p2Config = goConfigMother.addPipelineWithGroup(config, "group2", "pipeline2", "stage2", "job2");
         PipelineInstanceModel pimForP1 = pim(p1Config);
@@ -98,13 +94,13 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.size(), is(2));
+        assertThat(models.size()).isEqualTo(2);
         assertModel(models.get(1), "group1", pimForP1);  /* Pipeline is actually added in reverse order. */
         assertModel(models.get(0), "group2", pimForP2);
     }
 
     @Test
-    public void shouldIgnoreActivePipelineModelsNotInConfig() throws Exception {
+    public void shouldIgnoreActivePipelineModelsNotInConfig() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig pipelineWhichIsNotInConfig = PipelineConfigMother.pipelineConfig("pipelineWhichIsNotInConfig");
 
@@ -113,60 +109,60 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.size(), is(1));
+        assertThat(models.size()).isEqualTo(1);
         assertModel(models.get(0), "group1", pimForP1);
     }
 
     @Test
-    public void shouldHaveASpecialModelForAPipelineWhichIsTriggeredButNotYetActive_DueToMaterialCheckTakingTime() throws Exception {
+    public void shouldHaveASpecialModelForAPipelineWhichIsTriggeredButNotYetActive_DueToMaterialCheckTakingTime() {
         goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
 
         when(pipelineSqlMapDao.loadHistoryForDashboard(CaseInsensitiveString.toStringList(config.getAllPipelineNames()))).thenReturn(createPipelineInstanceModels());
         when(triggerMonitor.isAlreadyTriggered(new CaseInsensitiveString("pipeline1"))).thenReturn(true);
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
-        assertThat(models.size(), is(1));
-        assertThat(models.get(0).groupName(), is("group1"));
-        assertThat(models.get(0).model().getName(), is("pipeline1"));
+        assertThat(models.size()).isEqualTo(1);
+        assertThat(models.get(0).groupName()).isEqualTo("group1");
+        assertThat(models.get(0).model().getName()).isEqualTo("pipeline1");
 
         PipelineModel model = models.get(0).model();
-        assertThat(model.getActivePipelineInstances().size(), is(1));
+        assertThat(model.getActivePipelineInstances().size()).isEqualTo(1);
 
         PipelineInstanceModel specialPIM = model.getLatestPipelineInstance();
-        assertThat(specialPIM.getName(), is("pipeline1"));
-        assertThat(specialPIM.getCanRun(), is(false));
-        assertThat(specialPIM.isPreparingToSchedule(), is(true));
-        assertThat(specialPIM.getCounter(), is(-1));
-        assertThat(specialPIM.getBuildCause(), is(new PreparingToScheduleBuildCause()));
+        assertThat(specialPIM.getName()).isEqualTo("pipeline1");
+        assertThat(specialPIM.getCanRun()).isFalse();
+        assertThat(specialPIM.isPreparingToSchedule()).isTrue();
+        assertThat(specialPIM.getCounter()).isEqualTo(-1);
+        assertThat(specialPIM.getBuildCause()).isEqualTo(new PreparingToScheduleBuildCause());
         assertStages(specialPIM, "stage1");
     }
 
     @Test
-    public void shouldFallBackToAnEmptyPipelineInstanceModelIfItCannotBeLoadedEvenFromHistory() throws Exception {
+    public void shouldFallBackToAnEmptyPipelineInstanceModelIfItCannotBeLoadedEvenFromHistory() {
         goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
 
         when(triggerMonitor.isAlreadyTriggered(new CaseInsensitiveString("pipeline1"))).thenReturn(false);
         when(pipelineSqlMapDao.loadHistoryForDashboard(List.of("pipeline1"))).thenReturn(createPipelineInstanceModels());
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
-        assertThat(models.size(), is(1));
-        assertThat(models.get(0).groupName(), is("group1"));
-        assertThat(models.get(0).model().getName(), is("pipeline1"));
+        assertThat(models.size()).isEqualTo(1);
+        assertThat(models.get(0).groupName()).isEqualTo("group1");
+        assertThat(models.get(0).model().getName()).isEqualTo("pipeline1");
 
         PipelineModel model = models.get(0).model();
-        assertThat(model.getActivePipelineInstances().size(), is(1));
+        assertThat(model.getActivePipelineInstances().size()).isEqualTo(1);
 
         PipelineInstanceModel emptyPIM = model.getLatestPipelineInstance();
-        assertThat(emptyPIM.getName(), is("pipeline1"));
-        assertThat(emptyPIM.hasHistoricalData(), is(false));
-        assertThat(emptyPIM.isPreparingToSchedule(), is(false));
-        assertThat(emptyPIM.getCounter(), is(0));
-        assertThat(emptyPIM.getBuildCause(), is(BuildCause.createWithEmptyModifications()));
+        assertThat(emptyPIM.getName()).isEqualTo("pipeline1");
+        assertThat(emptyPIM.hasHistoricalData()).isFalse();
+        assertThat(emptyPIM.isPreparingToSchedule()).isFalse();
+        assertThat(emptyPIM.getCounter()).isEqualTo(0);
+        assertThat(emptyPIM.getBuildCause()).isEqualTo(BuildCause.createWithEmptyModifications());
         assertStages(emptyPIM, "stage1");
     }
 
     @Test
-    public void shouldAllowASinglePipelineInConfigToHaveMultipleInstances() throws Exception {
+    public void shouldAllowASinglePipelineInConfigToHaveMultipleInstances() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
 
         PipelineInstanceModel firstInstance = pim(p1Config);
@@ -176,13 +172,13 @@ public class GoDashboardCurrentStateLoaderTest {
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
         PipelineModel model = models.get(0).model();
-        assertThat(model.getActivePipelineInstances().size(), is(2));
-        assertThat(model.getActivePipelineInstances().get(0), is(firstInstance));
-        assertThat(model.getActivePipelineInstances().get(1), is(secondInstance));
+        assertThat(model.getActivePipelineInstances().size()).isEqualTo(2);
+        assertThat(model.getActivePipelineInstances().get(0)).isEqualTo(firstInstance);
+        assertThat(model.getActivePipelineInstances().get(1)).isEqualTo(secondInstance);
     }
 
     @Test
-    public void shouldAddStagesWhichHaveNotYetRunIntoEachInstanceOfAPipeline_FromConfig() throws Exception {
+    public void shouldAddStagesWhichHaveNotYetRunIntoEachInstanceOfAPipeline_FromConfig() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stageP1_S1", "jobP1_S1_J1");
         goConfigMother.addStageToPipeline(config, "pipeline1", "stageP1_S2", "jobP1_S2_J1");
 
@@ -203,17 +199,16 @@ public class GoDashboardCurrentStateLoaderTest {
         assertStages(pimForP1, "stageP1_S1", "stageP1_S2");
         assertStages(pimForP2, "stageP2_S1", "stageP2_S2", "stageP2_S3");
 
-        assertThat(pimForP1.getStageHistory().get(0).getCounter(), is(COUNTER));
-        assertThat(pimForP1.getStageHistory().get(1).getCounter(), is(COUNTER));
+        assertThat(pimForP1.getStageHistory().get(0).getCounter()).isEqualTo(COUNTER);
+        assertThat(pimForP1.getStageHistory().get(1).getCounter()).isEqualTo(COUNTER);
 
-        Matcher<String> counterForAStageAddedFromConfig = not(COUNTER);
-        assertThat(pimForP2.getStageHistory().get(0).getCounter(), is(COUNTER));
-        assertThat(pimForP2.getStageHistory().get(1).getCounter(), is(counterForAStageAddedFromConfig));
-        assertThat(pimForP2.getStageHistory().get(2).getCounter(), is(counterForAStageAddedFromConfig));
+        assertThat(pimForP2.getStageHistory().get(0).getCounter()).isEqualTo(COUNTER);
+        assertThat(pimForP2.getStageHistory().get(1).getCounter()).isNotEqualTo(COUNTER);
+        assertThat(pimForP2.getStageHistory().get(2).getCounter()).isNotEqualTo(COUNTER);
     }
 
     @Test
-    public void shouldAddPipelinePauseInfoAtPipelineLevel() throws Exception {
+    public void shouldAddPipelinePauseInfoAtPipelineLevel() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig p2Config = goConfigMother.addPipelineWithGroup(config, "group2", "pipeline2", "stage2", "job2");
 
@@ -226,14 +221,14 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.size(), is(2));
-        assertThat(models.get(1).model().getPausedInfo(), is(pipeline1PauseInfo));
-        assertThat(models.get(0).model().getPausedInfo(), is(pipeline2PauseInfo));
+        assertThat(models.size()).isEqualTo(2);
+        assertThat(models.get(1).model().getPausedInfo()).isEqualTo(pipeline1PauseInfo);
+        assertThat(models.get(0).model().getPausedInfo()).isEqualTo(pipeline2PauseInfo);
     }
 
     /* TODO: Even though the test is right, the correct place for lock info is pipeline level, not PIM level */
     @Test
-    public void shouldAddPipelineLockInformationAtPipelineInstanceLevel() throws Exception {
+    public void shouldAddPipelineLockInformationAtPipelineInstanceLevel() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         p1Config.lockExplicitly();
 
@@ -249,18 +244,18 @@ public class GoDashboardCurrentStateLoaderTest {
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
         PipelineModel modelForPipeline1 = models.get(1).model();
-        assertThat(modelForPipeline1.getLatestPipelineInstance().isLockable(), is(true));
-        assertThat(modelForPipeline1.getLatestPipelineInstance().isCurrentlyLocked(), is(true));
-        assertThat(modelForPipeline1.getLatestPipelineInstance().canUnlock(), is(true));
+        assertThat(modelForPipeline1.getLatestPipelineInstance().isLockable()).isTrue();
+        assertThat(modelForPipeline1.getLatestPipelineInstance().isCurrentlyLocked()).isTrue();
+        assertThat(modelForPipeline1.getLatestPipelineInstance().canUnlock()).isTrue();
 
         PipelineModel modelForPipeline2 = models.get(0).model();
-        assertThat(modelForPipeline2.getLatestPipelineInstance().isLockable(), is(false));
-        assertThat(modelForPipeline2.getLatestPipelineInstance().isCurrentlyLocked(), is(false));
-        assertThat(modelForPipeline2.getLatestPipelineInstance().canUnlock(), is(false));
+        assertThat(modelForPipeline2.getLatestPipelineInstance().isLockable()).isFalse();
+        assertThat(modelForPipeline2.getLatestPipelineInstance().isCurrentlyLocked()).isFalse();
+        assertThat(modelForPipeline2.getLatestPipelineInstance().canUnlock()).isFalse();
     }
 
     @Test
-    public void shouldUpdateAdministrabilityOfAPipelineBasedOnItsOrigin() throws Exception {
+    public void shouldUpdateAdministrabilityOfAPipelineBasedOnItsOrigin() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         p1Config.setOrigin(new FileConfigOrigin());
 
@@ -271,12 +266,12 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.get(1).model().canAdminister(), is(true));
-        assertThat(models.get(0).model().canAdminister(), is(false));
+        assertThat(models.get(1).model().canAdminister()).isTrue();
+        assertThat(models.get(0).model().canAdminister()).isFalse();
     }
 
     @Test
-    public void shouldAddPipelineSchedulabilityInformationAtPipelineLevel() throws Exception {
+    public void shouldAddPipelineSchedulabilityInformationAtPipelineLevel() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig p2Config = goConfigMother.addPipelineWithGroup(config, "group2", "pipeline2", "stage2", "job2");
 
@@ -286,12 +281,12 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.get(1).model().canForce(), is(true));
-        assertThat(models.get(0).model().canForce(), is(false));
+        assertThat(models.get(1).model().canForce()).isTrue();
+        assertThat(models.get(0).model().canForce()).isFalse();
     }
 
     @Test
-    public void shouldAssociateEveryPipelineWithItsPermissions() throws Exception {
+    public void shouldAssociateEveryPipelineWithItsPermissions() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig p2Config = goConfigMother.addPipelineWithGroup(config, "group2", "pipeline2", "stage2", "job2");
         PipelineInstanceModel pimForP1 = pim(p1Config);
@@ -305,12 +300,12 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.get(1).permissions(), is(permissionsForP1));
-        assertThat(models.get(0).permissions(), is(permissionsForP2));
+        assertThat(models.get(1).permissions()).isEqualTo(permissionsForP1);
+        assertThat(models.get(0).permissions()).isEqualTo(permissionsForP2);
     }
 
     @Test
-    public void shouldDefaultToAllowingNoOneToViewAPipelineIfItsPermissionsAreNotFound() throws Exception {
+    public void shouldDefaultToAllowingNoOneToViewAPipelineIfItsPermissionsAreNotFound() {
         PipelineConfig p1Config = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineInstanceModel pimForP1 = pim(p1Config);
 
@@ -320,14 +315,14 @@ public class GoDashboardCurrentStateLoaderTest {
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
         Permissions permissions = models.get(0).permissions();
-        assertThat(permissions.viewers(), is(NoOne.INSTANCE));
-        assertThat(permissions.operators(), is(NoOne.INSTANCE));
-        assertThat(permissions.admins(), is(NoOne.INSTANCE));
-        assertThat(permissions.pipelineOperators(), is(NoOne.INSTANCE));
+        assertThat(permissions.viewers()).isEqualTo(NoOne.INSTANCE);
+        assertThat(permissions.operators()).isEqualTo(NoOne.INSTANCE);
+        assertThat(permissions.admins()).isEqualTo(NoOne.INSTANCE);
+        assertThat(permissions.pipelineOperators()).isEqualTo(NoOne.INSTANCE);
     }
 
     @Test
-    public void shouldGetAGoDashboardPipelineGivenASinglePipelineConfigAndItsGroupConfig() throws Exception {
+    public void shouldGetAGoDashboardPipelineGivenASinglePipelineConfigAndItsGroupConfig() {
         String pipelineNameStr = "pipeline1";
         CaseInsensitiveString pipelineName = new CaseInsensitiveString(pipelineNameStr);
         Permissions permissions = new Permissions(Everyone.INSTANCE, NoOne.INSTANCE, Everyone.INSTANCE, NoOnePermission.INSTANCE);
@@ -339,9 +334,9 @@ public class GoDashboardCurrentStateLoaderTest {
 
         GoDashboardPipeline pipeline = loader.pipelineFor(p1Config, config.findGroup("group1"));
 
-        assertThat(pipeline.name(), is(pipelineName));
-        assertThat(pipeline.permissions(), is(permissions));
-        assertThat(pipeline.model().getActivePipelineInstances(), is(pipelineInstanceModels));
+        assertThat(pipeline.name()).isEqualTo(pipelineName);
+        assertThat(pipeline.permissions()).isEqualTo(permissions);
+        assertThat(pipeline.model().getActivePipelineInstances()).isEqualTo(pipelineInstanceModels);
 
         verify(pipelineSqlMapDao).loadHistoryForDashboard(List.of(pipelineNameStr));
         verifyNoMoreInteractions(pipelineSqlMapDao);
@@ -349,9 +344,9 @@ public class GoDashboardCurrentStateLoaderTest {
 
     @Test
     public void hasEverLoadedCurrentStateIsTrueAfterLoading() {
-        assertThat(loader.hasEverLoadedCurrentState(), is(false));
+        assertThat(loader.hasEverLoadedCurrentState()).isFalse();
         loader.allPipelines(new BasicCruiseConfig());
-        assertThat(loader.hasEverLoadedCurrentState(), is(true));
+        assertThat(loader.hasEverLoadedCurrentState()).isTrue();
     }
 
     @Test
@@ -364,7 +359,7 @@ public class GoDashboardCurrentStateLoaderTest {
 
         List<GoDashboardPipeline> models = loader.allPipelines(config);
 
-        assertThat(models.get(0).getTrackingTool(), is(Optional.of(trackingTool)));
+        assertThat(models.get(0).getTrackingTool()).isEqualTo(Optional.of(trackingTool));
     }
 
     @Test
@@ -377,7 +372,7 @@ public class GoDashboardCurrentStateLoaderTest {
 
         GoDashboardPipeline model = loader.pipelineFor(p1Config, config.findGroup("group1"));
 
-        assertThat(model.getTrackingTool(), is(Optional.of(trackingTool)));
+        assertThat(model.getTrackingTool()).isEqualTo(Optional.of(trackingTool));
     }
 
     @Test
@@ -424,13 +419,13 @@ public class GoDashboardCurrentStateLoaderTest {
         PipelineConfig pipeline1 = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline1", "stage1", "job1");
         PipelineConfig pipeline2 = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline2", "stage1", "job1");
         PipelineConfig pipeline3 = goConfigMother.addPipelineWithGroup(config, "group1", "pipeline3", "stage1", "job1");
-        when(pipelineSqlMapDao.loadHistoryForDashboard(ArgumentMatchers.any(List.class))).thenReturn(PipelineInstanceModels.createPipelineInstanceModels());
+        when(pipelineSqlMapDao.loadHistoryForDashboard(any())).thenReturn(PipelineInstanceModels.createPipelineInstanceModels());
         List<GoDashboardPipeline> goDashboardPipelines = loader.allPipelines(config);
-        assertThat(goDashboardPipelines, hasSize(3));
+        assertThat(goDashboardPipelines).hasSize(3);
 
         for (CaseInsensitiveString pipelineName : List.of(pipeline1.name(), pipeline2.name(), pipeline3.name())) {
             long matches = goDashboardPipelines.stream().filter(goDashboardPipeline -> pipelineName.equals(goDashboardPipeline.name())).count();
-            assertThat(matches, is(1L));
+            assertThat(matches).isEqualTo(1L);
 
         }
 
@@ -439,22 +434,22 @@ public class GoDashboardCurrentStateLoaderTest {
         config.getAllPipelineConfigs().remove(pipeline1);
         config.getAllPipelineConfigs().remove(pipeline2);
         goDashboardPipelines = loader.allPipelines(config);
-        assertThat(goDashboardPipelines, hasSize(1));
-        assertThat(goDashboardPipelines.get(0).name(), is(pipeline3.name()));
+        assertThat(goDashboardPipelines).hasSize(1);
+        assertThat(goDashboardPipelines.get(0).name()).isEqualTo(pipeline3.name());
     }
 
     private void assertModel(GoDashboardPipeline pipeline, String group, PipelineInstanceModel... pims) {
-        assertThat(pipeline.groupName(), is(group));
-        assertThat(pipeline.model().getName(), is(pims[0].getName()));
-        assertThat(pipeline.model().getActivePipelineInstances(), is(List.of(pims)));
+        assertThat(pipeline.groupName()).isEqualTo(group);
+        assertThat(pipeline.model().getName()).isEqualTo(pims[0].getName());
+        assertThat(pipeline.model().getActivePipelineInstances()).isEqualTo(List.of(pims));
     }
 
     private void assertStages(PipelineInstanceModel pim, String... stages) {
-        assertThat(pim.getStageHistory().size(), is(stages.length));
+        assertThat(pim.getStageHistory().size()).isEqualTo(stages.length);
 
         for (int i = 0; i < pim.getStageHistory().size(); i++) {
             StageInstanceModel stageInstanceModel = pim.getStageHistory().get(i);
-            assertThat(stageInstanceModel.getName(), is(stages[i]));
+            assertThat(stageInstanceModel.getName()).isEqualTo(stages[i]);
         }
     }
 

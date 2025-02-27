@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static com.thoughtworks.go.plugin.domain.common.PluginConstants.ARTIFACT_
 
 @Component
 public class ArtifactExtension extends AbstractExtension {
-    private final HashMap<String, ArtifactMessageConverter> messageHandlerMap = new HashMap<>();
+    private final Map<String, ArtifactMessageConverter> messageHandlerMap = new HashMap<>();
 
     @Autowired
     protected ArtifactExtension(PluginManager pluginManager, ExtensionsRegistry extensionsRegistry) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PipelineGroupModelTest {
 
@@ -30,11 +29,11 @@ public class PipelineGroupModelTest {
     public void shouldSayContainsPipelineIrrespectiveOfPipelineNameCase() {
         PipelineGroupModel groupModel = new PipelineGroupModel("group");
         groupModel.add(pipelineModel("pipeline"));
-        assertThat(groupModel.containsPipeline("PIPELINE"), is(true));
+        assertThat(groupModel.containsPipeline("PIPELINE")).isTrue();
     }
 
     @Test
-    public void shouldCopyAllInternalsOfPipelineModelWhenCreatingANewOneIfNeeded() throws Exception {
+    public void shouldCopyAllInternalsOfPipelineModelWhenCreatingANewOneIfNeeded() {
         PipelineGroupModel groupModel = new PipelineGroupModel("group");
 
         PipelineModel expectedModel = addInstanceTo(new PipelineModel("p1", true, true, PipelinePauseInfo.notPaused()));
@@ -43,8 +42,9 @@ public class PipelineGroupModelTest {
         groupModel.add(expectedModel);
         PipelineModel actualModel = groupModel.getPipelineModel("p1");
 
-        String message = String.format("\nExpected: %s\nActual:   %s", reflectionToString(expectedModel), reflectionToString(actualModel));
-        assertThat(message, EqualsBuilder.reflectionEquals(actualModel, expectedModel), is(true));
+        assertThat(EqualsBuilder.reflectionEquals(actualModel, expectedModel))
+            .describedAs(String.format("\nExpected: %s\nActual:   %s", reflectionToString(expectedModel), reflectionToString(actualModel)))
+            .isTrue();
     }
 
     private PipelineModel pipelineModel(String pipelineName) {

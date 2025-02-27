@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class GoConfigMigratorIntegrationTest {
     private SessionFactory sessionFactory;
     @Autowired
     private DatabaseAccessHelper dbHelper;
-    private ArrayList<Exception> exceptions;
+    private List<Exception> exceptions;
 
     @BeforeEach
     public void setUp(@TempDir File temporaryFolder, ResetCipher resetCipher) throws Exception {
@@ -182,7 +182,7 @@ public class GoConfigMigratorIntegrationTest {
         try {
             loadConfigFileWithContent(ConfigFileFixture.MINIMAL);
             loadConfigFileWithContent("<cruise></cruise>");
-            ServerHealthStates states = serverHealthService.logs();
+            ServerHealthStates states = serverHealthService.logsSorted();
             assertThat(states.size()).isEqualTo(1);
             assertThat(states.get(0).getDescription()).contains("Go encountered an invalid configuration file while starting up. The invalid configuration file has been renamed to &lsquo;");
             assertThat(states.get(0).getDescription()).contains("&rsquo; and a new configuration file has been automatically created using the last good configuration.");
@@ -437,7 +437,7 @@ public class GoConfigMigratorIntegrationTest {
 
     @Test
     public void shouldSetServerId_toARandomUUID_ifServerTagDoesntExist() {
-        GoConfigService.XmlPartialSaver fileSaver = goConfigService.fileSaver(true);
+        GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = goConfigService.fileSaver(true);
         GoConfigValidity configValidity = fileSaver.saveXml("<cruise schemaVersion='" + 53 + "'>\n"
                 + "</cruise>", goConfigService.configFileMd5());
         assertThat(configValidity.isValid()).as("Has no error").isTrue();
@@ -450,7 +450,7 @@ public class GoConfigMigratorIntegrationTest {
 
     @Test
     public void shouldSetServerId_toARandomUUID_ifOneDoesntExist() {
-        GoConfigService.XmlPartialSaver fileSaver = goConfigService.fileSaver(true);
+        GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = goConfigService.fileSaver(true);
         GoConfigValidity configValidity = fileSaver.saveXml("""
                 <cruise schemaVersion='55'>
                 <server artifactsdir="logs" siteUrl="http://go-server-site-url:8153" secureSiteUrl="https://go-server-site-url" jobTimeout="60">
@@ -997,7 +997,7 @@ public class GoConfigMigratorIntegrationTest {
     }
 
     @Test
-    public void shouldAddTokenGenerationKeyAttributeOnServerAsPartOf99To100Migration() throws Exception {
+    public void shouldAddTokenGenerationKeyAttributeOnServerAsPartOf99To100Migration() {
         try {
             String configXml = """
                     <cruise schemaVersion='99'><server artifactsdir="artifacts" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" webhookSecret="5f8b5eac-1148-4145-aa01-7b2934b6e1ab" commandRepositoryLocation="default" serverId="dev-id">
@@ -1529,7 +1529,7 @@ public class GoConfigMigratorIntegrationTest {
         return goFileConfigDataSource.forceLoad(configFile).config;
     }
 
-    private void assertConfiguration(Configuration configuration, List<List> expectedKeyValuePair) {
+    private void assertConfiguration(Configuration configuration, List<List<?>> expectedKeyValuePair) {
         int position = 0;
         for (ConfigurationProperty configurationProperty : configuration) {
             assertThat(configurationProperty.getConfigurationKey().getName()).isEqualTo(expectedKeyValuePair.get(position).get(0));

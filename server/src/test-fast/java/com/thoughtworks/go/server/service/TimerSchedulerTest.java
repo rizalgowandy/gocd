@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import java.util.List;
 import static com.thoughtworks.go.helper.PipelineConfigMother.pipelineConfig;
 import static com.thoughtworks.go.helper.PipelineConfigMother.pipelineConfigWithTimer;
 import static com.thoughtworks.go.server.service.TimerScheduler.PIPELINE_TRIGGGER_TIMER_GROUP;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobKey.jobKey;
@@ -81,7 +80,7 @@ public class TimerSchedulerTest {
     }
 
     @Test
-    public void shouldUpdateServerHealthStatusWhenCronSpecCantBeParsed() throws Exception {
+    public void shouldUpdateServerHealthStatusWhenCronSpecCantBeParsed() {
         when(goConfigService.getAllPipelineConfigs()).thenReturn(List.of(pipelineConfigWithTimer("uat", "bad cron spec!!!")));
 
         ServerHealthService serverHealthService = mock(ServerHealthService.class);
@@ -137,7 +136,7 @@ public class TimerSchedulerTest {
     }
 
     @Test
-    public void shouldRegisterAsACruiseConfigChangeListener() throws Exception {
+    public void shouldRegisterAsACruiseConfigChangeListener() {
         TimerScheduler timerScheduler = new TimerScheduler(scheduler, goConfigService, null, null, maintenanceModeService);
 
         timerScheduler.initialize();
@@ -154,8 +153,8 @@ public class TimerSchedulerTest {
         doNothing().when(goConfigService).register(captor.capture());
         timerScheduler.initialize();
         List<ConfigChangedListener> listeners = captor.getAllValues();
-        assertThat(listeners.get(1) instanceof EntityConfigChangedListener, is(true));
-        EntityConfigChangedListener<PipelineConfig> pipelineConfigChangeListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
+        assertThat(listeners.get(1) instanceof EntityConfigChangedListener).isTrue();
+        @SuppressWarnings("unchecked") EntityConfigChangedListener<PipelineConfig> pipelineConfigChangeListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
 
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
         when(pipelineConfig.name()).thenReturn(new CaseInsensitiveString(pipelineName));
@@ -165,8 +164,8 @@ public class TimerSchedulerTest {
         when(scheduler.scheduleJob(jobDetailArgumentCaptor.capture(), triggerArgumentCaptor.capture())).thenReturn(new Date());
         pipelineConfigChangeListener.onEntityConfigChange(pipelineConfig);
 
-        assertThat(jobDetailArgumentCaptor.getValue().getKey().getName(), is(pipelineName));
-        assertThat(triggerArgumentCaptor.getValue().getCronExpression(), is("* * * * * ?"));
+        assertThat(jobDetailArgumentCaptor.getValue().getKey().getName()).isEqualTo(pipelineName);
+        assertThat(triggerArgumentCaptor.getValue().getCronExpression()).isEqualTo("* * * * * ?");
 
         verify(scheduler).getJobDetail(jobKey(pipelineName, PIPELINE_TRIGGGER_TIMER_GROUP));
 

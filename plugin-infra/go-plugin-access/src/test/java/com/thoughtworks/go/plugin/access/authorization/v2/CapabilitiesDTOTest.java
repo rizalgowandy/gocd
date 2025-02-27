@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@ package com.thoughtworks.go.plugin.access.authorization.v2;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CapabilitiesDTOTest {
@@ -35,7 +34,7 @@ public class CapabilitiesDTOTest {
 
         CapabilitiesDTO capabilities = CapabilitiesDTO.fromJSON(json);
 
-        assertThat(capabilities.getSupportedAuthType(), is(SupportedAuthTypeDTO.Web));
+        assertThat(capabilities.getSupportedAuthType()).isEqualTo(SupportedAuthTypeDTO.Web);
         assertTrue(capabilities.canSearch());
         assertTrue(capabilities.canAuthorize());
         assertTrue(capabilities.canFetchUserRoles());

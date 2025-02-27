@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.thoughtworks.go.domain.ConfigErrors;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -88,14 +89,14 @@ public class PackageRepositories extends BaseCollection<PackageRepository> imple
     }
 
     private void validateNameUniqueness() {
-        HashMap<String, PackageRepository> nameMap = new HashMap<>();
+        Map<String, PackageRepository> nameMap = new HashMap<>();
         for (PackageRepository repository : this) {
             repository.validateNameUniqueness(nameMap);
         }
     }
 
     private void validateFingerprintUniqueness() {
-        HashMap<String, Packages> map = new HashMap<>();
+        Map<String, Packages> map = new HashMap<>();
         for (PackageRepository repository : this) {
             for (PackageDefinition packageDefinition : repository.getPackages()) {
                 String fingerprint = packageDefinition.getFingerprint(AbstractMaterialConfig.FINGERPRINT_DELIMITER);

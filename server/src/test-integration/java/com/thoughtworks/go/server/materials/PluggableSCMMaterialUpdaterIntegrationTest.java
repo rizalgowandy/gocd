@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ClearSingleton.class)
@@ -91,7 +90,7 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateMaterialInstanceWhenPluginIsUpgraded() throws Exception {
+    public void shouldUpdateMaterialInstanceWhenPluginIsUpgraded() {
         final PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         final MaterialInstance materialInstance = material.createMaterialInstance();
         materialRepository.saveOrUpdate(materialInstance);
@@ -106,18 +105,18 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
         });
 
         MaterialInstance actualInstance = materialRepository.findMaterialInstance(material);
-        assertThat(actualInstance.getConfiguration(), is(material.createMaterialInstance().getConfiguration()));
+        assertThat(actualInstance.getConfiguration()).isEqualTo(material.createMaterialInstance().getConfiguration());
     }
 
     @Test
-    public void shouldUpdateMaterialInstanceWhenAdditionalDataIsUpdatedDuringLatestModification() throws Exception {
+    public void shouldUpdateMaterialInstanceWhenAdditionalDataIsUpdatedDuringLatestModification() {
         final PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         final MaterialInstance materialInstance = material.createMaterialInstance();
         materialRepository.saveOrUpdate(materialInstance);
 
         Map<String, String> data = new HashMap<>();
         data.put("k1", "v1");
-        when(scmExtension.getLatestRevision(any(String.class), any(SCMPropertyConfiguration.class), any(Map.class), any(String.class))).thenReturn(new MaterialPollResult(data, new SCMRevision()));
+        when(scmExtension.getLatestRevision(any(String.class), any(SCMPropertyConfiguration.class), any(), any(String.class))).thenReturn(new MaterialPollResult(data, new SCMRevision()));
         mockSCMExtensionInPoller();
         scmMaterialUpdater = new ScmMaterialUpdater(materialRepository, materialChecker, subprocessExecutionContext, materialService);
         pluggableSCMMaterialUpdater = new PluggableSCMMaterialUpdater(materialRepository, scmMaterialUpdater, transactionTemplate);
@@ -128,11 +127,11 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
         });
 
         MaterialInstance actualInstance = materialRepository.findMaterialInstance(material);
-        assertThat(actualInstance.getAdditionalDataMap(), is(data));
+        assertThat(actualInstance.getAdditionalDataMap()).isEqualTo(data);
     }
 
     @Test
-    public void shouldUpdateMaterialInstanceWhenAdditionalDataIsUpdatedDuringLatestModificationsSince() throws Exception {
+    public void shouldUpdateMaterialInstanceWhenAdditionalDataIsUpdatedDuringLatestModificationsSince() {
         final PluggableSCMMaterial material = MaterialsMother.pluggableSCMMaterial();
         final MaterialInstance materialInstance = material.createMaterialInstance();
         Map<String, String> oldData = new HashMap<>();
@@ -142,7 +141,7 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
 
         Map<String, String> newData = new HashMap<>(oldData);
         newData.put("k2", "v2");
-        when(scmExtension.latestModificationSince(any(String.class), any(SCMPropertyConfiguration.class), any(Map.class), any(String.class), any(SCMRevision.class))).thenReturn(new MaterialPollResult(newData, new SCMRevision()));
+        when(scmExtension.latestModificationSince(any(String.class), any(SCMPropertyConfiguration.class), any(), any(String.class), any(SCMRevision.class))).thenReturn(new MaterialPollResult(newData, new SCMRevision()));
         mockSCMExtensionInPoller();
         scmMaterialUpdater = new ScmMaterialUpdater(materialRepository, materialChecker, subprocessExecutionContext, materialService);
         pluggableSCMMaterialUpdater = new PluggableSCMMaterialUpdater(materialRepository, scmMaterialUpdater, transactionTemplate);
@@ -153,9 +152,10 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
         });
 
         MaterialInstance actualInstance = materialRepository.findMaterialInstance(material);
-        assertThat(actualInstance.getAdditionalDataMap(), is(newData));
+        assertThat(actualInstance.getAdditionalDataMap()).isEqualTo(newData);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void addMetadata(PluggableSCMMaterial material, String field, boolean partOfIdentity) {
         SCMConfigurations scmConfigurations = new SCMConfigurations();
         scmConfigurations.add(new SCMConfiguration(field).with(SCMConfiguration.PART_OF_IDENTITY, partOfIdentity));
@@ -163,7 +163,7 @@ public class PluggableSCMMaterialUpdaterIntegrationTest {
     }
 
     private void mockSCMExtensionInPoller() {
-        Map<Class, MaterialPoller> materialPollerMap = ReflectionUtil.getField(materialService, "materialPollerMap");
+        Map<Class<?>, MaterialPoller<?>> materialPollerMap = ReflectionUtil.getField(materialService, "materialPollerMap");
         materialPollerMap.put(PluggableSCMMaterial.class, new PluggableSCMMaterialPoller(materialRepository, scmExtension, transactionTemplate));
         ReflectionUtil.setField(materialService, "materialPollerMap", materialPollerMap);
     }

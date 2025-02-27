@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.thoughtworks.go.serverhealth.HealthStateType.forbidden;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.lenient;
@@ -54,7 +53,7 @@ public class DeletePackageRepositoryCommandTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = new GoConfigMother().defaultCruiseConfig();
         packageRepository = new PackageRepository();
@@ -65,17 +64,17 @@ public class DeletePackageRepositoryCommandTest {
     }
 
     @Test
-    public void shouldDeletePackageRepository() throws Exception {
-        assertThat(cruiseConfig.getPackageRepositories().size(), is(1));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(packageRepository));
+    public void shouldDeletePackageRepository() {
+        assertThat(cruiseConfig.getPackageRepositories().size()).isEqualTo(1);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(packageRepository);
         DeletePackageRepositoryCommand command = new DeletePackageRepositoryCommand(goConfigService, packageRepository, currentUser, result);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.getPackageRepositories().size(), is(0));
+        assertThat(cruiseConfig.getPackageRepositories().size()).isEqualTo(0);
         assertNull(cruiseConfig.getPackageRepositories().find(repoId));
     }
 
     @Test
-    public void shouldNotDeletePackageRepositoryIfItIsUsedAsAMaterialInPipeline() throws Exception {
+    public void shouldNotDeletePackageRepositoryIfItIsUsedAsAMaterialInPipeline() {
         PackageDefinition pkg = new PackageDefinition();
         pkg.setId("pkg");
         packageRepository.addPackage(pkg);
@@ -84,22 +83,22 @@ public class DeletePackageRepositoryCommandTest {
         pipeline.setMaterialConfigs(new MaterialConfigs(packageMaterial));
         cruiseConfig.addPipeline("first", pipeline);
 
-        assertThat(cruiseConfig.getPackageRepositories().size(), is(1));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(packageRepository));
+        assertThat(cruiseConfig.getPackageRepositories().size()).isEqualTo(1);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(packageRepository);
         DeletePackageRepositoryCommand command = new DeletePackageRepositoryCommand(goConfigService, packageRepository, currentUser, result);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
     }
 
     @Test
-    public void shouldNotContinueIfTheUserIsNotAdmin() throws Exception {
+    public void shouldNotContinueIfTheUserIsNotAdmin() {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.forbidden(EntityType.PackageRepository.forbiddenToDelete(packageRepository.getId(), currentUser.getUsername()), forbidden());
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(false);
         DeletePackageRepositoryCommand command = new DeletePackageRepositoryCommand(goConfigService, packageRepository, currentUser, result);
 
         assertFalse(command.canContinue(cruiseConfig));
-        assertThat(result, is(expectedResult));
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -109,7 +108,7 @@ public class DeletePackageRepositoryCommandTest {
 
         DeletePackageRepositoryCommand command = new DeletePackageRepositoryCommand(goConfigService, packageRepository, currentUser, result);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -119,6 +118,6 @@ public class DeletePackageRepositoryCommandTest {
 
         DeletePackageRepositoryCommand command = new DeletePackageRepositoryCommand(goConfigService, packageRepository, currentUser, result);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 }

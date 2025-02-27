@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class ElasticAgentRequestProcessorTest {
     private ElasticAgentRequestProcessor processor;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final Map<String, VersionableElasticAgentProcessor> processorMap = new HashMap<>();
         processorMap.put("1.0", processorForV1);

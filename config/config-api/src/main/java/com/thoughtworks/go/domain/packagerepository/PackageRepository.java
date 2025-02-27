@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,10 @@ import org.jetbrains.annotations.TestOnly;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -244,20 +247,19 @@ public class PackageRepository implements Serializable, Validatable, SecretParam
         }
     }
 
-    public void setConfigAttributes(Object attributes) {
-        Map attributesMap = (Map) attributes;
-        if (attributesMap.containsKey(NAME)) {
-            name = ((String) attributesMap.get(NAME));
+    public void setConfigAttributes(Map<String, ?> attributes) {
+        if (attributes.containsKey(NAME)) {
+            name = ((String) attributes.get(NAME));
         }
-        if (attributesMap.containsKey(REPO_ID)) {
-            id = ((String) attributesMap.get(REPO_ID));
+        if (attributes.containsKey(REPO_ID)) {
+            id = ((String) attributes.get(REPO_ID));
         }
-        if (attributesMap.containsKey(PLUGIN_CONFIGURATION)) {
-            pluginConfiguration.setConfigAttributes(attributesMap.get(PLUGIN_CONFIGURATION));
+        if (attributes.containsKey(PLUGIN_CONFIGURATION)) {
+            pluginConfiguration.setConfigAttributes(attributes.get(PLUGIN_CONFIGURATION));
         }
-        if (attributesMap.containsKey(Configuration.CONFIGURATION)) {
+        if (attributes.containsKey(Configuration.CONFIGURATION)) {
             configuration.clear();
-            configuration.setConfigAttributes(attributesMap.get(Configuration.CONFIGURATION), getSecureKeyInfoProvider());
+            configuration.setConfigAttributes(attributes.get(Configuration.CONFIGURATION), getSecureKeyInfoProvider());
         }
     }
 
@@ -302,7 +304,7 @@ public class PackageRepository implements Serializable, Validatable, SecretParam
         packages.remove(entryToBeDeleted);
     }
 
-    public PackageDefinition findOrCreatePackageDefinition(Map attributes) {
+    public PackageDefinition findOrCreatePackageDefinition(Map<String, Object> attributes) {
         if (attributes.get("packageId") != null) {
             return findPackage((String) attributes.get("packageId"));
         }
@@ -312,7 +314,7 @@ public class PackageRepository implements Serializable, Validatable, SecretParam
         return packageDefinition;
     }
 
-    public void validateNameUniqueness(HashMap<String, PackageRepository> nameMap) {
+    public void validateNameUniqueness(Map<String, PackageRepository> nameMap) {
         if (name == null) {
             return;
         }

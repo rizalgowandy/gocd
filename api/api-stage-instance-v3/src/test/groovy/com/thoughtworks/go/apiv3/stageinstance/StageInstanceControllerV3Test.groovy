@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -432,7 +432,7 @@ class StageInstanceControllerV3Test implements SecurityServiceTrait, ControllerT
 
       def getJobInstance() {
         def jobInstance = new JobInstance("job")
-        jobInstance.setId(1);
+        jobInstance.setId(1)
         jobInstance.setState(JobState.Assigned)
         jobInstance.setResult(JobResult.Unknown)
         jobInstance.setAgentUuid("uuid")

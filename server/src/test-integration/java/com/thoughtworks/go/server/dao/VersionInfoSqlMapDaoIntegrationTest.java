@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -66,9 +65,9 @@ public class VersionInfoSqlMapDaoIntegrationTest {
         versionInfoSqlMapDao.saveOrUpdate(versionInfo);
 
         VersionInfo info = versionInfoSqlMapDao.findByComponentName(versionInfo.getComponentName());
-        assertThat(info.getInstalledVersion().toString(), is(installedVersion.toString()));
-        assertThat(info.getLatestVersion().toString(), is(latestVersion.toString()));
-        assertThat(info.getLatestVersionUpdatedAt().compareTo(now), is(0));
+        assertThat(info.getInstalledVersion().toString()).isEqualTo(installedVersion.toString());
+        assertThat(info.getLatestVersion().toString()).isEqualTo(latestVersion.toString());
+        assertThat(info.getLatestVersionUpdatedAt().compareTo(now)).isEqualTo(0);
     }
 
     @Test
@@ -85,6 +84,6 @@ public class VersionInfoSqlMapDaoIntegrationTest {
 
         VersionInfo info = versionInfoSqlMapDao.findByComponentName(versionInfo.getComponentName());
 
-        assertThat(info.getLatestVersion().toString(), is("15.2.1-111"));
+        assertThat(info.getLatestVersion().toString()).isEqualTo("15.2.1-111");
     }
 }

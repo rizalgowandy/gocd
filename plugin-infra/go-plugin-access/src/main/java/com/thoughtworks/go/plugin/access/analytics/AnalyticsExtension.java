@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.thoughtworks.go.plugin.access.analytics;
 import com.thoughtworks.go.plugin.access.DefaultPluginInteractionCallback;
 import com.thoughtworks.go.plugin.access.ExtensionsRegistry;
 import com.thoughtworks.go.plugin.access.PluginRequestHelper;
-import com.thoughtworks.go.plugin.access.analytics.V1.AnalyticsMessageConverterV1;
 import com.thoughtworks.go.plugin.access.analytics.V2.AnalyticsMessageConverterV2;
 import com.thoughtworks.go.plugin.access.common.AbstractExtension;
 import com.thoughtworks.go.plugin.access.common.settings.PluginSettingsJsonMessageHandler;
@@ -39,15 +38,12 @@ import static com.thoughtworks.go.plugin.domain.common.PluginConstants.ANALYTICS
 
 @Component
 public class AnalyticsExtension extends AbstractExtension {
-    private final HashMap<String, AnalyticsMessageConverter> messageHandlerMap = new HashMap<>();
+    private final Map<String, AnalyticsMessageConverter> messageHandlerMap = new HashMap<>();
 
     @Autowired
     public AnalyticsExtension(PluginManager pluginManager, ExtensionsRegistry extensionsRegistry) {
         super(pluginManager, extensionsRegistry, new PluginRequestHelper(pluginManager, SUPPORTED_VERSIONS, ANALYTICS_EXTENSION), ANALYTICS_EXTENSION);
-        addHandler(AnalyticsMessageConverterV1.VERSION, new PluginSettingsJsonMessageHandler2_0(), new AnalyticsMessageConverterV1()
-        );
-        addHandler(AnalyticsMessageConverterV2.VERSION, new PluginSettingsJsonMessageHandler2_0(), new AnalyticsMessageConverterV2()
-        );
+        addHandler(AnalyticsMessageConverterV2.VERSION, new PluginSettingsJsonMessageHandler2_0(), new AnalyticsMessageConverterV2());
     }
 
     private void addHandler(String version, PluginSettingsJsonMessageHandler messageHandler, AnalyticsMessageConverter extensionHandler) {
@@ -64,7 +60,7 @@ public class AnalyticsExtension extends AbstractExtension {
         });
     }
 
-    public AnalyticsData getAnalytics(String pluginId, String type, String metricId, Map params) {
+    public AnalyticsData getAnalytics(String pluginId, String type, String metricId, Map<String, ?> params) {
         return pluginRequestHelper.submitRequest(pluginId, REQUEST_GET_ANALYTICS, new DefaultPluginInteractionCallback<>() {
             @Override
             public String requestBody(String resolvedExtensionVersion) {

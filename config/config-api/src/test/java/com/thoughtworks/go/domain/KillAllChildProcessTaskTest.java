@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,61 +15,48 @@
  */
 package com.thoughtworks.go.domain;
 
-import com.thoughtworks.go.config.ValidationContext;
 import org.junit.jupiter.api.Test;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class KillAllChildProcessTaskTest {
-    private ValidationContext validationContext;
-
-    public long getSystemTime() {
-        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-        return bean.isCurrentThreadCpuTimeSupported() ?
-                (bean.getCurrentThreadCpuTime() - bean.getCurrentThreadUserTime()) : 0L;
-    }
-
     @Test
-    public void shouldReturnDefaultsForCancelTaskAndGetConditions() throws Exception {
+    public void shouldReturnDefaultsForCancelTaskAndGetConditions() {
         KillAllChildProcessTask processTask = new KillAllChildProcessTask();
         Task actual = processTask.cancelTask();
-        assertThat(actual, is(instanceOf(NullTask.class)));
-        assertThat(processTask.getConditions().size(), is(0));
+        assertThat(actual).isInstanceOf(NullTask.class);
+        assertThat(processTask.getConditions().size()).isEqualTo(0);
     }
 
     @Test
-    public void shouldNotAllowSettingOfConfigAttributes() throws Exception {
+    public void shouldNotAllowSettingOfConfigAttributes() {
         KillAllChildProcessTask processTask = new KillAllChildProcessTask();
         try {
-            processTask.setConfigAttributes(new HashMap());
+            processTask.setConfigAttributes(new HashMap<>());
             fail("should have failed, as configuration of kill-all task is not allowed");
         } catch (UnsupportedOperationException e) {
-            assertThat(e.getMessage(), is("Not a configurable task"));
+            assertThat(e.getMessage()).isEqualTo("Not a configurable task");
         }
     }
 
     @Test
-    public void validateShouldReturnNoErrors() throws Exception {
+    public void validateShouldReturnNoErrors() {
         KillAllChildProcessTask processTask = new KillAllChildProcessTask();
-        processTask.validate(validationContext);
-        assertThat(processTask.errors().isEmpty(), is(true));
+        processTask.validate(null);
+        assertThat(processTask.errors().isEmpty()).isTrue();
     }
 
     @Test
     public void shouldKnowItsType() {
-        assertThat(new KillAllChildProcessTask().getTaskType(), is("killallchildprocess"));
+        assertThat(new KillAllChildProcessTask().getTaskType()).isEqualTo("killallchildprocess");
     }
 
     @Test
     public void shouldReturnEmptyPropertiesForDisplay() {
-        assertThat(new KillAllChildProcessTask().getPropertiesForDisplay().isEmpty(), is(true));
+        assertThat(new KillAllChildProcessTask().getPropertiesForDisplay().isEmpty()).isTrue();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class UpdateClusterProfileCommand extends ClusterProfileCommand {
     }
 
     @Override
-    public void update(CruiseConfig preprocessedConfig) throws Exception {
+    public void update(CruiseConfig preprocessedConfig) {
         ClusterProfile existingClusterProfile = findExistingProfile(preprocessedConfig);
         ClusterProfiles clusterProfiles = getPluginProfiles(preprocessedConfig);
 

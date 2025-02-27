@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SafeOutputStreamConsumer implements ConsoleOutputStreamConsumer {
-    private List<CommandArgument> arguments = new ArrayList<>();
-    private List<SecretString> secrets = new ArrayList<>();
+    private final List<CommandArgument> arguments = new ArrayList<>();
+    private final List<SecretString> secrets = new ArrayList<>();
     private final ConsoleOutputStreamConsumer consumer;
 
     public SafeOutputStreamConsumer(ConsoleOutputStreamConsumer consumer) {
@@ -67,9 +67,5 @@ public class SafeOutputStreamConsumer implements ConsoleOutputStreamConsumer {
 
     public void addSecrets(List<SecretString> secrets) {
         this.secrets.addAll(secrets);
-    }
-
-    public void addSecret(SecretString secret) {
-        this.secrets.add(secret);
     }
 }

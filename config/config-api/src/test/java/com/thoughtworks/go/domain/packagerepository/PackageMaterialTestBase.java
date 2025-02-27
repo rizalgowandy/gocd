@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,17 +33,17 @@ public abstract class PackageMaterialTestBase {
     protected void teardown(){
     }
 
-    protected void createPackageConfigurationsFor(Map attributes, ConfigurationHolder[] configurations) {
-        Map configurationMap = new LinkedHashMap();
+    protected void createPackageConfigurationsFor(Map<String, Object> attributes, ConfigurationHolder[] configurations) {
+        Map<String, Object> configurationMap = new LinkedHashMap<>();
         for (int i = 0; i < configurations.length; i++) {
             ConfigurationHolder currentConfiguration = configurations[i];
 
-            HashMap config = new HashMap();
-            HashMap firstConfigKey = new HashMap();
+            Map<String, Object> config = new HashMap<>();
+            Map<String, Object> firstConfigKey = new HashMap<>();
             firstConfigKey.put(ConfigurationKey.NAME, currentConfiguration.name);
             config.put(ConfigurationProperty.CONFIGURATION_KEY, firstConfigKey);
 
-            HashMap firstConfigValue = new HashMap();
+            Map<String, Object> firstConfigValue = new HashMap<>();
             firstConfigValue.put(ConfigurationValue.VALUE, currentConfiguration.value);
             config.put(ConfigurationProperty.CONFIGURATION_VALUE, firstConfigValue);
 
@@ -51,7 +51,7 @@ public abstract class PackageMaterialTestBase {
                 config.put(ConfigurationProperty.IS_CHANGED, "1");
             }
             if (currentConfiguration.isSecure) {
-                HashMap encryptedValue = new HashMap();
+                Map<String, Object> encryptedValue = new HashMap<>();
                 encryptedValue.put(EncryptedConfigurationValue.VALUE, currentConfiguration.encryptedValue);
                 config.put(ConfigurationProperty.ENCRYPTED_VALUE, encryptedValue);
             }
@@ -60,8 +60,8 @@ public abstract class PackageMaterialTestBase {
         attributes.put(Configuration.CONFIGURATION, configurationMap);
     }
 
-    protected Map createPackageDefinitionConfiguration(String name, String pluginId, ConfigurationHolder... configurations) {
-        Map attributes = new HashMap();
+    protected Map<String, Object> createPackageDefinitionConfiguration(String name, String pluginId, ConfigurationHolder... configurations) {
+        Map<String, Object> attributes = new HashMap<>();
         attributes.put(PackageDefinition.NAME, name);
         attributes.put("pluginId", pluginId);
 

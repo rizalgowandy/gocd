@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class AnalyticsData {
     }
 
     public Map<String, String> toMap() {
-        HashMap<String, String> m = new HashMap<>();
+        Map<String, String> m = new HashMap<>();
         m.put("data", data);
         m.put("view_path", getFullViewPath());
 

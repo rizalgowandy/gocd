@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -72,7 +71,7 @@ public class MultipleMaterialsWithFilterTest {
     private static GoConfigFileHelper configHelper;
 
     @BeforeAll
-    public static void fixtureSetUp() throws Exception {
+    public static void fixtureSetUp() {
         configHelper = new GoConfigFileHelper();
     }
 
@@ -101,13 +100,11 @@ public class MultipleMaterialsWithFilterTest {
         fixture.checkInToSecondMaterial("b.java");
         buildCauseProducerService.autoSchedulePipeline(fixture.pipelineName, new ServerHealthStateOperationResult(), 12345);
         BuildCause buildCause = pipelineScheduleQueue.toBeScheduled().get(new CaseInsensitiveString(fixture.pipelineName));
-        assertThat(buildCause, instanceOf(BuildCause.class));
+        assertThat(buildCause).isInstanceOf(BuildCause.class);
 
         MaterialRevisions actual = buildCause.getMaterialRevisions();
-        assertThat(actual.getMaterialRevision(fixture.getSecondMaterialFolder()).getRevision(),
-                is(fixture.latestRevisionOfSecondMaterial().getRevision()));
-        assertThat(actual.getMaterialRevision(fixture.getFirstMaterialFolder()).getRevision(),
-                is(fixture.latestRevisionOfFirstMaterial().getRevision()));
+        assertThat(actual.getMaterialRevision(fixture.getSecondMaterialFolder()).getRevision()).isEqualTo(fixture.latestRevisionOfSecondMaterial().getRevision());
+        assertThat(actual.getMaterialRevision(fixture.getFirstMaterialFolder()).getRevision()).isEqualTo(fixture.latestRevisionOfFirstMaterial().getRevision());
     }
 
     @Test
@@ -119,8 +116,8 @@ public class MultipleMaterialsWithFilterTest {
 
         buildCauseProducerService.autoSchedulePipeline(fixture.pipelineName, new ServerHealthStateOperationResult(), 12345);
 
-        assertThat(pipelineScheduleQueue.toBeScheduled().size(), is(size));
-        assertThat(pipelineScheduleQueue.toBeScheduled().get(new CaseInsensitiveString(fixture.pipelineName)), is(nullValue()));
+        assertThat(pipelineScheduleQueue.toBeScheduled().size()).isEqualTo(size);
+        assertThat(pipelineScheduleQueue.toBeScheduled().get(new CaseInsensitiveString(fixture.pipelineName))).isNull();
     }
 
     public class PipelineWithMultipleMaterials extends PipelineWithTwoStages {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -52,7 +53,7 @@ class ReplaceElasticAgentInformationCommandTest {
     private ReplaceElasticAgentInformationCommand replaceElasticAgentInformationCommand;
     private BasicCruiseConfig basicCruiseConfig;
     private String pluginId;
-    private HashMap<String, String> pluginSettings;
+    private Map<String, String> pluginSettings;
     private ClusterProfiles clusterProfiles;
     private ElasticProfiles elasticProfiles;
 
@@ -78,14 +79,14 @@ class ReplaceElasticAgentInformationCommandTest {
     }
 
     @Test
-    void shouldMakeCallToElasticAgentExtensionToMigrateElasticAgentRelatedConfig() throws Exception {
+    void shouldMakeCallToElasticAgentExtensionToMigrateElasticAgentRelatedConfig() {
         replaceElasticAgentInformationCommand.update(basicCruiseConfig);
 
         verify(elasticAgentExtension).migrateConfig(pluginId, new ElasticAgentInformation(Collections.emptyMap(), clusterProfiles, elasticProfiles));
     }
 
     @Test
-    void shouldMakeCallToElasticAgentExtensionToMigrateElasticAgentRelatedConfig_WhenNoPluginSettingsAreConfigured() throws Exception {
+    void shouldMakeCallToElasticAgentExtensionToMigrateElasticAgentRelatedConfig_WhenNoPluginSettingsAreConfigured() {
         replaceElasticAgentInformationCommand = new ReplaceElasticAgentInformationCommand(clusterProfilesService, elasticProfileService, elasticAgentExtension, pluginDescriptor, new HashMap<>());
 
         replaceElasticAgentInformationCommand.update(basicCruiseConfig);
@@ -94,7 +95,7 @@ class ReplaceElasticAgentInformationCommandTest {
     }
 
     @Test
-    void shouldUpdateGoCDConfigWithPluginReturnedMigratedConfig() throws Exception {
+    void shouldUpdateGoCDConfigWithPluginReturnedMigratedConfig() {
         ElasticConfig elasticConfig = new ElasticConfig();
 
         assertThat(elasticConfig.getProfiles()).hasSize(0);

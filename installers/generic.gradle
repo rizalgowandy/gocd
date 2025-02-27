@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ assemble.dependsOn(":installers:agentGenericZip", ":installers:serverGenericZip"
 def configureGenericZip(Zip zipTask, InstallerType installerType) {
   zipTask.with {
     dependsOn extractDeltaPack
-    destinationDirectory = file("${project.buildDir.path}/${project.base.distsDirName}/zip")
+    destinationDirectory = project.base.distsDirectory.dir("zip")
     archiveBaseName = installerType.baseName
 
     into("${installerType.baseName}-${project.goVersion}")
@@ -81,7 +81,9 @@ def configureGenericZip(Zip zipTask, InstallerType installerType) {
       filter(FixCrLfFilter.class, eol: FixCrLfFilter.CrLf.UNIX)
       rename 'App.sh.in', installerType.baseName
       into "bin"
-      fileMode = 0755
+      filePermissions {
+        unix(0755)
+      }
     }
 
     from("${extractDeltaPack.outputs.files.singleFile.path}/wrapper-delta-pack-${project.versions.tanuki}/src/bin") {
@@ -167,11 +169,12 @@ def configureGenericZip(Zip zipTask, InstallerType installerType) {
           eachLine = newLines.join('\n')
         }
 
-        if (eachLine == 'wrapper.java.classpath.1=../lib/wrapper.jar') {
-          eachLine = [
-            'wrapper.java.classpath.1=wrapper/wrapper.jar',
-            "wrapper.java.classpath.2=lib/${installerType.jarFileName}",
-          ].join("\n")
+        if (eachLine == 'wrapper.jarfile=../lib/wrapper.jar') {
+          eachLine = "wrapper.jarfile=wrapper/wrapper.jar"
+        }
+
+        if (eachLine == '#wrapper.java.classpath.1=') {
+          eachLine = "wrapper.java.classpath.1=lib/${installerType.jarFileName}"
         }
 
         if (eachLine == 'wrapper.java.library.path.1=../lib') {

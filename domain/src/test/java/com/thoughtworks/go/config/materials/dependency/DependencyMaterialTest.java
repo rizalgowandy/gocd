@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class DependencyMaterialTest {
 
     @Test
     void shouldParseMaterialRevisionWithPipelineLabel() {
-        ArrayList<Modification> mods = new ArrayList<>();
+        List<Modification> mods = new ArrayList<>();
         Modification mod = new Modification(new Date(), "pipelineName/123/stageName/2", "pipeline-label-123", null);
         mods.add(mod);
         DependencyMaterialRevision revision = (DependencyMaterialRevision) new Modifications(mods).latestRevision(dependencyMaterial);
@@ -82,7 +82,7 @@ class DependencyMaterialTest {
     }
 
     @Test
-    void shouldBeUniqueBasedOnpipelineAndStageName() throws Exception {
+    void shouldBeUniqueBasedOnpipelineAndStageName() {
         DependencyMaterial material1 = new DependencyMaterial(new CaseInsensitiveString("pipeline1"), new CaseInsensitiveString("stage1"));
         Map<String, Object> map = new HashMap<>();
         material1.appendCriteria(map);
@@ -92,19 +92,19 @@ class DependencyMaterialTest {
     }
 
     @Test
-    void shouldUsePipelineNameAsMaterialNameIfItIsNotSet() throws Exception {
+    void shouldUsePipelineNameAsMaterialNameIfItIsNotSet() {
         assertThat(new DependencyMaterial(new CaseInsensitiveString("pipeline1"), new CaseInsensitiveString("stage1")).getName()).isEqualTo(new CaseInsensitiveString("pipeline1"));
     }
 
     @Test
-    void shouldUseMaterialNameAsMaterialNameIfItIsSet() throws Exception {
+    void shouldUseMaterialNameAsMaterialNameIfItIsSet() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("pipeline1"), new CaseInsensitiveString("stage1"));
         material.setName(new CaseInsensitiveString("my-material-name"));
         assertThat(material.getName()).isEqualTo(new CaseInsensitiveString("my-material-name"));
     }
 
     @Test
-    void shouldGenerateSqlCriteriaMapInSpecificOrder() throws Exception {
+    void shouldGenerateSqlCriteriaMapInSpecificOrder() {
         Map<String, Object> map = dependencyMaterial.getSqlCriteria();
         assertThat(map.size()).isEqualTo(3);
         Iterator<Map.Entry<String, Object>> iter = map.entrySet().iterator();
@@ -114,7 +114,7 @@ class DependencyMaterialTest {
     }
 
     @Test
-    void equalsImplementation() throws Exception {
+    void equalsImplementation() {
         DependencyMaterial one = new DependencyMaterial(new CaseInsensitiveString("pipelineName"), new CaseInsensitiveString("stage"));
         DependencyMaterial two = new DependencyMaterial(new CaseInsensitiveString("pipelineName"), new CaseInsensitiveString("stage"));
         two.setName(new CaseInsensitiveString("other-name-that-should-be-ignored-in-equals-comparison"));
@@ -125,7 +125,7 @@ class DependencyMaterialTest {
     }
 
     @Test
-    void hashCodeImplementation() throws Exception {
+    void hashCodeImplementation() {
         DependencyMaterial one = new DependencyMaterial(new CaseInsensitiveString("pipelineName"), new CaseInsensitiveString("stage"));
         DependencyMaterial two = new DependencyMaterial(new CaseInsensitiveString("pipelineName"), new CaseInsensitiveString("stage"));
         two.setName(new CaseInsensitiveString("other-name-that-should-be-ignored-in-hashcode-generation"));
@@ -136,20 +136,20 @@ class DependencyMaterialTest {
     }
 
     @Test
-    void shouldReturnUpstreamPipelineNameAsDisplayNameIfMaterialNameIsNotDefined() throws Exception {
+    void shouldReturnUpstreamPipelineNameAsDisplayNameIfMaterialNameIsNotDefined() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("upstream"), new CaseInsensitiveString("first"));
         assertThat(material.getDisplayName()).isEqualTo("upstream");
     }
 
     @Test
-    void shouldReturnMaterialNameIfDefined() throws Exception {
+    void shouldReturnMaterialNameIfDefined() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("upstream"), new CaseInsensitiveString("first"));
         material.setName(new CaseInsensitiveString("my_name"));
         assertThat(material.getDisplayName()).isEqualTo("my_name");
     }
 
     @Test
-    void shouldNotTruncateshortRevision() throws Exception {
+    void shouldNotTruncateshortRevision() {
         Material material = new DependencyMaterial(new CaseInsensitiveString("upstream"), new CaseInsensitiveString("first"));
         assertThat(material.getShortRevision("pipeline-name/1/stage-name/5")).isEqualTo("pipeline-name/1/stage-name/5");
     }
@@ -164,7 +164,7 @@ class DependencyMaterialTest {
     void shouldDetectDependencyMaterialUsedInFetchArtifact() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("pipeline-foo"), new CaseInsensitiveString("stage-bar"));
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
-        ArrayList<FetchTask> fetchTasks = new ArrayList<>();
+        List<FetchTask> fetchTasks = new ArrayList<>();
         fetchTasks.add(new FetchTask(new CaseInsensitiveString("something"), new CaseInsensitiveString("new"), "src", "dest"));
         fetchTasks.add(new FetchTask(new CaseInsensitiveString("pipeline-foo"), new CaseInsensitiveString("stage-bar"), new CaseInsensitiveString("job"), "src", "dest"));
         when(pipelineConfig.getFetchTasks()).thenReturn(fetchTasks);
@@ -176,7 +176,7 @@ class DependencyMaterialTest {
     void shouldDetectDependencyMaterialUsedInFetchArtifactFromAncestor() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("parent-pipeline"), new CaseInsensitiveString("stage-bar"));
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
-        ArrayList<FetchTask> fetchTasks = new ArrayList<>();
+        List<FetchTask> fetchTasks = new ArrayList<>();
         fetchTasks.add(new FetchTask(new CaseInsensitiveString("grandparent-pipeline/parent-pipeline"), new CaseInsensitiveString("grandparent-stage"), new CaseInsensitiveString("grandparent-job"), "src", "dest"));
         when(pipelineConfig.getFetchTasks()).thenReturn(fetchTasks);
 
@@ -187,7 +187,7 @@ class DependencyMaterialTest {
     void shouldDetectDependencyMaterialNotUsedInFetchArtifact() {
         DependencyMaterial material = new DependencyMaterial(new CaseInsensitiveString("pipeline-foo"), new CaseInsensitiveString("stage-bar"));
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
-        ArrayList<FetchTask> fetchTasks = new ArrayList<>();
+        List<FetchTask> fetchTasks = new ArrayList<>();
         fetchTasks.add(new FetchTask(new CaseInsensitiveString("something"), new CaseInsensitiveString("new"), "src", "dest"));
         fetchTasks.add(new FetchTask(new CaseInsensitiveString("another"), new CaseInsensitiveString("boo"), new CaseInsensitiveString("foo"), "src", "dest"));
         when(pipelineConfig.getFetchTasks()).thenReturn(fetchTasks);
@@ -229,13 +229,13 @@ class DependencyMaterialTest {
 
     private void assertAttributes(Map<String, Object> attributes) {
         assertThat(attributes.get("type")).isEqualTo("pipeline");
-        Map<String, Object> configuration = (Map<String, Object>) attributes.get("pipeline-configuration");
+        @SuppressWarnings("unchecked") Map<String, Object> configuration = (Map<String, Object>) attributes.get("pipeline-configuration");
         assertThat(configuration.get("pipeline-name")).isEqualTo("pipeline-name");
         assertThat(configuration.get("stage-name")).isEqualTo("stage-name");
     }
 
     @Test
-    void shouldReturnFalseForDependencyMaterial_supportsDestinationFolder() throws Exception {
+    void shouldReturnFalseForDependencyMaterial_supportsDestinationFolder() {
         DependencyMaterial material = new DependencyMaterial();
         assertThat(material.supportsDestinationFolder()).isFalse();
     }

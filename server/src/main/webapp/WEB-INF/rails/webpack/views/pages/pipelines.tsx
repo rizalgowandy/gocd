@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,8 +163,8 @@ export class PipelineCreatePage extends Page<{}, State> {
 
   helpText(): m.Children {
     return <div>
-      To read about the basic pipeline setup, follow
-      <Link href={docsUrl('configuration/quick_pipeline_setup.html')} externalLinkIcon={true}> this.</Link>
+      To read about the basic pipeline setup, follow%nbsp;
+      <Link href={docsUrl('configuration/quick_pipeline_setup.html')} target="_blank" externalLinkIcon={true}>this.</Link>
     </div>;
   }
 }

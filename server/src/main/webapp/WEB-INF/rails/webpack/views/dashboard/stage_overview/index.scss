@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:map";
 @import "../../global/common";
 
 $border-color: #ccc;
@@ -37,7 +38,7 @@ $dark-gray: #2f4f4f;
 
 .stage-overview-container {
   position: absolute;
-  z-index: map_get($zindex, stage-overview);
+  z-index: map.get($zindex, stage-overview);
   border: 1px solid $border-color;
   border-radius: 3px;
   font-size: 12px;
@@ -366,9 +367,9 @@ $dark-gray: #2f4f4f;
 }
 
 .passed {
-  @include icon-before($type: $fa-var-check, $color: $white);
-
   background: $passed;
+
+  @include icon-before($type: $fa-var-check, $color: $white);
 
   &::before {
     position: relative;
@@ -378,9 +379,9 @@ $dark-gray: #2f4f4f;
 }
 
 .failed {
-  @include icon-before($type: $fa-var-exclamation-circle, $color: $white);
-
   background: $failed;
+
+  @include icon-before($type: $fa-var-exclamation-circle, $color: $white);
 
   &::before {
     position: relative;
@@ -390,9 +391,9 @@ $dark-gray: #2f4f4f;
 }
 
 .cancelled {
-  @include icon-before($type: $fa-var-ban);
-
   background: $building;
+
+  @include icon-before($type: $fa-var-ban);
 
   &::before {
     position: relative;
@@ -587,7 +588,7 @@ $dark-gray: #2f4f4f;
   padding: 10px;
   border-radius: 6px;
   position: absolute;
-  z-index: map_get($zindex, tooltip);
+  z-index: map.get($zindex, tooltip);
   background: rgb(243, 243, 243, 95%);
   border: 1px solid $tooltip-border-color;
 
@@ -768,22 +769,22 @@ $dark-gray: #2f4f4f;
 }
 
 .unsorted {
-  @include icon-before($fa-var-sort);
-
   color: $gray;
   margin-left: 2px;
+
+  @include icon-before($fa-var-sort);
 }
 
 .asc {
-  @include icon-before($fa-var-sort-up);
-
   color: $dark-gray;
   margin-left: 2px;
+
+  @include icon-before($fa-var-sort-up);
 }
 
 .desc {
-  @include icon-before($fa-var-sort-down);
-
   color: $dark-gray;
   margin-left: 2px;
+
+  @include icon-before($fa-var-sort-down);
 }

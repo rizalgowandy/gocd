@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.thoughtworks.go.api.representers.JsonReader;
 import com.thoughtworks.go.config.TimerConfig;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class TimerRepresenter {
 
@@ -30,7 +31,7 @@ public class TimerRepresenter {
         }
         if (!timerConfig.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> mapping = new HashMap<>();
+                Map<String, String> mapping = new HashMap<>();
                 mapping.put("timerSpec", "spec");
                 new ErrorGetter(mapping).toJSON(errorWriter, timerConfig);
             });

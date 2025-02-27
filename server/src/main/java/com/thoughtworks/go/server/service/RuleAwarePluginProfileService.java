@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,15 +50,15 @@ public abstract class RuleAwarePluginProfileService<M extends RuleAwarePluginPro
         return getPluginProfiles().find(id);
     }
 
-    private void validatePluginProperties(RuleAwarePluginProfileCommand command, RuleAwarePluginProfile newPluginProfile) {
+    private void validatePluginProperties(RuleAwarePluginProfileCommand<?, ?> command, RuleAwarePluginProfile newPluginProfile) {
         try {
             ValidationResult result = command.validateUsingExtension(newPluginProfile.getPluginId(), newPluginProfile.getConfiguration().getConfigurationAsMap(true));
             addErrorsToConfiguration(result, newPluginProfile);
-        }catch (RecordNotFoundException e) {
+        } catch (RecordNotFoundException e) {
             newPluginProfile.addError("pluginId", String.format("Plugin with id `%s` is not found.", newPluginProfile.getPluginId()));
         } catch (GoPluginFrameworkException e) {
             newPluginProfile.addError("pluginId", e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             //Ignore - it will be the invalid cipher text exception for an encrypted value. This will be validated later during entity update
         }
     }
@@ -77,7 +77,7 @@ public abstract class RuleAwarePluginProfileService<M extends RuleAwarePluginPro
         }
     }
 
-    protected void update(Username currentUser, M pluginProfile, LocalizedOperationResult result, RuleAwarePluginProfileCommand cmd, boolean validatePluginProperties) {
+    protected void update(Username currentUser, M pluginProfile, LocalizedOperationResult result, RuleAwarePluginProfileCommand<?, ?> cmd, boolean validatePluginProperties) {
         try {
             if (validatePluginProperties) {
                 validatePluginProperties(cmd, pluginProfile);

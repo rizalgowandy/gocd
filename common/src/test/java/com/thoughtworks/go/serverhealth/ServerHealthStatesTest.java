@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,32 @@ package com.thoughtworks.go.serverhealth;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServerHealthStatesTest {
 
     @Test
-    public void shouldReturnTheErrorCount() throws Exception {
+    public void shouldReturnTheErrorCount() {
         ServerHealthStates states = new ServerHealthStates(ServerHealthState.error("msg", "desc", HealthStateType.artifactsDirChanged()),
                 ServerHealthState.warning("another", "some", HealthStateType.databaseDiskFull()));
-        assertThat(states.errorCount(), is(1));
-        assertThat(states.warningCount(), is(1));
+        assertThat(states.errorCount()).isEqualTo(1);
+        assertThat(states.warningCount()).isEqualTo(1);
     }
 
     @Test
-    public void shouldReturnFalseForRealSuccessIfThereIsAtleastOneError() throws Exception {
+    public void shouldReturnFalseForRealSuccessIfThereIsAtleastOneError() {
         ServerHealthStates states = new ServerHealthStates(ServerHealthState.error("msg", "desc", HealthStateType.artifactsDirChanged()));
-        assertThat(states.isRealSuccess(), is(false));
+        assertThat(states.isRealSuccess()).isFalse();
     }
 
     @Test
-    public void shouldReturnFalseForRealSuccessIfThereIsAtleastOneWarning() throws Exception {
+    public void shouldReturnFalseForRealSuccessIfThereIsAtleastOneWarning() {
         ServerHealthStates states = new ServerHealthStates(ServerHealthState.warning("another", "some", HealthStateType.databaseDiskFull()));
-        assertThat(states.isRealSuccess(), is(false));
+        assertThat(states.isRealSuccess()).isFalse();
     }
 
     @Test
-    public void shouldReturntrueForRealSuccess() throws Exception {
-        assertThat(new ServerHealthStates(ServerHealthState.success(HealthStateType.databaseDiskFull())).isRealSuccess(), is(true));
+    public void shouldReturntrueForRealSuccess() {
+        assertThat(new ServerHealthStates(ServerHealthState.success(HealthStateType.databaseDiskFull())).isRealSuccess()).isTrue();
     }
 }

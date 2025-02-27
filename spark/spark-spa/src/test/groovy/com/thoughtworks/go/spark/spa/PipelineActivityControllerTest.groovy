@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class PipelineActivityControllerTest implements ControllerTrait<PipelineActivity
     def pipelineName = "up42"
     def request = mock(Request)
     when(request.params("pipeline_name")).thenReturn(pipelineName)
-    when(goConfigService.isPipelineEditable(pipelineName)).thenReturn(true);
+    when(goConfigService.isPipelineEditable(pipelineName)).thenReturn(true)
     ModelAndView modelAndView = controller.index(request, response)
 
     Map<Object, Object> model = modelAndView.getModel() as Map<Object, Object>
@@ -69,7 +69,7 @@ class PipelineActivityControllerTest implements ControllerTrait<PipelineActivity
     def pipelineName = "up42"
     def request = mock(Request)
     when(request.params("pipeline_name")).thenReturn(pipelineName)
-    when(securityService.hasOperatePermissionForPipeline(currentUserLoginName(), pipelineName)).thenReturn(true);
+    when(securityService.hasOperatePermissionForPipeline(currentUserLoginName(), pipelineName)).thenReturn(true)
     ModelAndView modelAndView = controller.index(request, response)
 
     Map<Object, Object> model = modelAndView.getModel() as Map<Object, Object>

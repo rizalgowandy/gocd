@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class DefaultAgentLaunchDescriptorImplTest {
         int port = 20;
         AgentBootstrapperArgs bootstrapperArgs = new AgentBootstrapperArgs().setServerUrl(new URL("https://" + hostname + ":" + port + "/go")).setRootCertFile(null).setSslVerificationMode(AgentBootstrapperArgs.SslMode.NONE);
         DefaultAgentLaunchDescriptorImpl launchDescriptor = new DefaultAgentLaunchDescriptorImpl(bootstrapperArgs, new AgentBootstrapper());
-        Map context = launchDescriptor.context();
+        Map<String, String> context = launchDescriptor.context();
 
         assertContainsAll(bootstrapperArgs.toProperties(), context);
     }
@@ -45,12 +45,12 @@ public class DefaultAgentLaunchDescriptorImplTest {
         when(bootstrapper.version()).thenReturn("1.2.3-1234");
 
         DefaultAgentLaunchDescriptorImpl launchDescriptor = new DefaultAgentLaunchDescriptorImpl(new AgentBootstrapperArgs().setServerUrl(new URL("https://www.example.com")), bootstrapper);
-        Map context = launchDescriptor.context();
+        Map<String, String> context = launchDescriptor.context();
 
         assertEquals("1.2.3-1234", context.get(GoConstants.AGENT_BOOTSTRAPPER_VERSION));
     }
 
-    private void assertContainsAll(Map<String, String> expected, Map actual) {
+    private void assertContainsAll(Map<String, String> expected, Map<String, String> actual) {
         for (Map.Entry<String, String> keyValuePair : expected.entrySet()) {
             String key = keyValuePair.getKey();
             assertEquals(actual.get(key), expected.get(key));

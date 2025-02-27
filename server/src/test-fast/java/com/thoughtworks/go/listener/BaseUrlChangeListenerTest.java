@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,12 @@ import com.thoughtworks.go.domain.SiteUrl;
 import com.thoughtworks.go.server.cache.GoCache;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.mockito.Mockito.*;
 
 public class BaseUrlChangeListenerTest {
 
     @Test
-    public void shouldFlushCacheWhenBaseUrlConfigChangesAndUpdateTheSiteURLAndSecureSiteURLToTheNewValues() throws IOException {
+    public void shouldFlushCacheWhenBaseUrlConfigChangesAndUpdateTheSiteURLAndSecureSiteURLToTheNewValues() {
         GoCache cache = mock(GoCache.class);
         BaseUrlChangeListener listener = new BaseUrlChangeListener(new SiteUrl(""),
                 new SecureSiteUrl(""), cache);

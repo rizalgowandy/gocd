@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.PLUGGABLE_TASK_EXTENSION;
 
@@ -43,7 +44,7 @@ public class TaskExtension extends AbstractExtension {
     public final static String EXECUTION_REQUEST = "execute";
     public final static String TASK_VIEW_REQUEST = "view";
 
-    final HashMap<String, JsonBasedTaskExtensionHandler> messageHandlerMap = new HashMap<>();
+    final Map<String, JsonBasedTaskExtensionHandler> messageHandlerMap = new HashMap<>();
 
     @Autowired
     public TaskExtension(PluginManager pluginManager, ExtensionsRegistry extensionsRegistry) {

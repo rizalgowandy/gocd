@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +21,27 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JobHistoryItemTest {
 
     @Test
     public void shouldBeUnsuccessfullyCompletedWhenFailedOrCancelled() {
-        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Failed, new Date()).hasUnsuccessfullyCompleted(), is(true));
-        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Cancelled, new Date()).hasUnsuccessfullyCompleted(), is(true));
+        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Failed, new Date()).hasUnsuccessfullyCompleted()).isTrue();
+        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Cancelled, new Date()).hasUnsuccessfullyCompleted()).isTrue();
     }
 
     @Test
     public void shouldPassedWhenJobCompletesSuccessfully() {
-        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Passed, new Date()).hasPassed(), is(true));
+        assertThat(new JobHistoryItem("", JobState.Completed, JobResult.Passed, new Date()).hasPassed()).isTrue();
     }
 
     @Test
     public void shouldBeRunningBasedOnJobState() {
-        assertThat(new JobHistoryItem("", JobState.Assigned, JobResult.Unknown, new Date()).isRunning(), is(true));
-        assertThat(new JobHistoryItem("", JobState.Building, JobResult.Unknown, new Date()).isRunning(), is(true));
-        assertThat(new JobHistoryItem("", JobState.Completing, JobResult.Unknown, new Date()).isRunning(), is(true));
-        assertThat(new JobHistoryItem("", JobState.Preparing, JobResult.Unknown, new Date()).isRunning(), is(true));
-        assertThat(new JobHistoryItem("", JobState.Scheduled, JobResult.Unknown, new Date()).isRunning(), is(true));
+        assertThat(new JobHistoryItem("", JobState.Assigned, JobResult.Unknown, new Date()).isRunning()).isTrue();
+        assertThat(new JobHistoryItem("", JobState.Building, JobResult.Unknown, new Date()).isRunning()).isTrue();
+        assertThat(new JobHistoryItem("", JobState.Completing, JobResult.Unknown, new Date()).isRunning()).isTrue();
+        assertThat(new JobHistoryItem("", JobState.Preparing, JobResult.Unknown, new Date()).isRunning()).isTrue();
+        assertThat(new JobHistoryItem("", JobState.Scheduled, JobResult.Unknown, new Date()).isRunning()).isTrue();
     }
 }

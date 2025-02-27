@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.thoughtworks.go.helper.ModificationsMother.aCheckIn;
 import static org.assertj.core.api.Assertions.*;
@@ -84,7 +85,7 @@ class UserTest {
     @Test
     void shouldPopulateEmptyListWhenMatcherDoesNotInitialized() {
         user = new User("UserName", new String[]{""}, "user@mail.com", true);
-        HashMap<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         user.populateModel(data);
         Object value = data.get("matchers");
         assertThat(value).isEqualTo(new Matcher(""));
@@ -93,7 +94,7 @@ class UserTest {
     @Test
     void shouldPopulateMatchers() {
         user = new User("UserName", new String[]{"Jez,Pavan"}, "user@mail.com", true);
-        HashMap<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         user.populateModel(data);
         Object value = data.get("matchers");
         assertThat(value).isEqualTo(new Matcher("Jez,Pavan"));
@@ -151,7 +152,7 @@ class UserTest {
     }
 
     @Test
-    void shouldInvalidateMatcherMoreThan255Of() throws Exception {
+    void shouldInvalidateMatcherMoreThan255Of() {
         user = new User("UserName", new String[]{onlyChars(200), onlyChars(55)}, "user@mail.com", true);
         try {
             user.validateMatcher();
@@ -167,7 +168,7 @@ class UserTest {
     }
 
     @Test
-    void shouldEquals() throws Exception {
+    void shouldEquals() {
         User user1 = new User("UserName", new String[]{"A", "b"}, "user@mail.com", true);
         User user2 = new User("UserName", new String[]{}, "user@mail.com", true);
         user2.setMatcher("A, b");

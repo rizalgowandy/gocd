@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public class BackupConfigControllerV1 extends ApiController implements SparkSpri
         return show(req, res);
     }
 
-    public String deleteBackupConfig(Request req, Response res) throws IOException {
+    public String deleteBackupConfig(Request req, Response res) {
         // to throw a NFE, if none is available
         fetchEntityFromConfig();
 

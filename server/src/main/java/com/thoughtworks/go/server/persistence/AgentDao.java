@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +130,7 @@ public class AgentDao extends HibernateDaoSupport {
         return (AgentDao.class.getName() + "_agent_" + uuid).intern();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Agent> getAllAgents() {
         return ((List<Agent>) transactionTemplate.execute(transactionStatus -> {
             try {
@@ -143,6 +144,7 @@ public class AgentDao extends HibernateDaoSupport {
         }));
     }
 
+    @SuppressWarnings("unchecked")
     public List<Agent> getAgentsByUUIDs(List<String> uuids) {
         AgentMutex mutex = agentMutexes.acquire(uuids);
         synchronized (mutex) {

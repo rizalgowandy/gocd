@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,6 @@ public class HgMaterialConfig extends ScmMaterialConfig implements ParamsAttribu
         if (isNotBlank(branch)) {
             parameters.put("branch", branch);
         }
-    }
-
-    @Override
-    protected void appendAttributes(Map<String, Object> parameters) {
-        parameters.put("url", url);
     }
 
     @Override
@@ -136,11 +131,6 @@ public class HgMaterialConfig extends ScmMaterialConfig implements ParamsAttribu
     }
 
     @Override
-    protected String getLocation() {
-        return this.url.forDisplay();
-    }
-
-    @Override
     public String getUriForDisplay() {
         return this.url.forDisplay();
     }
@@ -168,25 +158,26 @@ public class HgMaterialConfig extends ScmMaterialConfig implements ParamsAttribu
                 '}';
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         if (attributes == null) {
             return;
         }
         super.setConfigAttributes(attributes);
-        Map map = (Map) attributes;
+        Map<String, String> map = (Map<String, String>) attributes;
         if (map.containsKey(URL)) {
-            this.url = new HgUrlArgument((String) map.get(URL));
+            this.url = new HgUrlArgument(map.get(URL));
         }
         if (map.containsKey("userName")) {
-            this.userName = (String) map.get("userName");
+            this.userName = map.get("userName");
         }
         if (map.containsKey(PASSWORD_CHANGED) && "1".equals(map.get(PASSWORD_CHANGED))) {
-            String passwordToSet = (String) map.get(PASSWORD);
+            String passwordToSet = map.get(PASSWORD);
             resetPassword(passwordToSet);
         }
         if (map.containsKey(BRANCH)) {
-            setBranchAttribute((String) map.get(BRANCH));
+            setBranchAttribute(map.get(BRANCH));
         }
     }
 

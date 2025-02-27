@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,10 @@ import com.thoughtworks.go.security.ResetCipher;
 import com.thoughtworks.go.server.service.GoConfigService;
 import com.thoughtworks.go.serverhealth.ServerHealthService;
 import com.thoughtworks.go.service.ConfigRepository;
-import com.thoughtworks.go.util.ConfigElementImplementationRegistryMother;
-import com.thoughtworks.go.util.GoConfigFileHelper;
-import com.thoughtworks.go.util.SystemEnvironment;
-import com.thoughtworks.go.util.TimeProvider;
+import com.thoughtworks.go.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.filter.ElementFilter;
-import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +44,6 @@ import org.xmlunit.assertj.XmlAssert;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Objects;
 
 import static com.thoughtworks.go.config.PipelineConfig.LOCK_VALUE_LOCK_ON_FAILURE;
@@ -231,7 +226,7 @@ public class GoConfigMigrationIntegrationTest {
 
     @Test
     public void shouldSetServerId_toARandomUUID_ifServerTagDoesntExist() {
-        GoConfigService.XmlPartialSaver fileSaver = goConfigService.fileSaver(true);
+        GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = goConfigService.fileSaver(true);
         GoConfigValidity configValidity = fileSaver.saveXml("<cruise schemaVersion='" + 53 + "'>\n"
                 + "</cruise>", goConfigService.configFileMd5());
         assertThat(configValidity.isValid()).as("Has no error").isTrue();
@@ -244,7 +239,7 @@ public class GoConfigMigrationIntegrationTest {
 
     @Test
     public void shouldSetServerId_toARandomUUID_ifOneDoesntExist() {
-        GoConfigService.XmlPartialSaver fileSaver = goConfigService.fileSaver(true);
+        GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = goConfigService.fileSaver(true);
         GoConfigValidity configValidity = fileSaver.saveXml("""
                 <cruise schemaVersion='55'>
                 <server artifactsdir="logs" siteUrl="http://go-server-site-url:8153" secureSiteUrl="https://go-server-site-url" jobTimeout="60">
@@ -260,7 +255,7 @@ public class GoConfigMigrationIntegrationTest {
 
     @Test
     public void shouldLoadServerId_ifOneExists() {
-        GoConfigService.XmlPartialSaver fileSaver = goConfigService.fileSaver(true);
+        GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = goConfigService.fileSaver(true);
         GoConfigValidity configValidity = fileSaver.saveXml("""
                 <cruise schemaVersion='55'>
                 <server artifactsdir="logs" siteUrl="http://go-server-site-url:8153" secureSiteUrl="https://go-server-site-url" jobTimeout="60" serverId="foo">
@@ -296,7 +291,7 @@ public class GoConfigMigrationIntegrationTest {
                         </cruise>""";
 
         String migratedContent = migrateXmlString(configString, 66);
-        Document document = new SAXBuilder().build(new StringReader(migratedContent));
+        Document document = XmlUtils.buildXmlDocument(migratedContent);
 
         assertThat(document.getDescendants(new ElementFilter("luau")).hasNext()).isFalse();
         assertThat(document.getDescendants(new ElementFilter("groups")).hasNext()).isFalse();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class ClusterProfilesService extends PluginProfilesService<ClusterProfile
     }
 
     @Override
-    void validatePluginProperties(PluginProfileCommand command, ClusterProfile clusterProfile) {
+    void validatePluginProperties(PluginProfileCommand<?, ?> command, ClusterProfile clusterProfile) {
         secretParamResolver.resolve(clusterProfile);
         try {
             ValidationResult result = command.validateUsingExtension(clusterProfile.getPluginId(), clusterProfile.getConfigurationAsMap(true, true));

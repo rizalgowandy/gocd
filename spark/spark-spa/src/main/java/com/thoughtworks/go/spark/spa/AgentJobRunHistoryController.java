@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,8 @@ public class AgentJobRunHistoryController implements SparkController {
         return new ModelAndView(object, null);
     }
 
-    private HashMap<String, String> meta(Request request) {
-        HashMap<String, String> meta = new HashMap<>();
+    private Map<String, String> meta(Request request) {
+        Map<String, String> meta = new HashMap<>();
         meta.put("uuid", request.params("uuid"));
         return meta;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import java.util.Optional;
 
 @WebSocket
 public class ConsoleLogSocket implements SocketEndpoint {
+    private static final String PING = "{\"type\":\"ping\"}";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleLogSocket.class);
     private static final Gson GSON = new Gson();
 
@@ -102,7 +103,7 @@ public class ConsoleLogSocket implements SocketEndpoint {
 
     @Override
     public void ping() throws IOException {
-        session.getRemote().sendString(WebsocketMessages.PING);
+        session.getRemote().sendString(PING);
     }
 
     @Override

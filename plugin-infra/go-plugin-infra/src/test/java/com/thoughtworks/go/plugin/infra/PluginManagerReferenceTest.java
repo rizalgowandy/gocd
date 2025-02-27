@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 
 public class PluginManagerReferenceTest {
     @Test
-    public void testGetPluginManager() throws Exception {
+    public void testGetPluginManager() {
         PluginManagerReference reference = PluginManagerReference.reference();
         try {
             reference.getPluginManager();

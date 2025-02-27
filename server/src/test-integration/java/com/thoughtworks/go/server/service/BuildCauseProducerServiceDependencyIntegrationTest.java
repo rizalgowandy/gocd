@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class BuildCauseProducerServiceDependencyIntegrationTest {
         PipelineConfig config;
         Pipeline latest;
 
-        void setup(BuildCause buildCause) throws Exception {
+        void setup(BuildCause buildCause) {
             config = configHelper.addPipeline(MINGLE_PIPELINE_NAME, STAGE_NAME, repository, new Filter(new IgnoredFiles("**/*.doc")), "unit", "functional");
             latest = PipelineMother.schedule(this.config, buildCause);
             latest = pipelineDao.saveWithStages(latest);
@@ -153,7 +153,7 @@ public class BuildCauseProducerServiceDependencyIntegrationTest {
         PipelineConfig config;
         Pipeline latest;
 
-        void setup(BuildCause buildCause) throws Exception {
+        void setup(BuildCause buildCause) {
             config = configHelper.addPipeline(GO_PIPELINE_NAME, STAGE_NAME, repository, "unit");
             latest = PipelineMother.schedule(this.config, buildCause);
             latest = pipelineDao.saveWithStages(latest);

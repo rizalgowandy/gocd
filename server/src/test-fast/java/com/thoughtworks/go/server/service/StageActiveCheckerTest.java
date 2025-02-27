@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class StageActiveCheckerTest {
     private OperationResult result;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         service = mock(StageService.class);
         pipelineName = "cruise";
         stageName = "dev";
@@ -50,7 +50,7 @@ public class StageActiveCheckerTest {
     }
 
     @Test
-    public void shouldBeAConflictOperationResultWhenStageAlreadyScheduled() throws Exception {
+    public void shouldBeAConflictOperationResultWhenStageAlreadyScheduled() {
         when(service.isStageActive(pipelineName, stageName)).thenReturn(true);
         checker.check(result);
         verify(result).conflict(eq("Failed to trigger pipeline [cruise]"), eq("Stage [dev] in pipeline [cruise] is still in progress"), any(HealthStateType.class));

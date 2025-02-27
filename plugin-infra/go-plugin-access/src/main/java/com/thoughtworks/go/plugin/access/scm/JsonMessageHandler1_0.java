@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ import java.util.*;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonMessageHandler1_0 implements JsonMessageHandler {
+    public static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private final JSONResultMessageHandler jsonResultMessageHandler;
@@ -59,6 +61,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
                 if (isEmpty(key)) {
                     throw new RuntimeException("SCM configuration key cannot be empty");
                 }
+                //noinspection DataFlowIssue
                 if (!(configurations.get(key) instanceof Map)) {
                     throw new RuntimeException(format("SCM configuration properties for key '%s' should be represented as a Map", key));
                 }
@@ -121,7 +124,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
     public String requestMessageForIsSCMConfigurationValid(SCMPropertyConfiguration scmConfiguration) {
         Map configuredValues = new LinkedHashMap();
         configuredValues.put("scm-configuration", jsonResultMessageHandler.configurationToMap(scmConfiguration));
-        return toJsonString(configuredValues);
+        return GSON.toJson(configuredValues);
     }
 
     @Override
@@ -133,7 +136,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
     public String requestMessageForCheckConnectionToSCM(SCMPropertyConfiguration scmConfiguration) {
         Map configuredValues = new LinkedHashMap();
         configuredValues.put("scm-configuration", jsonResultMessageHandler.configurationToMap(scmConfiguration));
-        return toJsonString(configuredValues);
+        return GSON.toJson(configuredValues);
     }
 
     @Override
@@ -147,7 +150,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
         configuredValues.put("scm-configuration", jsonResultMessageHandler.configurationToMap(scmConfiguration));
         configuredValues.put("scm-data", materialData);
         configuredValues.put("flyweight-folder", flyweightFolder);
-        return toJsonString(configuredValues);
+        return GSON.toJson(configuredValues);
     }
 
     @Override
@@ -163,7 +166,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
         configuredValues.put("scm-data", materialData);
         configuredValues.put("flyweight-folder", flyweightFolder);
         configuredValues.put("previous-revision", scmRevisionToMap(previousRevision));
-        return toJsonString(configuredValues);
+        return GSON.toJson(configuredValues);
     }
 
     @Override
@@ -179,7 +182,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
         configuredValues.put("scm-configuration", jsonResultMessageHandler.configurationToMap(scmConfiguration));
         configuredValues.put("destination-folder", destinationFolder);
         configuredValues.put("revision", scmRevisionToMap(revision));
-        return toJsonString(configuredValues);
+        return GSON.toJson(configuredValues);
     }
 
     @Override
@@ -189,11 +192,6 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
 
     private Map parseResponseToMap(String responseBody) {
         return (Map) new GsonBuilder().create().fromJson(responseBody, Object.class);
-    }
-
-    private static String toJsonString(Object object) {
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        return gson.toJson(object);
     }
 
     private SCMProperty toSCMProperty(String key, Map configuration) {
@@ -267,7 +265,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
     }
 
     private Map getResponseMap(String responseBody) {
-        Map map = null;
+        Map map;
         try {
             map = parseResponseToMap(responseBody);
         } catch (Exception e) {
@@ -282,7 +280,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
                 return null;
             }
 
-            Map scmData = null;
+            Map scmData;
             try {
                 scmData = (Map) map.get("scm-data");
             } catch (Exception e) {
@@ -300,7 +298,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
                 throw new RuntimeException("SCM revision cannot be empty");
             }
 
-            Map revisionMap = null;
+            Map revisionMap;
             try {
                 revisionMap = (Map) map.get("revision");
             } catch (Exception e) {
@@ -321,7 +319,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
                 return scmRevisions;
             }
 
-            List revisionMaps = null;
+            List revisionMaps;
             try {
                 revisionMaps = (List) map.get("revisions");
             } catch (Exception e) {
@@ -388,7 +386,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
 
         List<ModifiedFile> modifiedFiles = new ArrayList<>();
         if (map.containsKey("modifiedFiles") && map.get("modifiedFiles") != null) {
-            List modifiedFileMaps = null;
+            List modifiedFileMaps;
             try {
                 modifiedFileMaps = (List) map.get("modifiedFiles");
             } catch (Exception e) {
@@ -416,7 +414,7 @@ public class JsonMessageHandler1_0 implements JsonMessageHandler {
                         throw new RuntimeException("modified file 'fileName' is a required field");
                     }
 
-                    String actionStr = null;
+                    String actionStr;
                     ModifiedAction action;
                     try {
                         actionStr = (String) modifiedFileMap.get("action");

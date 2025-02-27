@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import com.thoughtworks.go.domain.JobStateTransition
 import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class JobStateTransitionRepresenterTest {
 
   @Test
   void 'should represent a job state transition'() {
     def transition = new JobStateTransition(JobState.Building, new Date(12345))
-    transition.setId(21);
+    transition.setId(21)
     def actualJson = toObjectString({JobStateTransitionRepresenter.toJSON(it, transition) })
 
     assertThatJson(actualJson).isEqualTo(jobStateTransitionHash)

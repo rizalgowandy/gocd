@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ public class EnvironmentPipelinesConfig extends BaseCollection<EnvironmentPipeli
         configErrors.add(fieldName, message);
     }
 
-    public ArrayList<CaseInsensitiveString> getNames() {
-        ArrayList<CaseInsensitiveString> names = new ArrayList<>();
+    public List<CaseInsensitiveString> getNames() {
+        List<CaseInsensitiveString> names = new ArrayList<>();
         for (EnvironmentPipelineConfig environmentPipelineConfig : this) {
             names.add(environmentPipelineConfig.getName());
         }
@@ -90,9 +90,9 @@ public class EnvironmentPipelinesConfig extends BaseCollection<EnvironmentPipeli
     @Override
     public void setConfigAttributes(Object attributes) {
         if (attributes != null) {
-            List<Map> pipelineAttributes = (List) attributes;
+            @SuppressWarnings("unchecked") List<Map<String, Object>> pipelineAttributes = (List<Map<String, Object>>) attributes;
             this.clear();
-            for (Map attributeMap : pipelineAttributes) {
+            for (Map<String, Object> attributeMap : pipelineAttributes) {
                 this.add(new EnvironmentPipelineConfig(new CaseInsensitiveString((String) attributeMap.get("name"))));
             }
         }

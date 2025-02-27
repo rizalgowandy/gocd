@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,10 @@ public class SvnPostCommitHookImplementer implements PostCommitHookImplementer {
     private final UrlMatchers validators = new UrlMatchers();
 
     @Override
-    public Set<Material> prune(Set<Material> materials, Map params) {
+    public Set<Material> prune(Set<Material> materials, Map<String, String> params) {
         final HashSet<Material> prunedMaterials = new HashSet<>();
         if (params.containsKey(UUID)) {
-            final String targetUUID = (String) params.get(UUID);
+            final String targetUUID = params.get(UUID);
 
             final Map<String, String> urlToRemoteUUIDMap = createUrlToRemoteUUIDMap(materials);
             for (Material material : materials) {
@@ -45,7 +45,7 @@ public class SvnPostCommitHookImplementer implements PostCommitHookImplementer {
                 }
             }
         } else if (params.containsKey(REPO_URL_PARAM_KEY)) {
-            String paramRepoUrl = (String) params.get(REPO_URL_PARAM_KEY);
+            String paramRepoUrl = params.get(REPO_URL_PARAM_KEY);
             if (StringUtils.isNotBlank(paramRepoUrl)) {
                 for (Material material : materials) {
                     if (material instanceof SvnMaterial && isUrlEqual(paramRepoUrl, (SvnMaterial) material)) {

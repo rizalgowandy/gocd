@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:map";
 @import "../../global/common";
 
 $notification-bg: #fff;
@@ -39,9 +40,9 @@ $icon-background: #e0dede;
 }
 
 .bell {
-  @include icon-before($fa-var-bell, $color: $header-text-color);
-
   font-size: 18px;
+
+  @include icon-before($fa-var-bell, $color: $header-text-color);
 
   @media (max-width: $screen-md-min) {
     float: left;
@@ -57,7 +58,7 @@ $icon-background: #e0dede;
   box-sizing: border-box;
   font-size: 13px;
   box-shadow: 3px 3px 5px 0 $box-shadow-color;
-  z-index: map_get($zindex, "menu");
+  z-index: map.get($zindex, "menu");
 
   @media (max-width: $screen-md-min) {
     width: 100%;

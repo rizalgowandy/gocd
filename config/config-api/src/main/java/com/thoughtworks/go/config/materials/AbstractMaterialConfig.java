@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,6 @@ public abstract class AbstractMaterialConfig implements MaterialConfig, ParamsAt
 
     protected abstract void appendCriteria(Map<String, Object> parameters);
 
-    protected abstract void appendAttributes(Map<String,Object> parameters);
-
     protected abstract void appendPipelineUniqueCriteria(Map<String, Object> basicCriteria);
 
     @Override
@@ -248,12 +246,13 @@ public abstract class AbstractMaterialConfig implements MaterialConfig, ParamsAt
         return String.format("AbstractMaterial{name=%s, type=%s}", name, type);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         resetCachedIdentityAttributes();//TODO: BUG: update this after making changes to attributes, because this is thread unsafe if primed by another thread when initialization is half way through(and the returning API will use inconsistent and temprory value) --sara & jj
-        Map map = (Map) attributes;
+        Map<String, String> map = (Map<String, String>) attributes;
         if (map.containsKey(MATERIAL_NAME)) {
-            String name = (String) map.get(MATERIAL_NAME);
+            String name = map.get(MATERIAL_NAME);
             this.name = StringUtils.isBlank(name) ? null : new CaseInsensitiveString(name);
         }
     }

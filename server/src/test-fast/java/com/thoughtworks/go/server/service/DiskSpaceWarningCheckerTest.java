@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,20 +24,16 @@ import com.thoughtworks.go.server.service.result.ServerHealthStateOperationResul
 import com.thoughtworks.go.serverhealth.HealthStateType;
 import com.thoughtworks.go.serverhealth.ServerHealthService;
 import com.thoughtworks.go.util.SystemEnvironment;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static com.thoughtworks.go.CurrentGoCDVersion.docsUrl;
 import static com.thoughtworks.go.server.service.ArtifactsDiskSpaceFullCheckerTest.mockGoConfigServiceToHaveSiteUrl;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,7 +44,7 @@ public class DiskSpaceWarningCheckerTest {
     private GoConfigService goConfigService;
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         new SystemEnvironment().clearProperty(SystemEnvironment.ARTIFACT_WARNING_SIZE_LIMIT);
     }
 
@@ -70,7 +66,7 @@ public class DiskSpaceWarningCheckerTest {
 
         ArtifactsDiskSpaceWarningChecker fullChecker = new ArtifactsDiskSpaceWarningChecker(new SystemEnvironment(), sender, goConfigService, new SystemDiskSpaceChecker(), serverHealthService);
 
-        assertThat(fullChecker.limitInMb(), is(1L));
+        assertThat(fullChecker.limitInMb()).isEqualTo(1L);
     }
 
     @Test
@@ -80,12 +76,12 @@ public class DiskSpaceWarningCheckerTest {
 
         ServerHealthStateOperationResult result = new ServerHealthStateOperationResult();
         new ArtifactsDiskSpaceWarningChecker(new SystemEnvironment(), sender, service, new SystemDiskSpaceChecker(), serverHealthService).check(result);
-        assertThat(result.getServerHealthState().isSuccess(), is(true));
+        assertThat(result.getServerHealthState().isSuccess()).isTrue();
     }
 
     // #2866
     @Test
-    public void shouldShowAbsolutePathOfArtifactDirInWarningMessage() throws IOException, URISyntaxException {
+    public void shouldShowAbsolutePathOfArtifactDirInWarningMessage() throws IOException {
         goConfigService = mockGoConfigServiceToHaveSiteUrl();
         TestingEmailSender sender = new TestingEmailSender();
 
@@ -96,11 +92,11 @@ public class DiskSpaceWarningCheckerTest {
 
         checker.check(new ServerHealthStateOperationResult());
 
-        assertThat(sender.getSentMessage(), containsString(new File(".").getCanonicalPath()));
+        assertThat(sender.getSentMessage()).contains(new File(".").getCanonicalPath());
     }
 
     @Test
-    public void shouldFormatLowDiskSpaceWarningMailWithHelpLinksHttpAndSiteUrl() throws URISyntaxException {
+    public void shouldFormatLowDiskSpaceWarningMailWithHelpLinksHttpAndSiteUrl() {
         String expectedHelpUrl = docsUrl("/installation/configuring_server_details.html");
 
         GoConfigService goConfigService = mockGoConfigServiceToHaveSiteUrl();
@@ -116,9 +112,9 @@ public class DiskSpaceWarningCheckerTest {
         SendEmailMessage actual = diskSpaceWarningChecker.createEmail();
         ServerHealthStateOperationResult result = new ServerHealthStateOperationResult();
         diskSpaceWarningChecker.check(result);
-        assertThat(actual.getBody(), Matchers.containsString(expectedHelpUrl));
-        assertThat(result.getServerHealthState().isSuccess(), is(true));
-        assertThat(result.getServerHealthState().getMessage(), is("GoCD Server's artifact repository is running low on disk space"));
-        assertThat(result.getServerHealthState().getType(), is(HealthStateType.artifactsDiskFull()));
+        assertThat(actual.getBody()).contains(expectedHelpUrl);
+        assertThat(result.getServerHealthState().isSuccess()).isTrue();
+        assertThat(result.getServerHealthState().getMessage()).isEqualTo("GoCD Server's artifact repository is running low on disk space");
+        assertThat(result.getServerHealthState().getType()).isEqualTo(HealthStateType.artifactsDiskFull());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,20 +42,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class PipelineRepositoryTest {
 
-    private SessionFactory sessionFactory;
     private GoCache goCache;
     private HibernateTemplate hibernateTemplate;
     private PipelineRepository pipelineRepository;
-    private Database databaseStrategy;
     private TransactionSynchronizationManager transactionSynchronizationManager;
     private TransactionTemplate transactionTemplate;
     private Session session;
@@ -65,10 +61,10 @@ public class PipelineRepositoryTest {
     public void setup() {
         session = mock(Session.class);
         sqlQuery = mock(SQLQuery.class);
-        sessionFactory = mock(SessionFactory.class);
+        SessionFactory sessionFactory = mock(SessionFactory.class);
         hibernateTemplate = mock(HibernateTemplate.class);
         goCache = mock(GoCache.class);
-        databaseStrategy = mock(Database.class);
+        Database databaseStrategy = mock(Database.class);
         when(databaseStrategy.getQueryExtensions()).thenReturn(mock(QueryExtensions.class));
         pipelineRepository = new PipelineRepository(sessionFactory, goCache, databaseStrategy);
         pipelineRepository.setHibernateTemplate(hibernateTemplate);
@@ -82,7 +78,7 @@ public class PipelineRepositoryTest {
         PipelineSelections pipelineSelections = makePipelineSelections();
         long userId = 1L;
 
-        when(hibernateTemplate.find(queryString, new Object[]{userId})).thenReturn((List) Arrays.asList(pipelineSelections));
+        doReturn(List.of(pipelineSelections)).when(hibernateTemplate).find(queryString, new Object[]{userId});
         //return false for first 2 calls and return true for next call
         when(goCache.isKeyInCache(pipelineRepository.pipelineSelectionForUserIdKey(userId))).thenReturn(false).thenReturn(false).thenReturn(true);
 
@@ -130,18 +126,18 @@ public class PipelineRepositoryTest {
         Object[] pipelineRow2 = {"p1", new BigInteger("2"), new BigInteger("2"), new Date(), "fingerprint", 2.0, "r2", null, new BigInteger("1"), new BigInteger("1")};
 
         stubPipelineInstancesInDb(pipelineRow1, pipelineRow2);
-        ArrayList<PipelineTimelineEntry> tempEntries = new ArrayList<>();
+        List<PipelineTimelineEntry> tempEntries = new ArrayList<>();
         PipelineTimeline pipelineTimeline = new PipelineTimeline(pipelineRepository, transactionTemplate, transactionSynchronizationManager);
 
         pipelineRepository.updatePipelineTimeline(pipelineTimeline, tempEntries);
 
         PipelineTimelineEntry timelineEntry1 = pipelineTimeline.getEntryFor(new CaseInsensitiveString("p1"), 1);
         PipelineTimelineEntry timelineEntry2 = pipelineTimeline.getEntryFor(new CaseInsensitiveString("p1"), 2);
-        assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1")), is(2));
+        assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1"))).isEqualTo(2);
         assertNotNull(timelineEntry1);
         assertNotNull(timelineEntry2);
-        assertThat(tempEntries.size(), is(2));
-        assertThat(tempEntries, containsInAnyOrder(timelineEntry1, timelineEntry2));
+        assertThat(tempEntries.size()).isEqualTo(2);
+        assertThat(tempEntries).contains(timelineEntry1, timelineEntry2);
     }
 
     @Test
@@ -150,15 +146,15 @@ public class PipelineRepositoryTest {
         Object[] pipelineRow2 = {"p1", "cause-failure-during-retrieval", new BigInteger("2"), new Date(), "fingerprint", 2.0, "r2", null, new BigInteger("1"), new BigInteger("1")};
 
         stubPipelineInstancesInDb(pipelineRow1, pipelineRow2);
-        ArrayList<PipelineTimelineEntry> tempEntries = new ArrayList<>();
+        List<PipelineTimelineEntry> tempEntries = new ArrayList<>();
         PipelineTimeline pipelineTimeline = new PipelineTimeline(pipelineRepository, transactionTemplate, transactionSynchronizationManager);
 
         try {
             pipelineRepository.updatePipelineTimeline(pipelineTimeline, tempEntries);
             fail("Should fail to retrieve pipeline.");
         } catch (ClassCastException e) {
-            assertThat(tempEntries.size(), is(0));
-            assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1")), is(0));
+            assertThat(tempEntries.size()).isEqualTo(0);
+            assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1"))).isEqualTo(0);
         }
     }
 
@@ -170,7 +166,7 @@ public class PipelineRepositoryTest {
         stubPipelineInstancesInDb(pipelineRow1, pipelineRow2);
 
         when(sqlQuery.executeUpdate()).thenThrow(new RuntimeException("Failure during update natural order in db"));
-        ArrayList<PipelineTimelineEntry> tempEntries = new ArrayList<>();
+        List<PipelineTimelineEntry> tempEntries = new ArrayList<>();
         PipelineTimeline pipelineTimeline = new PipelineTimeline(pipelineRepository, transactionTemplate, transactionSynchronizationManager);
 
         try {
@@ -178,11 +174,11 @@ public class PipelineRepositoryTest {
         } catch (RuntimeException e) {
             PipelineTimelineEntry timelineEntry1 = pipelineTimeline.getEntryFor(new CaseInsensitiveString("p1"), 1);
             PipelineTimelineEntry timelineEntry2 = pipelineTimeline.getEntryFor(new CaseInsensitiveString("p1"), 2);
-            assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1")), is(2));
+            assertThat(pipelineTimeline.instanceCount(new CaseInsensitiveString("p1"))).isEqualTo(2);
             assertNotNull(timelineEntry1);
             assertNotNull(timelineEntry2);
-            assertThat(tempEntries.size(), is(2));
-            assertThat(tempEntries, containsInAnyOrder(timelineEntry1, timelineEntry2));
+            assertThat(tempEntries.size()).isEqualTo(2);
+            assertThat(tempEntries).contains(timelineEntry1, timelineEntry2);
         }
     }
 

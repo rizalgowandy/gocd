@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,10 +253,10 @@ class FelixGoPluginOSGiFrameworkTest {
     }
 
     private void registerServicesWithSamePluginID(String pluginID, String extensionType, SomeInterface... someInterfaces) throws InvalidSyntaxException {
-        ArrayList<ServiceReference<SomeInterface>> references = new ArrayList<>();
+        List<ServiceReference<SomeInterface>> references = new ArrayList<>();
 
         for (SomeInterface someInterface : someInterfaces) {
-            ServiceReference<SomeInterface> reference = mock(ServiceReference.class);
+            @SuppressWarnings("unchecked") ServiceReference<SomeInterface> reference = mock(ServiceReference.class);
             Bundle bundle = mock(Bundle.class);
             lenient().when(reference.getBundle()).thenReturn(bundle);
             lenient().when(bundleContext.getService(reference)).thenReturn(someInterface);
@@ -269,7 +269,7 @@ class FelixGoPluginOSGiFrameworkTest {
     }
 
     private void registerService(SomeInterface someInterface, String pluginID, String extension) throws InvalidSyntaxException {
-        ServiceReference<SomeInterface> reference = mock(ServiceReference.class);
+        @SuppressWarnings("unchecked") ServiceReference<SomeInterface> reference = mock(ServiceReference.class);
 
         lenient().when(reference.getBundle()).thenReturn(bundle);
         lenient().when(bundleContext.getService(reference)).thenReturn(someInterface);
@@ -282,7 +282,7 @@ class FelixGoPluginOSGiFrameworkTest {
 
     private void registerService(String pluginID, GoPlugin... someInterfaces) throws InvalidSyntaxException {
         final List<ServiceReference<GoPlugin>> serviceReferences = Arrays.stream(someInterfaces).map(someInterface -> {
-            ServiceReference<GoPlugin> reference = mock(ServiceReference.class);
+            @SuppressWarnings("unchecked") ServiceReference<GoPlugin> reference = mock(ServiceReference.class);
             lenient().when(reference.getBundle()).thenReturn(bundle);
             when(bundleContext.getService(reference)).thenReturn(someInterface);
             when(registry.getPlugin(pluginID)).thenReturn(buildExpectedDescriptor(pluginID));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,20 +51,12 @@ public class SecurityConfig implements Validatable {
         return rolesConfig;
     }
 
-    public Role roleNamed(String roleName) {
-        return rolesConfig.findByName(new CaseInsensitiveString(roleName));
-    }
-
     public void addRole(Role role) {
         rolesConfig.add(role);
     }
 
     public boolean deleteRole(Role role) {
         return rolesConfig.remove(role);
-    }
-
-    public boolean deleteRole(String roleName) {
-        return rolesConfig.remove(roleNamed(roleName));
     }
 
     public boolean isRoleExist(final CaseInsensitiveString role) {

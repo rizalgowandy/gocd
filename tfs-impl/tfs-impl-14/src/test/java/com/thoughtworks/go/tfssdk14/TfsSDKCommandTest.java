@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ class TfsSDKCommandTest {
     }
 
     @Test
-    void shouldThrowUpWhenUrlIsInvalid() throws Exception {
+    void shouldThrowUpWhenUrlIsInvalid() {
         TfsSDKCommand tfsCommandForInvalidCollection = new TfsSDKCommand(null, new StringArgument("invalid_url"), DOMAIN, USERNAME, PASSWORD, TFS_WORKSPACE, TFS_PROJECT);
         try {
             tfsCommandForInvalidCollection.init();

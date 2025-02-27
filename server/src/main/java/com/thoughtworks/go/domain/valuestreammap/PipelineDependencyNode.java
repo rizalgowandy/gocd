@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class PipelineDependencyNode extends Node {
 
     @Override
     public List<Revision> revisions() {
-        ArrayList<Revision> revisions = new ArrayList<>(this.revisions);
+        List<Revision> revisions = new ArrayList<>(this.revisions);
         revisions.sort((o1, o2) -> ((PipelineRevision) o1).compareTo((PipelineRevision) o2));
         return revisions;
     }

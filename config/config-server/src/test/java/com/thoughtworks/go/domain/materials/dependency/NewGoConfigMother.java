@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class NewGoConfigMother {
         return config;
     }
 
-    public PipelineConfig addPipeline(String pipelineName, String stageName, String... buildNames) throws Exception {
+    public PipelineConfig addPipeline(String pipelineName, String stageName, String... buildNames) {
         return mother.addPipeline(config, pipelineName, stageName, buildNames);
     }
 

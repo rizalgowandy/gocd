@@ -1,5 +1,5 @@
 #
-# Copyright 2024 Thoughtworks, Inc.
+# Copyright Thoughtworks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -255,7 +255,7 @@ describe ApplicationHelper do
     end
 
     describe "supports_vsm_analytics?" do
-      it "should support vsm analytics if there is atleast one analytics plugin which supports vsm analytics" do
+      it "should support vsm analytics if there is at least one analytics plugin which supports vsm analytics" do
         def default_plugin_info_finder; @default_plugin_info_finder; end
         def is_user_an_admin?; true; end
 

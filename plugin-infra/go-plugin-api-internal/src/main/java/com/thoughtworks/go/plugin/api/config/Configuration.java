@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
  * Container for holding configuration properties for a package or repository
  */
 public class Configuration implements PluginPreference {
-    private List<Property> properties = new ArrayList<>();
+    private final List<Property> properties = new ArrayList<>();
 
     /**
      * Adds given property as configuration
@@ -35,6 +35,7 @@ public class Configuration implements PluginPreference {
 
     /**
      * Gets property for a given property key
+     *
      * @param key the key whose associated property to be returned
      * @return the property to which the specified key is mapped, or null if this property with given key not found
      */
@@ -49,6 +50,7 @@ public class Configuration implements PluginPreference {
 
     /**
      * Returns number of properties in this configuration
+     *
      * @return number of properties in this configuration
      */
     public int size() {
@@ -57,9 +59,10 @@ public class Configuration implements PluginPreference {
 
     /**
      * Returns copy of properties list
+     *
      * @return copy of properties list
      */
-    public List<? extends  Property> list() {
+    public List<? extends Property> list() {
         return properties;
     }
 }

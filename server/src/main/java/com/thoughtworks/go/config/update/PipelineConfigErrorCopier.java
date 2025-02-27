@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class PipelineConfigErrorCopier {
         to.errors().addAll(from.errors());
     }
 
-    private static void copyCollectionErrors(BaseCollection from, BaseCollection to) {
+    private static void copyCollectionErrors(BaseCollection<?> from, BaseCollection<?> to) {
         if (from == null || to == null) return;
         copy((Validatable) from, (Validatable) to);
         for (int i = 0; i < to.size(); i++) {

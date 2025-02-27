@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,19 @@ import static org.mockito.Mockito.mock;
 
 public class ConfigUpdateResponseTest {
     @Test
-    public void shouldReturnWasMergedIfConfigSaveStateIsMerged() throws Exception {
+    public void shouldReturnWasMergedIfConfigSaveStateIsMerged() {
         ConfigUpdateResponse configUpdateResponse = new ConfigUpdateResponse(null, null, null, mock(ConfigAwareUpdate.class), ConfigSaveState.MERGED);
         assertTrue(configUpdateResponse.wasMerged());
     }
     
     @Test
-    public void shouldNOTReturnWasMergedIfConfigSaveStateIsUpdated() throws Exception {
+    public void shouldNOTReturnWasMergedIfConfigSaveStateIsUpdated() {
         ConfigUpdateResponse configUpdateResponse = new ConfigUpdateResponse(null, null, null, mock(ConfigAwareUpdate.class), ConfigSaveState.UPDATED);
         assertFalse(configUpdateResponse.wasMerged());
     }
 
     @Test
-    public void shouldNOTReturnWasMergedIfConfigSaveStateIsNull() throws Exception {
+    public void shouldNOTReturnWasMergedIfConfigSaveStateIsNull() {
         ConfigUpdateResponse configUpdateResponse = new ConfigUpdateResponse(null, null, null, mock(ConfigAwareUpdate.class), null);
         assertFalse(configUpdateResponse.wasMerged());
     }

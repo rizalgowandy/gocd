@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -312,11 +312,12 @@ public class PipelineTemplateConfig extends BaseCollection<StageConfig> implemen
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
-        Map attributeMap = (Map) attributes;
+        Map<String, String> attributeMap = (Map<String, String>) attributes;
         if (attributeMap.containsKey(NAME)) {
-            String strName = (String) attributeMap.get(NAME);
+            String strName = attributeMap.get(NAME);
             name = new CaseInsensitiveString(strName);
         }
         if (attributeMap.containsKey(AUTHORIZATION)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,16 @@ import org.apache.commons.codec.digest.DigestUtils
 
 description = 'GoCD TFS SDK wrapper v14'
 
+def sdkTarget = layout.buildDirectory.dir("tfssdk")
+
 dependencies {
   implementation project(path: ':common', configuration: 'runtimeElements')
-  implementation files("${project.buildDir}/tfssdk/lib/com.microsoft.tfs.sdk-${project.versions.tfsSdk}.jar")
+  implementation files(sdkTarget.get().file("lib/com.microsoft.tfs.sdk-${project.versions.tfsSdk}.jar"))
   compileOnly project.deps.jetBrainsAnnotations
 
   testImplementation project.deps.junit5Api
   testRuntimeOnly project.deps.junit5Engine
-  testImplementation project.deps.hamcrest
+  testRuntimeOnly project.deps.junit5PlatformLauncher
   testImplementation project.deps.mockitoCore
   testImplementation project.deps.assertJ
 }
@@ -37,19 +39,19 @@ jar {
 }
 
 private File destFile(String url) {
-  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(new URL(url).path).name}")
+  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(URI.create(url).toURL().path).name}")
 }
 
 task downloadTfsSdk(type: DownloadFile) {
   def srcUrl = "https://github.com/microsoft/team-explorer-everywhere/releases/download/${project.versions.tfsSdk}/TFS-SDK-${project.versions.tfsSdk}.zip"
   src srcUrl
   dest destFile(srcUrl)
-  checksum project.versions.tfsSdkSha256sum
+  checksum = project.versions.tfsSdkSha256sum
 }
 
 task extractTfsSdk(type: Copy) {
   doFirst {
-    delete "${project.buildDir}/tfssdk"
+    delete sdkTarget
   }
   dependsOn downloadTfsSdk
   from(project.zipTree(downloadTfsSdk.outputs.files.singleFile)) {
@@ -59,7 +61,7 @@ task extractTfsSdk(type: Copy) {
     }
     includeEmptyDirs = false
   }
-  into "${project.buildDir}/tfssdk"
+  into sdkTarget
 }
 
 compileJava.dependsOn extractTfsSdk

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,14 +69,14 @@ public class DeletePackageRepositoryCommand implements EntityConfigUpdateCommand
     }
 
     private List<String> populateList(Map<String, List<Pair<PipelineConfig, PipelineConfigs>>> packageUsageInPipelines) {
-        ArrayList<String> pipleines = new ArrayList<>();
+        List<String> pipelines = new ArrayList<>();
         for(String key: packageUsageInPipelines.keySet()) {
             List<Pair<PipelineConfig, PipelineConfigs>> pairs = packageUsageInPipelines.get(key);
             for(Pair<PipelineConfig, PipelineConfigs> pair : pairs) {
-                pipleines.add(pair.first().getName().toLower());
+                pipelines.add(pair.first().getName().toLower());
             }
         }
-        return pipleines;
+        return pipelines;
     }
 
     @Override

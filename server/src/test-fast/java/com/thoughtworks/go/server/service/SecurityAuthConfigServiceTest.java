@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,26 +25,19 @@ import com.thoughtworks.go.domain.config.ConfigurationKey;
 import com.thoughtworks.go.domain.config.ConfigurationProperty;
 import com.thoughtworks.go.domain.config.ConfigurationValue;
 import com.thoughtworks.go.plugin.access.authorization.AuthorizationExtension;
-import com.thoughtworks.go.plugin.access.authorization.AuthorizationMetadataStore;
-import com.thoughtworks.go.plugin.domain.authorization.AuthorizationPluginInfo;
-import com.thoughtworks.go.plugin.domain.authorization.Capabilities;
-import com.thoughtworks.go.plugin.domain.authorization.SupportedAuthType;
-import com.thoughtworks.go.plugin.domain.common.Image;
 import com.thoughtworks.go.plugin.domain.common.ValidationError;
 import com.thoughtworks.go.plugin.domain.common.ValidationResult;
 import com.thoughtworks.go.plugin.domain.common.VerifyConnectionResponse;
-import com.thoughtworks.go.plugin.infra.plugininfo.GoPluginDescriptor;
 import com.thoughtworks.go.server.domain.Username;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
-import com.thoughtworks.go.server.ui.AuthPluginInfoViewModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.thoughtworks.go.domain.packagerepository.ConfigurationPropertyMother.create;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -54,19 +47,17 @@ public class SecurityAuthConfigServiceTest {
     private EntityHashingService hashingService;
     private GoConfigService goConfigService;
     private SecurityAuthConfigService securityAuthConfigService;
-    private AuthorizationMetadataStore authorizationMetadataStore;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         extension = mock(AuthorizationExtension.class);
         hashingService = mock(EntityHashingService.class);
         goConfigService = mock(GoConfigService.class);
-        authorizationMetadataStore = mock(AuthorizationMetadataStore.class);
-        securityAuthConfigService = new SecurityAuthConfigService(goConfigService, hashingService, extension, authorizationMetadataStore);
+        securityAuthConfigService = new SecurityAuthConfigService(goConfigService, hashingService, extension);
     }
 
     @Test
-    public void verifyConnection_shouldSendSuccessResponseOnSuccessfulVerification() throws Exception {
+    public void verifyConnection_shouldSendSuccessResponseOnSuccessfulVerification() {
         VerifyConnectionResponse success = new VerifyConnectionResponse("success", "Connection check passed", new ValidationResult());
         SecurityAuthConfig ldap = new SecurityAuthConfig("ldap", "cd.go.ldap");
 
@@ -74,11 +65,11 @@ public class SecurityAuthConfigServiceTest {
 
         VerifyConnectionResponse response = securityAuthConfigService.verifyConnection(ldap);
 
-        assertThat(response, is(success));
+        assertThat(response).isEqualTo(success);
     }
 
     @Test
-    public void verifyConnection_shouldFailForAInvalidAuthConfig() throws Exception {
+    public void verifyConnection_shouldFailForAInvalidAuthConfig() {
         SecurityAuthConfig ldap = new SecurityAuthConfig("ldap", "cd.go.ldap",
                 new ConfigurationProperty(new ConfigurationKey("username"), new ConfigurationValue()));
         ValidationResult validationResult = new ValidationResult();
@@ -91,13 +82,13 @@ public class SecurityAuthConfigServiceTest {
 
         VerifyConnectionResponse response = securityAuthConfigService.verifyConnection(ldap);
 
-        assertThat(response, is(validationFailed));
-        assertThat(ldap.getProperty("username").errors().get("username").get(0), is("Username cannot be blank"));
-        assertThat(ldap.getProperty("password").errors().get("password").get(0), is("Password cannot be blank"));
+        assertThat(response).isEqualTo(validationFailed);
+        assertThat(ldap.getProperty("username").errors().get("username").get(0)).isEqualTo("Username cannot be blank");
+        assertThat(ldap.getProperty("password").errors().get("password").get(0)).isEqualTo("Password cannot be blank");
     }
 
     @Test
-    public void verifyConnection_shouldSendConnectionFailedResponseOnUnSuccessfulVerification() throws Exception {
+    public void verifyConnection_shouldSendConnectionFailedResponseOnUnSuccessfulVerification() {
         VerifyConnectionResponse success = new VerifyConnectionResponse("failure", "Connection check failed", new ValidationResult());
         SecurityAuthConfig ldap = new SecurityAuthConfig("ldap", "cd.go.ldap");
 
@@ -105,19 +96,19 @@ public class SecurityAuthConfigServiceTest {
 
         VerifyConnectionResponse response = securityAuthConfigService.verifyConnection(ldap);
 
-        assertThat(response, is(success));
+        assertThat(response).isEqualTo(success);
     }
 
     @Test
-    public void verifyConnection_shouldFailInAbsenceOfPlugin() throws Exception {
+    public void verifyConnection_shouldFailInAbsenceOfPlugin() {
         SecurityAuthConfig ldap = new SecurityAuthConfig("ldap", "cd.go.ldap");
 
         when(extension.verifyConnection("cd.go.ldap", ldap.getConfigurationAsMap(true))).thenThrow(new RecordNotFoundException(""));
 
         VerifyConnectionResponse response = securityAuthConfigService.verifyConnection(ldap);
 
-        assertThat(response, is(new VerifyConnectionResponse("failure", "Unable to verify connection, missing plugin: cd.go.ldap",
-                new com.thoughtworks.go.plugin.domain.common.ValidationResult())));
+        assertThat(response).isEqualTo(new VerifyConnectionResponse("failure", "Unable to verify connection, missing plugin: cd.go.ldap",
+                new com.thoughtworks.go.plugin.domain.common.ValidationResult()));
     }
 
     @Test
@@ -151,7 +142,7 @@ public class SecurityAuthConfigServiceTest {
     }
 
     @Test
-    public void shouldAddPluginNotFoundErrorOnConfigForANonExistentPluginIdWhileCreating() throws Exception {
+    public void shouldAddPluginNotFoundErrorOnConfigForANonExistentPluginIdWhileCreating() {
         SecurityAuthConfig securityAuthConfig = new SecurityAuthConfig("some-id", "non-existent-plugin", create("key", false, "value"));
 
         Username username = new Username("username");
@@ -159,8 +150,8 @@ public class SecurityAuthConfigServiceTest {
 
         securityAuthConfigService.create(username, securityAuthConfig, new HttpLocalizedOperationResult());
 
-        assertThat(securityAuthConfig.errors().isEmpty(), is(false));
-        assertThat(securityAuthConfig.errors().on("pluginId"), is("Plugin with id `non-existent-plugin` is not found."));
+        assertThat(securityAuthConfig.errors().isEmpty()).isFalse();
+        assertThat(securityAuthConfig.errors().on("pluginId")).isEqualTo("Plugin with id `non-existent-plugin` is not found.");
     }
 
     @Test
@@ -184,7 +175,7 @@ public class SecurityAuthConfigServiceTest {
     }
 
     @Test
-    public void shouldAddPluginNotFoundErrorOnConfigForANonExistentPluginId() throws Exception {
+    public void shouldAddPluginNotFoundErrorOnConfigForANonExistentPluginId() {
         SecurityAuthConfig securityAuthConfig = new SecurityAuthConfig("some-id", "non-existent-plugin", create("key", false, "value"));
 
         Username username = new Username("username");
@@ -192,8 +183,8 @@ public class SecurityAuthConfigServiceTest {
 
         securityAuthConfigService.update(username, "md5", securityAuthConfig, new HttpLocalizedOperationResult());
 
-        assertThat(securityAuthConfig.errors().isEmpty(), is(false));
-        assertThat(securityAuthConfig.errors().on("pluginId"), is("Plugin with id `non-existent-plugin` is not found."));
+        assertThat(securityAuthConfig.errors().isEmpty()).isFalse();
+        assertThat(securityAuthConfig.errors().on("pluginId")).isEqualTo("Plugin with id `non-existent-plugin` is not found.");
     }
 
     @Test
@@ -207,13 +198,13 @@ public class SecurityAuthConfigServiceTest {
     }
 
     @Test
-    public void shouldGetSecurityAuthConfigByGivenId() throws Exception {
+    public void shouldGetSecurityAuthConfigByGivenId() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("ldap", "cd.go.ldap");
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.securityAuthConfigs().add(authConfig);
         when(goConfigService.security()).thenReturn(securityConfig);
 
-        assertThat(securityAuthConfigService.findProfile("ldap"), is(authConfig));
+        assertThat(securityAuthConfigService.findProfile("ldap")).isEqualTo(authConfig);
     }
 
     @Test
@@ -227,53 +218,21 @@ public class SecurityAuthConfigServiceTest {
     public void shouldReturnAnEmptyMapForAuthConfigsIfNonePresent() {
         when(goConfigService.security()).thenReturn(new SecurityConfig());
 
-        assertThat(securityAuthConfigService.listAll().isEmpty(), is(true));
+        assertThat(securityAuthConfigService.listAll().isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldReturnAMapOfSecurityAuthConfigs() throws Exception {
+    public void shouldReturnAMapOfSecurityAuthConfigs() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("ldap", "cd.go.ldap");
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.securityAuthConfigs().add(authConfig);
         when(goConfigService.security()).thenReturn(securityConfig);
 
-        HashMap<String, SecurityAuthConfig> expectedMap = new HashMap<>();
+        Map<String, SecurityAuthConfig> expectedMap = new HashMap<>();
         expectedMap.put("ldap", authConfig);
 
         Map<String, SecurityAuthConfig> authConfigMap = securityAuthConfigService.listAll();
-        assertThat(authConfigMap.size(), is(1));
-        assertThat(authConfigMap, is(expectedMap));
-    }
-
-    @Test
-    public void shouldGetAListOfAllConfiguredWebBasedAuthorizationPlugins() {
-        Set<AuthorizationPluginInfo> installedWebBasedPlugins = new HashSet<>();
-        String githubPluginId = "cd.go.github";
-        AuthorizationPluginInfo githubPluginInfo = pluginInfo(githubPluginId, "GitHub Auth Plugin", SupportedAuthType.Web);
-        installedWebBasedPlugins.add(githubPluginInfo);
-        installedWebBasedPlugins.add(pluginInfo(githubPluginId, "Google Auth Plugin", SupportedAuthType.Web));
-        when(authorizationMetadataStore.getPluginsThatSupportsWebBasedAuthentication()).thenReturn(installedWebBasedPlugins);
-        when(authorizationMetadataStore.getPluginInfo(githubPluginId)).thenReturn(githubPluginInfo);
-
-        SecurityConfig securityConfig = new SecurityConfig();
-        SecurityAuthConfig github = new SecurityAuthConfig("github", githubPluginId);
-        SecurityAuthConfig ldap = new SecurityAuthConfig("ldap", "cd.go.ldap");
-        securityConfig.securityAuthConfigs().add(github);
-
-        securityConfig.securityAuthConfigs().add(ldap);
-        when(goConfigService.security()).thenReturn(securityConfig);
-
-        List<AuthPluginInfoViewModel> allWebBasedAuthorizationConfigs = securityAuthConfigService.getAllConfiguredWebBasedAuthorizationPlugins();
-        assertThat(allWebBasedAuthorizationConfigs.size(), is(1));
-        AuthPluginInfoViewModel pluginInfoViewModel = allWebBasedAuthorizationConfigs.get(0);
-        assertThat(pluginInfoViewModel.pluginId(), is(githubPluginId));
-        assertThat(pluginInfoViewModel.name(), is("GitHub Auth Plugin"));
-        assertThat(pluginInfoViewModel.imageUrl(), is("/go/api/plugin_images/cd.go.github/hash"));
-    }
-
-    private AuthorizationPluginInfo pluginInfo(String githubPluginId, String name, SupportedAuthType supportedAuthType) {
-        GoPluginDescriptor.About about = GoPluginDescriptor.About.builder().name(name).build();
-        GoPluginDescriptor descriptor = GoPluginDescriptor.builder().id(githubPluginId).about(about).build();
-        return new AuthorizationPluginInfo(descriptor, null, null, new Image("svg", "data", "hash"), new Capabilities(supportedAuthType, true, true, false));
+        assertThat(authConfigMap.size()).isEqualTo(1);
+        assertThat(authConfigMap).isEqualTo(expectedMap);
     }
 }

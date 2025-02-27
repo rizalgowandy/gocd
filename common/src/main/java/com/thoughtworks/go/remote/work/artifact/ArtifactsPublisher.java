@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ public class ArtifactsPublisher implements Serializable {
     }
 
     private Map<ArtifactPlan, ArtifactStore> artifactStoresToPlugin(List<ArtifactPlan> artifactPlans) {
-        final HashMap<ArtifactPlan, ArtifactStore> artifactPlanToArtifactStoreMap = new HashMap<>();
+        final Map<ArtifactPlan, ArtifactStore> artifactPlanToArtifactStoreMap = new HashMap<>();
         for (ArtifactPlan artifactPlan : artifactPlans) {
             final String storeId = (String) artifactPlan.getPluggableArtifactConfiguration().get("storeId");
             artifactPlanToArtifactStoreMap.put(artifactPlan, artifactStores.find(storeId));

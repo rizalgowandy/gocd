@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ public class GoDashboardStageStatusChangeHandlerTest {
     private GoDashboardStageStatusChangeHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         handler = new GoDashboardStageStatusChangeHandler(cacheUpdateService);
     }
 
     @Test
-    public void shouldRefreshPipelineInCacheWhenStageStatusChanges() throws Exception {
+    public void shouldRefreshPipelineInCacheWhenStageStatusChanges() {
         handler.call(StageMother.scheduledStage("pipeline1", 1, "stage1", 2, "job1"));
 
         verify(cacheUpdateService).updateCacheForPipeline(new CaseInsensitiveString("pipeline1"));

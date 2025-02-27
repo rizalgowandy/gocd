@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,12 @@
  */
 package com.thoughtworks.go.presentation.pipelinehistory;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StageHistoryTest {
     private StageInstanceModels stageHistory;
@@ -34,7 +31,7 @@ public class StageHistoryTest {
     private static final Date DATE = new Date(2000000000);
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         stageHistory = new StageInstanceModels();
         stageHistory.add(new StageInstanceModel(STAGE_UT, "1", new JobHistory()));
         stageHistory.add(new StageInstanceModel(STAGE_FT, "1", new JobHistory()));
@@ -42,26 +39,26 @@ public class StageHistoryTest {
     }
 
     @Test
-    public void hasStageTest() throws Exception {
-        assertThat(stageHistory.hasStage(STAGE_FT), is(true));
-        assertThat(stageHistory.hasStage("notExisting"), is(false));
-        assertThat(stageHistory.hasStage(null), is(false));
-        assertThat(stageHistory.hasStage(""), is(false));
+    public void hasStageTest() {
+        assertThat(stageHistory.hasStage(STAGE_FT)).isTrue();
+        assertThat(stageHistory.hasStage("notExisting")).isFalse();
+        assertThat(stageHistory.hasStage(null)).isFalse();
+        assertThat(stageHistory.hasStage("")).isFalse();
     }
 
     @Test
-    public void nextStageTest() throws Exception {
-        assertThat(stageHistory.nextStageName(STAGE_UT), is(STAGE_FT));
-        assertThat(stageHistory.nextStageName(STAGE_FT), is(STAGE_RELEASE));
-        assertThat(stageHistory.nextStageName(STAGE_RELEASE), is(nullValue()));
-        assertThat(stageHistory.nextStageName("notExisting"), is(nullValue()));
-        assertThat(stageHistory.nextStageName(""), is(nullValue()));
-        assertThat(stageHistory.nextStageName(null), is(nullValue()));
+    public void nextStageTest() {
+        assertThat(stageHistory.nextStageName(STAGE_UT)).isEqualTo(STAGE_FT);
+        assertThat(stageHistory.nextStageName(STAGE_FT)).isEqualTo(STAGE_RELEASE);
+        assertThat(stageHistory.nextStageName(STAGE_RELEASE)).isNull();
+        assertThat(stageHistory.nextStageName("notExisting")).isNull();
+        assertThat(stageHistory.nextStageName("")).isNull();
+        assertThat(stageHistory.nextStageName(null)).isNull();
     }
 
     @Test
     public void shouldNotHaveDateForEmptyHistory() {
-        assertThat(new StageInstanceModels().getScheduledDate(), is(nullValue()));
+        assertThat(new StageInstanceModels().getScheduledDate()).isNull();
     }
 
     @Test
@@ -69,7 +66,7 @@ public class StageHistoryTest {
         StageInstanceModels history = new StageInstanceModels();
         history.add(new StageHistoryItemStub(EARLIEAR_DATE));
         history.add(new StageHistoryItemStub(DATE));
-        assertThat(history.getScheduledDate(), Matchers.is(EARLIEAR_DATE));
+        assertThat(history.getScheduledDate()).isEqualTo((EARLIEAR_DATE));
     }
 
     @Test
@@ -77,7 +74,7 @@ public class StageHistoryTest {
         StageInstanceModels history = new StageInstanceModels();
         history.add(new NullStageHistoryItemStub(EARLIEAR_DATE));
         history.add(new StageHistoryItemStub(DATE));
-        assertThat(history.getScheduledDate(), Matchers.is(DATE));
+        assertThat(history.getScheduledDate()).isEqualTo((DATE));
     }
 
     private class StageHistoryItemStub extends StageInstanceModel {

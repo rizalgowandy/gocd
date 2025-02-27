@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import static com.thoughtworks.go.domain.materials.git.GitTestRepo.GIT_FOO_BRANC
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
 import static com.thoughtworks.go.util.command.ProcessOutputStreamConsumer.inMemoryConsumer;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -188,7 +188,7 @@ public class GitMaterialTest {
         }
 
         @Test
-        void shouldRetrieveLatestModificationIfRevisionIsNotFound() throws IOException {
+        void shouldRetrieveLatestModificationIfRevisionIsNotFound() {
             List<Modification> modifications = git.modificationsSince(workingDir, GitTestRepo.NON_EXISTENT_REVISION, new TestSubprocessExecutionContext());
             assertThat(modifications).isEqualTo(git.latestModification(workingDir, new TestSubprocessExecutionContext()));
         }
@@ -437,9 +437,11 @@ public class GitMaterialTest {
         git.toJson(json, new StringRevision("123"));
 
         assertThatJson(json)
-            .node("scmType").isEqualTo("Git")
-            .node("location").isEqualTo(git.getUrl())
-            .node("action").isEqualTo("Modified");
+            .and(
+                a -> a.node("scmType").isEqualTo("Git"),
+                a -> a.node("location").isEqualTo(git.getUrl()),
+                a -> a.node("action").isEqualTo("Modified")
+            );
     }
 
     @Test

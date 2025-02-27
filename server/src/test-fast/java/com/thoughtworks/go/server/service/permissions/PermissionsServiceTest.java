@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ class PermissionsServiceTest {
     void shouldNotAddEntitiesWhenNotRequested() {
         Map<String, Object> permissions = service.getPermissions(Collections.emptyList());
 
-        assertThat(permissions.get("environment")).isEqualTo(null);
-        assertThat(permissions.get("config_repo")).isEqualTo(null);
+        assertThat(permissions.get("environment")).isNull();
+        assertThat(permissions.get("config_repo")).isNull();
     }
 }

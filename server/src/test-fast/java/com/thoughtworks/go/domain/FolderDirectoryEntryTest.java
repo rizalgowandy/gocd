@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package com.thoughtworks.go.domain;
 import com.thoughtworks.go.server.presentation.html.HtmlRenderer;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FolderDirectoryEntryTest {
     @Test
@@ -27,7 +26,7 @@ public class FolderDirectoryEntryTest {
         DirectoryEntries subDirectory = new DirectoryEntries();
         FolderDirectoryEntry entry = new FolderDirectoryEntry("file", "url", subDirectory);
         entry.addFile("file", "path");
-        assertThat(subDirectory, hasItem(new FileDirectoryEntry("file", "path")));
+        assertThat(subDirectory).contains(new FileDirectoryEntry("file", "path"));
     }
 
     @Test
@@ -38,7 +37,7 @@ public class FolderDirectoryEntryTest {
         HtmlRenderer renderer = new HtmlRenderer("");
         entry.htmlBody().render(renderer);
 
-        assertThat(renderer.asString(), containsString("&lt;div&gt;Hello&lt;/div&gt;"));
-        assertThat(renderer.asString(), not(containsString("<div>Hello</div>")));
+        assertThat(renderer.asString()).contains("&lt;div&gt;Hello&lt;/div&gt;");
+        assertThat(renderer.asString()).doesNotContain("<div>Hello</div>");
     }
 }

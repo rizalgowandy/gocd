@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,10 +47,10 @@ public class ServerHealthInformationProvider implements ServerInfoProvider {
     @Override
     public Map<String, Object> asJson() {
         LinkedHashMap<String, Object> json = new LinkedHashMap<>();
-        ServerHealthStates allLogs = service.logs();
+        ServerHealthStates allLogs = service.logsSorted();
         json.put("Messages Count", allLogs.size());
 
-        ArrayList<Map<String, String>> messages = new ArrayList<>();
+        List<Map<String, String>> messages = new ArrayList<>();
         for (ServerHealthState log : allLogs) {
             messages.add(log.asJson());
         }

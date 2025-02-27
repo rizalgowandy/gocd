@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ import static com.thoughtworks.go.helper.ModificationsMother.modifyOneFile;
 import static com.thoughtworks.go.server.dao.DatabaseAccessHelper.assertIsInserted;
 import static com.thoughtworks.go.server.dao.DatabaseAccessHelper.assertNotInserted;
 import static com.thoughtworks.go.util.GoConstants.DEFAULT_APPROVED_BY;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -89,45 +88,45 @@ public class PipelineStateDaoIntegrationTest {
     }
 
     @Test
-    public void shouldFindLockedPipelinesCaseInsensitively() throws Exception {
+    public void shouldFindLockedPipelinesCaseInsensitively() {
         Pipeline minglePipeline = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials("mingle", "stage1", "stage2"));
         pipelineStateDao.lockPipeline(minglePipeline);
         PipelineState lockedPipelineState = pipelineStateDao.pipelineStateFor("mingle");
-        assertThat(lockedPipelineState.getLockedBy().pipelineIdentifier(), is(minglePipeline.getIdentifier()));
-        assertThat(lockedPipelineState.getLockedByPipelineId(), is(minglePipeline.getId()));
-        assertThat(lockedPipelineState.getLockedByPipelineId(), is(not(0L)));
+        assertThat(lockedPipelineState.getLockedBy().pipelineIdentifier()).isEqualTo(minglePipeline.getIdentifier());
+        assertThat(lockedPipelineState.getLockedByPipelineId()).isEqualTo(minglePipeline.getId());
+        assertThat(lockedPipelineState.getLockedByPipelineId()).isNotEqualTo(0L);
         lockedPipelineState = pipelineStateDao.pipelineStateFor("mInGlE");
-        assertThat(lockedPipelineState.getLockedBy().pipelineIdentifier(), is(minglePipeline.getIdentifier()));
-        assertThat(lockedPipelineState.getLockedByPipelineId(), is(minglePipeline.getId()));
-        assertThat(lockedPipelineState.getLockedByPipelineId(), is(not(0L)));
+        assertThat(lockedPipelineState.getLockedBy().pipelineIdentifier()).isEqualTo(minglePipeline.getIdentifier());
+        assertThat(lockedPipelineState.getLockedByPipelineId()).isEqualTo(minglePipeline.getId());
+        assertThat(lockedPipelineState.getLockedByPipelineId()).isNotEqualTo(0L);
     }
 
     @Test
-    public void shouldBombWhenLockingPipelineThatHasAlreadyBeenLocked() throws Exception {
+    public void shouldBombWhenLockingPipelineThatHasAlreadyBeenLocked() {
         String pipelineName = UUID.randomUUID().toString();
         Pipeline minglePipeline1 = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials(pipelineName, "defaultStage"));
         Pipeline minglePipeline2 = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials(pipelineName, "defaultStage"));
 
         pipelineStateDao.lockPipeline(minglePipeline1);
 
-        assertThat(pipelineStateDao.pipelineStateFor(pipelineName).getLockedBy(), is(minglePipeline1.getFirstStage().getIdentifier()));
+        assertThat(pipelineStateDao.pipelineStateFor(pipelineName).getLockedBy()).isEqualTo(minglePipeline1.getFirstStage().getIdentifier());
 
         try {
             pipelineStateDao.lockPipeline(minglePipeline2);
             fail("Should not be able to lock a different instance of an already locked pipeline");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is(String.format("Pipeline '%s' is already locked (counter = 1)", pipelineName)));
+            assertThat(e.getMessage()).isEqualTo(String.format("Pipeline '%s' is already locked (counter = 1)", pipelineName));
         }
     }
 
     @Test
-    public void shouldNotBombWhenLockingTheSamePipelineInstanceThatHasAlreadyBeenLocked() throws Exception {
+    public void shouldNotBombWhenLockingTheSamePipelineInstanceThatHasAlreadyBeenLocked() {
         String pipelineName = "pipeline";
         Pipeline minglePipeline1 = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials(pipelineName, "defaultStage"));
 
         pipelineStateDao.lockPipeline(minglePipeline1);
 
-        assertThat(pipelineStateDao.pipelineStateFor(pipelineName).getLockedBy(), is(minglePipeline1.getFirstStage().getIdentifier()));
+        assertThat(pipelineStateDao.pipelineStateFor(pipelineName).getLockedBy()).isEqualTo(minglePipeline1.getFirstStage().getIdentifier());
 
         try {
             pipelineStateDao.lockPipeline(minglePipeline1);
@@ -137,40 +136,40 @@ public class PipelineStateDaoIntegrationTest {
     }
 
     @Test
-    public void shouldUnlockPipelineInstance() throws Exception {
+    public void shouldUnlockPipelineInstance() {
         String pipelineName = UUID.randomUUID().toString();
         Pipeline minglePipeline = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials(pipelineName, "defaultStage"));
         TestAfterCompletionCallback afterLockCallback = new TestAfterCompletionCallback();
 
         pipelineStateDao.lockPipeline(minglePipeline, afterLockCallback);
         PipelineState pipelineState = pipelineStateDao.pipelineStateFor(pipelineName);
-        assertThat(pipelineState.getLockedBy(), is(minglePipeline.getFirstStage().getIdentifier()));
-        assertThat(pipelineState.getLockedByPipelineId(), is(minglePipeline.getId()));
+        assertThat(pipelineState.getLockedBy()).isEqualTo(minglePipeline.getFirstStage().getIdentifier());
+        assertThat(pipelineState.getLockedByPipelineId()).isEqualTo(minglePipeline.getId());
         afterLockCallback.assertCalledWithStatus(TransactionSynchronization.STATUS_COMMITTED);
 
         TestAfterCompletionCallback unlockCallback = new TestAfterCompletionCallback();
         pipelineStateDao.unlockPipeline(pipelineName, unlockCallback);
         PipelineState pipelineState1 = pipelineStateDao.pipelineStateFor(pipelineName);
-        assertThat(pipelineState1.getLockedBy(), is(nullValue()));
-        assertThat(pipelineState1.getLockedByPipelineId(), is(0L));
+        assertThat(pipelineState1.getLockedBy()).isNull();
+        assertThat(pipelineState1.getLockedByPipelineId()).isEqualTo(0L);
         unlockCallback.assertCalledWithStatus(TransactionSynchronization.STATUS_COMMITTED);
     }
 
     @Test
-    public void shouldReturnListOfAllLockedPipelines() throws Exception {
+    public void shouldReturnListOfAllLockedPipelines() {
         Pipeline minglePipeline = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials("mingle", "defaultStage"));
         Pipeline twistPipeline = schedulePipelineWithStages(PipelineMother.twoBuildPlansWithResourcesAndMaterials("twist", "defaultStage"));
         pipelineStateDao.lockPipeline(minglePipeline);
         pipelineStateDao.lockPipeline(twistPipeline);
         List<String> lockedPipelines = pipelineStateDao.lockedPipelines();
-        assertThat(lockedPipelines.size(), is(2));
-        assertThat(lockedPipelines, hasItem("mingle"));
-        assertThat(lockedPipelines, hasItem("twist"));
+        assertThat(lockedPipelines.size()).isEqualTo(2);
+        assertThat(lockedPipelines).contains("mingle");
+        assertThat(lockedPipelines).contains("twist");
 
         pipelineStateDao.unlockPipeline("mingle");
         lockedPipelines = pipelineStateDao.lockedPipelines();
-        assertThat(lockedPipelines.size(), is(1));
-        assertThat(lockedPipelines, hasItem("twist"));
+        assertThat(lockedPipelines.size()).isEqualTo(1);
+        assertThat(lockedPipelines).contains("twist");
     }
     @Test
     public void lockPipeline_shouldEnsureOnlyOneThreadCanLockAPipelineSuccessfully() throws Exception {
@@ -194,10 +193,10 @@ public class PipelineStateDaoIntegrationTest {
         for (Thread thread : threads) {
             thread.join();
         }
-        assertThat(errors[0], is(9));
+        assertThat(errors[0]).isEqualTo(9);
     }
 
-    private Pipeline schedulePipelineWithStages(PipelineConfig pipelineConfig) throws Exception {
+    private Pipeline schedulePipelineWithStages(PipelineConfig pipelineConfig) {
         BuildCause buildCause = BuildCause.createWithModifications(modifyOneFile(pipelineConfig), "");
         Pipeline pipeline = instanceFactory.createPipelineInstance(pipelineConfig, buildCause, new DefaultSchedulingContext(DEFAULT_APPROVED_BY), "md5-test", new TimeProvider());
         assertNotInserted(pipeline.getId());
@@ -229,7 +228,7 @@ public class PipelineStateDaoIntegrationTest {
 
         void assertCalledWithStatus(int status) {
             assertTrue(called);
-            assertThat(this.status, equalTo(status));
+            assertThat(this.status).isEqualTo(status);
         }
     }
 }

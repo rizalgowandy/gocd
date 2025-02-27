@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import com.thoughtworks.go.util.command.UrlArgument;
 import com.thoughtworks.go.util.command.UrlUserInfo;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.util.Map;
 
 import static com.thoughtworks.go.util.ExceptionUtils.bomb;
@@ -80,15 +79,8 @@ public abstract class ScmMaterialConfig extends AbstractMaterialConfig implement
         basicCriteria.put("dest", folder);
     }
 
-    public File workingdir(File baseFolder) {
-        if (getFolder() == null) {
-            return baseFolder;
-        }
-        return new File(baseFolder, getFolder());
-    }
-
     //most of the material such as hg, git, p4 all print the file from the root without '/'
-    //but subverion print it with '/', we standarize it here. look at the implementation of subversion as well.
+    //but subversion prints it with '/', we standardize it here. look at the implementation of subversion as well.
     @Override
     public boolean matches(String name, String regex) {
         if (regex.startsWith("/")) {
@@ -174,8 +166,6 @@ public abstract class ScmMaterialConfig extends AbstractMaterialConfig implement
     public abstract String getUrl();
 
     public abstract void setUrl(String url);
-
-    protected abstract String getLocation();
 
     @Override
     public Filter filter() {
@@ -287,12 +277,13 @@ public abstract class ScmMaterialConfig extends AbstractMaterialConfig implement
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         super.setConfigAttributes(attributes);
-        Map map = (Map) attributes;
+        Map<String, String> map = (Map<String, String>) attributes;
         if (map.containsKey(FOLDER)) {
-            String folder = (String) map.get(FOLDER);
+            String folder = map.get(FOLDER);
             if (isBlank(folder)) {
                 folder = null;
             }
@@ -301,7 +292,7 @@ public abstract class ScmMaterialConfig extends AbstractMaterialConfig implement
         this.setAutoUpdate("true".equals(map.get(AUTO_UPDATE)));
         this.setInvertFilter("true".equals(map.get(INVERT_FILTER)));
         if (map.containsKey(FILTER)) {
-            String pattern = (String) map.get(FILTER);
+            String pattern = map.get(FILTER);
             if (!isBlank(pattern)) {
                 this.setFilter(Filter.fromDisplayString(pattern));
             } else {

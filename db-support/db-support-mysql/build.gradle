@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-configurations.all {
-  // Test containers depends on legacy junit, see https://github.com/testcontainers/testcontainers-java/issues/970
-  exclude group: 'junit'
-}
 
 dependencies {
   implementation(project.deps.mysql) {
@@ -34,9 +29,15 @@ dependencies {
 
   testImplementation project.deps.junit5Api
   testRuntimeOnly project.deps.junit5Engine
+  testRuntimeOnly project.deps.junit5PlatformLauncher
   testImplementation project.deps.assertJ
 
-  testImplementation project.deps.testcontainers
-  testImplementation project.deps.testcontainersJunit
-  testImplementation project.deps.testcontainersMysql
+  testImplementation(project.deps.testcontainersJunit) {
+    exclude group: 'junit' // Test containers depends on legacy junit, see https://github.com/testcontainers/testcontainers-java/issues/970
+  }
+  testImplementation(project.deps.testcontainersMysql) {
+    exclude group: 'junit' // Test containers depends on legacy junit, see https://github.com/testcontainers/testcontainers-java/issues/970
+  }
 }
+
+test.dependsOn ':docker:configureDockerRegistryMirror'

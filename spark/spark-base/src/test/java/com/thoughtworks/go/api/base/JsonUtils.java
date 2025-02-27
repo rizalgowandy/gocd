@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,12 @@ public abstract class JsonUtils {
         return new JsonOutputWriter(new StringWriter(1024), null).forTopLevelObject(consumer).writer.toString();
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, ?> toObjectWithoutLinks(Consumer<OutputWriter> consumer) throws IOException {
         return JsonOutputWriter.OBJECT_MAPPER.readValue(toObjectStringWithoutLinks(consumer), Map.class);
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, ?> toObject(Consumer<OutputWriter> consumer) throws IOException {
         return JsonOutputWriter.OBJECT_MAPPER.readValue(toObjectString(consumer), Map.class);
     }

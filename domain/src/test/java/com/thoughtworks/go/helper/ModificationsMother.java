@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -292,7 +292,7 @@ public class ModificationsMother {
     public static BuildCause modifyNoFiles(PipelineConfig config) {
         MaterialRevisions materialRevisions = new MaterialRevisions();
         for (Material material : new MaterialConfigConverter().toMaterials(config.materialConfigs())) {
-            ArrayList<Modification> list = new ArrayList<>();
+            List<Modification> list = new ArrayList<>();
             list.add(new Modification("no-user", "comment", "dummy-email", new Date(), "Dummy Modification"+ UUID.randomUUID().toString()));
             materialRevisions.addRevision(material, list);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import m from "mithril";
-import "mithril/promise/promise";
 import Stream from "mithril/stream";
 import * as events from "simulate-event";
 import {AutocompleteField, SuggestionProvider} from "views/components/forms/autocomplete";

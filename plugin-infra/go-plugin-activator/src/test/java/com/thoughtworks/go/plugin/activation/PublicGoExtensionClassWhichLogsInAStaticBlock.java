@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.annotation.Load;
 import com.thoughtworks.go.plugin.api.annotation.UnLoad;
-import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
 import com.thoughtworks.go.plugin.api.info.PluginContext;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
@@ -31,7 +30,7 @@ import java.util.List;
 
 @Extension
 public class PublicGoExtensionClassWhichLogsInAStaticBlock implements GoPlugin {
-    private static Logger logger;
+    private static final Logger logger;
 
     static {
         logger = Logger.getLoggerFor(PublicGoExtensionClassWhichLogsInAStaticBlock.class);
@@ -57,7 +56,7 @@ public class PublicGoExtensionClassWhichLogsInAStaticBlock implements GoPlugin {
     }
 
     @Override
-    public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+    public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
         return null;
     }
 

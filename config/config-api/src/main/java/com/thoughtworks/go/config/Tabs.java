@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,19 +56,20 @@ public class Tabs extends BaseCollection<Tab> implements Validatable, ParamsAttr
     }
     @Override
     public void validate(ValidationContext validationContext) {
-        ArrayList<Tab> visitedTabs = new ArrayList<>();
+        List<Tab> visitedTabs = new ArrayList<>();
         for (Tab tab : this) {
             tab.validateTabNameUniqueness(visitedTabs);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setConfigAttributes(Object attributes) {
         this.clear();
         if (attributes != null) {
-            for (Map attributeMap : (List<Map>) attributes) {
-                String tabName = (String) attributeMap.get(Tab.NAME);
-                String path = (String) attributeMap.get(Tab.PATH);
+            for (Map<String, String> attributeMap : (List<Map<String, String>>) attributes) {
+                String tabName = attributeMap.get(Tab.NAME);
+                String path = attributeMap.get(Tab.PATH);
                 if (StringUtils.isBlank(tabName) && StringUtils.isBlank(path)) {
                     continue;
                 }

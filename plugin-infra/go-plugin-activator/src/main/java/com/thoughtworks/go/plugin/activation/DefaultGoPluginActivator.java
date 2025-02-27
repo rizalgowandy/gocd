@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,13 @@ public class DefaultGoPluginActivator implements GoPluginActivator {
     private final List<UnloadMethodInvoker> unloadMethodInvokers = new ArrayList<>();
     private PluginRegistryService pluginRegistryService;
     private static String bundleSymbolicName;
-    @SuppressWarnings("unused") /* Used through reflection (see Logger class). */
+    @SuppressWarnings({"unused", "FieldCanBeLocal"}) /* Used through reflection (see Logger class). */
     private static String pluginId;
     private static final PluginContext DUMMY_PLUGIN_CONTEXT = new PluginContext() {
     };
 
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    public void start(BundleContext bundleContext) {
         Bundle bundle = bundleContext.getBundle();
         pluginRegistryService = bundleContext.getService(bundleContext.getServiceReference(PluginRegistryService.class));
 
@@ -120,6 +120,7 @@ public class DefaultGoPluginActivator implements GoPluginActivator {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void registerAllServicesImplementedBy(BundleContext bundleContext, List<Map<Class<?>, List<Object>>> toRegister) {
         for (Map<Class<?>, List<Object>> classListHashMap : toRegister) {
             for (Map.Entry<Class<?>, List<Object>> entry : classListHashMap.entrySet()) {
@@ -139,7 +140,6 @@ public class DefaultGoPluginActivator implements GoPluginActivator {
                         serviceProperties.put(Constants.BUNDLE_SYMBOLICNAME, bundleSymbolicName);
                         serviceProperties.put(Constants.BUNDLE_CATEGORY, extensionType);
                         serviceProperties.put("PLUGIN_ID", pluginID);
-                        //noinspection unchecked
                         bundleContext.registerService((Class<Object>) serviceInterface, serviceImplementation, serviceProperties);
                     }
                 }
@@ -225,7 +225,7 @@ public class DefaultGoPluginActivator implements GoPluginActivator {
     private Method[] getMethodsWithAnnotation(Object extensionObject, Class<? extends Annotation> annotation) {
         // public,non-static,non-inherited zero-argument with @Load annotation
         Class<?> extnPointClass = extensionObject.getClass();
-        ArrayList<Method> methodsWithLoadAnnotation = new ArrayList<>();
+        List<Method> methodsWithLoadAnnotation = new ArrayList<>();
         for (Method method : extnPointClass.getDeclaredMethods()) {
             boolean annotated = hasAnnotation(annotation, method);
             if (annotated

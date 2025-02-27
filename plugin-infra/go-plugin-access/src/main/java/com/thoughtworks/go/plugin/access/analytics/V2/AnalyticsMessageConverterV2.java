@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class AnalyticsMessageConverterV2 implements AnalyticsMessageConverter {
     private static final Gson GSON = new Gson();
 
     @Override
-    public String getAnalyticsRequestBody(String type, String metricId, Map params) {
+    public String getAnalyticsRequestBody(String type, String metricId, Map<String, ?> params) {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("type", type);
         requestMap.put("id", metricId);
@@ -56,7 +56,7 @@ public class AnalyticsMessageConverterV2 implements AnalyticsMessageConverter {
 
     @Override
     public String getStaticAssetsFromResponseBody(String responseBody) {
-        String assets = (String) new Gson().fromJson(responseBody, Map.class).get("assets");
+        String assets = (String) GSON.fromJson(responseBody, Map.class).get("assets");
 
         if (StringUtils.isBlank(assets)) {
             throw new RuntimeException("No assets defined!");

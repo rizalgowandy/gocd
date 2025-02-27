@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,9 @@ import com.thoughtworks.go.server.service.materials.PackageDefinitionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,25 +52,25 @@ public class PackageDefinitionCreatorTest {
     }
 
     @Test
-    public void testCreateNewPackageDefinition() throws Exception {
-        HashMap<String, Serializable> params = PackageDefinitionMother.paramsForPackageMaterialCreation(repoId, pkgName);
+    public void testCreateNewPackageDefinition() {
+        Map<String, Object> params = PackageDefinitionMother.paramsForPackageMaterialCreation(repoId, pkgName);
 
         PackageDefinitionCreator packageDefinitionCreator = new PackageDefinitionCreator(packageDefinitionService, params);
         PackageDefinition newPackageDefinition = packageDefinitionCreator.createNewPackageDefinition(cruiseConfig);
 
-        assertThat(newPackageDefinition.getName(), is(pkgName));
-        assertThat(newPackageDefinition.getRepository(), is(packageRepository));
+        assertThat(newPackageDefinition.getName()).isEqualTo(pkgName);
+        assertThat(newPackageDefinition.getRepository()).isEqualTo(packageRepository);
 
         verify(packageDefinitionService).performPluginValidationsFor(any(PackageDefinition.class));
         verify(cruiseConfig).savePackageDefinition(any(PackageDefinition.class));
     }
 
     @Test
-    public void testGetPackageDefinition() throws Exception {
-        HashMap<String, Serializable> params = PackageDefinitionMother.paramsForPackageMaterialAssociation(repoId, pkgId);
+    public void testGetPackageDefinition() {
+        Map<String, Object> params = PackageDefinitionMother.paramsForPackageMaterialAssociation(repoId, pkgId);
         PackageDefinitionCreator packageDefinitionCreator = new PackageDefinitionCreator(packageDefinitionService, params);
         PackageDefinition fetchedPackageDefinition = packageDefinitionCreator.getPackageDefinition(cruiseConfig);
 
-        assertThat(fetchedPackageDefinition.getId(), is(pkgId));
+        assertThat(fetchedPackageDefinition.getId()).isEqualTo(pkgId);
     }
 }

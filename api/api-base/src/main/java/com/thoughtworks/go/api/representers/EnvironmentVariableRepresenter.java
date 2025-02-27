@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,7 @@ import com.thoughtworks.go.config.EnvironmentVariableConfig;
 import com.thoughtworks.go.config.EnvironmentVariablesConfig;
 import com.thoughtworks.go.security.CryptoException;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.thoughtworks.go.api.util.HaltApiMessages.errorWhileEncryptingMessage;
 
@@ -38,7 +35,7 @@ public class EnvironmentVariableRepresenter {
     public static void toJSON(OutputWriter outputWriter, EnvironmentVariableConfig environmentVariableConfig) {
         if (!environmentVariableConfig.errors().isEmpty()) {
             outputWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> mapping = new HashMap<>();
+                Map<String, String> mapping = new HashMap<>();
                 mapping.put("encryptedValue", "encrypted_value");
                 new ErrorGetter(mapping).toJSON(outputWriter, environmentVariableConfig);
             });

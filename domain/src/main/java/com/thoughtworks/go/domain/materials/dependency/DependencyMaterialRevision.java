@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class DependencyMaterialRevision implements Revision {
@@ -132,9 +133,8 @@ public class DependencyMaterialRevision implements Revision {
 
     @TestOnly
     public MaterialRevision convert(Material material, Date modifiedTime) {
-        ArrayList<Modification> modifications = new ArrayList<>();
-        modifications.add(new Modification(modifiedTime, getRevision(), getPipelineLabel(), null
-        ));
+        List<Modification> modifications = new ArrayList<>();
+        modifications.add(new Modification(modifiedTime, getRevision(), getPipelineLabel(), null));
         return new MaterialRevision(material, modifications);
     }
 

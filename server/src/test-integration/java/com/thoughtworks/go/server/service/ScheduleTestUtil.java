@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class ScheduleTestUtil {
     }
 
     public MaterialRevision mr(Material material, final boolean changed, final String... revs) {
-        ArrayList<Modification> modifications = new ArrayList<>();
+        List<Modification> modifications = new ArrayList<>();
         for (String rev : revs) {
             Modification mod = modForRev(rev);
             modifications.add(0, mod);
@@ -392,7 +392,7 @@ public class ScheduleTestUtil {
         return new AddedPipeline(cfg, new DependencyMaterial(str(pipelineName), str(newStageName)));
     }
 
-    public AddedPipeline addStageToPipeline(CaseInsensitiveString pipelineName, String stageName) throws Exception {
+    public AddedPipeline addStageToPipeline(CaseInsensitiveString pipelineName, String stageName) {
         PipelineConfig config = configHelper.addStageToPipeline(pipelineName.toString(), stageName);
         return new AddedPipeline(config, new DependencyMaterial(pipelineName, new CaseInsensitiveString(stageName)));
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class AgentInstanceTest {
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown() {
         FileUtils.deleteQuietly(new File("config/agentkeystore"));
         new SystemEnvironment().setProperty("agent.connection.timeout", "300");
         new SystemEnvironment().clearProperty(SystemEnvironment.AGENT_SIZE_LIMIT);
@@ -933,7 +933,7 @@ public class AgentInstanceTest {
     }
 
     private List<JobPlan> jobPlans(String... resources) {
-        ArrayList<JobPlan> plans = new ArrayList<>();
+        List<JobPlan> plans = new ArrayList<>();
         int count = 1;
         for (String resource : resources) {
             plans.add(jobPlan("pipeline" + count, "job" + count, resource, null));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:color";
 @import "variables";
 @import "go-variables";
 @import "mixins";
@@ -239,13 +240,12 @@ textarea {
 // new styles
 
 .key-value-pair {
-  @include clearfix;
-
   margin: 0;
   padding: 0;
 
-  dt,
-  .key {
+  @include clearfix;
+
+  dt, .key {
     float: left;
     min-width: 150px;
     clear: left;
@@ -254,8 +254,7 @@ textarea {
     font-size: rem-calc(13px);
   }
 
-  dd,
-  .value {
+  dd, .value {
     float: left;
     position: relative;
     padding-left: 15px;
@@ -276,8 +275,7 @@ textarea {
     margin-right: 20px;
     line-height: 30px;
 
-    dt,
-    .key {
+    dt, .key {
       min-width: 10px;
     }
   }
@@ -289,10 +287,10 @@ ul.key-value-pair {
   padding: 0;
 
   li {
-    @include clearfix;
-
     padding: 5px;
-    border-bottom: 1px dashed lighten($border-color, 10%);
+    border-bottom: 1px dashed color.adjust($border-color, $lightness: 10%);
+
+    @include clearfix;
 
     &:last-child {
       border: 0;

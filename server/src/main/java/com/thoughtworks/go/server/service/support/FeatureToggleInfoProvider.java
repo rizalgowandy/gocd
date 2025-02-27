@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class FeatureToggleInfoProvider implements ServerInfoProvider {
     }
 
     @Override
-    public Map<String, Object> asJson() throws Exception {
+    public Map<String, Object> asJson() {
         LinkedHashMap<String, Object> json = new LinkedHashMap<>();
         json.put("Available Toggles", featureToggleService.allToggles().all());
         return json;

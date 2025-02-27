@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import static com.thoughtworks.go.serverhealth.HealthStateType.general
 import static com.thoughtworks.go.serverhealth.ServerHealthState.error
 import static com.thoughtworks.go.serverhealth.ServerHealthState.warning
 import static java.util.Collections.emptyMap
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class MaterialWithModificationsRepresenterTest {
   @Test
@@ -55,7 +55,7 @@ class MaterialWithModificationsRepresenterTest {
 
   @Test
   void 'should render json'() {
-    def map = new HashMap();
+    def map = new HashMap()
     def git = MaterialConfigsMother.git("http://example.com", "main")
     def modification = ModificationsMother.withModifiedFileWhoseNameLengthIsOneK()
     def timestamp = new Date().toTimestamp()
@@ -110,7 +110,7 @@ class MaterialWithModificationsRepresenterTest {
 
   @Test
   void 'should render modification as null'() {
-    def map = new HashMap();
+    def map = new HashMap()
     def git = MaterialConfigsMother.git("http://example.com", "main")
     def timestamp = new Date().toTimestamp()
     map.put(git, new MaterialInfo(null, false, true, timestamp, []))
@@ -143,7 +143,7 @@ class MaterialWithModificationsRepresenterTest {
 
   @Test
   void 'should not render material update start time if null'() {
-    def map = new HashMap();
+    def map = new HashMap()
     def git = MaterialConfigsMother.git("http://example.com", "main")
     map.put(git, new MaterialInfo(null, false, false, null, []))
 

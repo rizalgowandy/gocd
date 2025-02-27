@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,5 @@ const meta = document.querySelector("meta[name='gocd-params']");
 
 export const SERVER_TIMEZONE_UTC_OFFSET = parseInt(meta && meta.getAttribute("data-timezone") || "0", 10);
 export const SPA_REQUEST_TIMEOUT        = parseInt(meta && meta.getAttribute("data-page-timeout") || "5000", 10);
-export const SPA_REFRESH_INTERVAL       = parseInt(meta && meta.getAttribute("data-page-refresh-interval") || "10000", 10);
+export const SPA_REFRESH_INTERVAL       = parseInt(meta && meta.getAttribute("data-page-refresh-interval") || "5000", 10);
 export const AUTH_LOGIN_PATH            = "/go/auth/login";

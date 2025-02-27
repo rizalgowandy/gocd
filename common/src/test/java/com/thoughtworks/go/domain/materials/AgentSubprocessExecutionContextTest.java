@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import com.thoughtworks.go.remote.AgentIdentifier;
 import com.thoughtworks.go.util.CachedDigestUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +33,7 @@ public class AgentSubprocessExecutionContextTest {
         String workingDirectory = "working-folder-full-path";
         AgentSubprocessExecutionContext execCtx = new AgentSubprocessExecutionContext(agentIdentifier, workingDirectory);
         String workspaceName = execCtx.getProcessNamespace(fingerprint);
-        assertThat(workspaceName, is(CachedDigestUtils.sha256Hex(fingerprint + uuid + workingDirectory)));
-        assertThat(workspaceName.length(), is(64));
+        assertThat(workspaceName).isEqualTo(CachedDigestUtils.sha256Hex(fingerprint + uuid + workingDirectory));
+        assertThat(workspaceName.length()).isEqualTo(64);
     }
 }

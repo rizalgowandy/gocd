@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,12 @@ import com.thoughtworks.go.domain.valuestreammap.*;
 import com.thoughtworks.go.helper.ModificationsMother;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LevelAssignmentTest {
 
     @Test
-    public void shouldAssignLevelsForUpstreamNodesOfCurrentPipeline() throws Exception {
+    public void shouldAssignLevelsForUpstreamNodesOfCurrentPipeline() {
 
         /*
         ---> p1 ---
@@ -54,18 +53,18 @@ public class LevelAssignmentTest {
         valueStreamMap.addUpstreamMaterialNode(gitNode, new CaseInsensitiveString("main-branch"), p2name, new MaterialRevision(null));
         NodeLevelMap levelToNodeMap = new LevelAssignment().apply(valueStreamMap);
 
-        assertThat(valueStreamMap.getCurrentPipeline().getLevel(), is(0));
-        assertThat(p1.getLevel(), is(-1));
-        assertThat(p2.getLevel(), is(-1));
-        assertThat(gitNode.getLevel(), is(-2));
+        assertThat(valueStreamMap.getCurrentPipeline().getLevel()).isEqualTo(0);
+        assertThat(p1.getLevel()).isEqualTo(-1);
+        assertThat(p2.getLevel()).isEqualTo(-1);
+        assertThat(gitNode.getLevel()).isEqualTo(-2);
 
-        assertThat(levelToNodeMap.get(0), contains(valueStreamMap.getCurrentPipeline()));
-        assertThat(levelToNodeMap.get(-1), containsInAnyOrder(p1, p2));
-        assertThat(levelToNodeMap.get(-2), contains(gitNode));
+        assertThat(levelToNodeMap.get(0)).contains(valueStreamMap.getCurrentPipeline());
+        assertThat(levelToNodeMap.get(-1)).contains(p1, p2);
+        assertThat(levelToNodeMap.get(-2)).contains(gitNode);
     }
 
     @Test
-    public void shouldAssignLevelsForDownstreamNodesOfCurrentPipeline() throws Exception {
+    public void shouldAssignLevelsForDownstreamNodesOfCurrentPipeline() {
 
     	/*
                 ---> p1 ----
@@ -94,20 +93,20 @@ public class LevelAssignmentTest {
 
         NodeLevelMap levelToNodeMap = new LevelAssignment().apply(valueStreamMap);
 
-        assertThat(valueStreamMap.getCurrentPipeline().getLevel(), is(0));
-        assertThat(gitNode.getLevel(), is(-1));
-        assertThat(p1.getLevel(), is(1));
-        assertThat(p2.getLevel(), is(1));
-        assertThat(p3.getLevel(), is(2));
+        assertThat(valueStreamMap.getCurrentPipeline().getLevel()).isEqualTo(0);
+        assertThat(gitNode.getLevel()).isEqualTo(-1);
+        assertThat(p1.getLevel()).isEqualTo(1);
+        assertThat(p2.getLevel()).isEqualTo(1);
+        assertThat(p3.getLevel()).isEqualTo(2);
 
-        assertThat(levelToNodeMap.get(0), contains(valueStreamMap.getCurrentPipeline()));
-        assertThat(levelToNodeMap.get(-1), contains(gitNode));
-        assertThat(levelToNodeMap.get(1), containsInAnyOrder(p1, p2));
-        assertThat(levelToNodeMap.get(2), contains(p3));
+        assertThat(levelToNodeMap.get(0)).contains(valueStreamMap.getCurrentPipeline());
+        assertThat(levelToNodeMap.get(-1)).contains(gitNode);
+        assertThat(levelToNodeMap.get(1)).contains(p1, p2);
+        assertThat(levelToNodeMap.get(2)).contains(p3);
     }
 
 	@Test
-	public void shouldAssignLevelsForDownstreamNodesOfCurrentMaterial() throws Exception {
+	public void shouldAssignLevelsForDownstreamNodesOfCurrentMaterial() {
 
 		/*
 				---> p1 ----
@@ -135,15 +134,15 @@ public class LevelAssignmentTest {
 
 		NodeLevelMap levelToNodeMap = new LevelAssignment().apply(valueStreamMap);
 
-		assertThat(valueStreamMap.getCurrentMaterial().getLevel(), is(0));
-		assertThat(p.getLevel(), is(1));
-		assertThat(p1.getLevel(), is(2));
-		assertThat(p2.getLevel(), is(2));
-		assertThat(p3.getLevel(), is(3));
+		assertThat(valueStreamMap.getCurrentMaterial().getLevel()).isEqualTo(0);
+		assertThat(p.getLevel()).isEqualTo(1);
+		assertThat(p1.getLevel()).isEqualTo(2);
+		assertThat(p2.getLevel()).isEqualTo(2);
+		assertThat(p3.getLevel()).isEqualTo(3);
 
-		assertThat(levelToNodeMap.get(0), contains(valueStreamMap.getCurrentMaterial()));
-		assertThat(levelToNodeMap.get(1), containsInAnyOrder(p));
-		assertThat(levelToNodeMap.get(2), containsInAnyOrder(p1, p2));
-		assertThat(levelToNodeMap.get(3), contains(p3));
+		assertThat(levelToNodeMap.get(0)).contains(valueStreamMap.getCurrentMaterial());
+		assertThat(levelToNodeMap.get(1)).contains(p);
+		assertThat(levelToNodeMap.get(2)).contains(p1, p2);
+		assertThat(levelToNodeMap.get(3)).contains(p3);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,8 +144,8 @@ public class MaterialRepository extends HibernateDaoSupport {
         query.addScalar("id", new LongType());
         query.setParameterList("ids", ids);
 
-        //noinspection unchecked
-        return query.list();
+        @SuppressWarnings("unchecked") List<Long> list = query.list();
+        return list;
     }
 
     public Map<Long, List<ModificationForPipeline>> findModificationsForPipelineIds(final List<Long> pipelineIds) {
@@ -364,6 +364,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         return (List<Modification>) getHibernateTemplate().find("FROM Modification WHERE materialId = ?", new Object[]{id});
     }
 
+    @SuppressWarnings("unchecked")
     List<Modification> findModificationsFor(PipelineMaterialRevision pmr) {
         String cacheKey = pmrModificationsKey(pmr);
         List<Modification> modifications = goCache.get(cacheKey);
@@ -371,7 +372,6 @@ public class MaterialRepository extends HibernateDaoSupport {
             synchronized (cacheKey) {
                 modifications = goCache.get(cacheKey);
                 if (modifications == null) {
-                    //noinspection unchecked
                     modifications = (List<Modification>) getHibernateTemplate().find(
                         "FROM Modification WHERE materialId = ? AND id BETWEEN ? AND ? ORDER BY id DESC",
                         new Object[]{findMaterialInstance(pmr.getMaterial()).getId(), pmr.getFromModification().getId(), pmr.getToModification().getId()});
@@ -632,7 +632,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         if (scmRevision == null) {
             return modificationsSince;
         }
-        ArrayList<Modification> modificationsUptil = new ArrayList<>();
+        List<Modification> modificationsUptil = new ArrayList<>();
         for (Modification modification : modificationsSince) {
             if (modification.getId() <= scmRevision.id) {
                 modificationsUptil.add(modification);
@@ -783,7 +783,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         DetachedCriteria criteria = DetachedCriteria.forClass(Modification.class);
         criteria.setProjection(Projections.projectionList().add(Projections.property("revision")));
         criteria.add(Restrictions.eq("materialInstance.id", materialInstance.getId()));
-        ArrayList<String> revisions = new ArrayList<>();
+        List<String> revisions = new ArrayList<>();
         for (Modification modification : newChanges) {
             revisions.add(modification.getRevision());
         }
@@ -888,6 +888,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         return cacheKeyGenerator.generate("hasPipelineEverRunWithModification", pipelineName, materialId, modificationId);
     }
 
+    @SuppressWarnings("unchecked")
     public List<MatchedRevision> findRevisionsMatching(final MaterialConfig materialConfig, final String searchString) {
         return getHibernateTemplate().execute(session -> {
             String sql = "SELECT m.*"
@@ -903,7 +904,6 @@ public class MaterialRepository extends HibernateDaoSupport {
             query.setString("finger_print", material.getFingerprint());
             query.setString("search_string", "%" + searchString + "%");
             final List<MatchedRevision> list = new ArrayList<>();
-            //noinspection unchecked
             for (Modification mod : (List<Modification>) query.list()) {
                 list.add(material.createMatchedRevision(mod, searchString));
             }
@@ -911,6 +911,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public List<Modification> modificationFor(final StageIdentifier stageIdentifier) {
         if (stageIdentifier == null) {
             return null;
@@ -921,7 +922,6 @@ public class MaterialRepository extends HibernateDaoSupport {
             synchronized (key) {
                 modifications = goCache.get(key);
                 if (modifications == null) {
-                    //noinspection unchecked
                     modifications = getHibernateTemplate().execute(session -> {
                         Query q = session.createQuery("FROM Modification WHERE revision = :revision ORDER BY id DESC");
                         q.setParameter("revision", stageIdentifier.getStageLocator());
@@ -1025,6 +1025,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         return new File(new File("pipelines", "flyweight"), materialInstance.getFlyweightName());
     }
 
+    @SuppressWarnings("unchecked")
     public List<Modification> getLatestModificationForEachMaterial() {
         String queryString = "SELECT mods.* " +
             "FROM (" +
@@ -1033,7 +1034,6 @@ public class MaterialRepository extends HibernateDaoSupport {
             ") mods " +
             "JOIN materials m ON mods.materialid=m.id " +
             "WHERE mods.id=mods.max_id;";
-        //noinspection unchecked
         return getHibernateTemplate().execute(session -> {
             SQLQuery query = session.createSQLQuery(queryString);
             return query.addEntity("mods", Modification.class)
@@ -1041,6 +1041,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public List<Modification> loadHistory(long materialId, FeedModifier modifier, long cursor, Integer pageSize) {
         Map<String, Object> params = Map.of(
             "materialId", materialId,
@@ -1050,7 +1051,6 @@ public class MaterialRepository extends HibernateDaoSupport {
 
         String queryString = loadModificationQuery(modifier);
 
-        //noinspection unchecked
         return getHibernateTemplate().execute(session -> {
             SQLQuery query = session.createSQLQuery(queryString);
             query.setProperties(params);
@@ -1087,6 +1087,7 @@ public class MaterialRepository extends HibernateDaoSupport {
         return new PipelineRunIdInfo((long) info[0], (long) info[1]);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Modification> findMatchingModifications(long materialId, String pattern, FeedModifier modifier, long cursor, Integer pageSize) {
         Map<String, Object> params = Map.of(
             "materialId", materialId,
@@ -1097,7 +1098,6 @@ public class MaterialRepository extends HibernateDaoSupport {
 
         String finalQueryString = MaterialQueries.loadModificationMatchingPatternQuery(modifier);
 
-        //noinspection unchecked
         return getHibernateTemplate().execute(session -> {
             SQLQuery query = session.createSQLQuery(finalQueryString);
             query.setProperties(params);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public abstract class AbstractRuleAwarePluginProfileTest {
     protected abstract String getObjectDescription();
 
     @Test
-    public void shouldNotAllowNullPluginIdOrProfileId() throws Exception {
+    public void shouldNotAllowNullPluginIdOrProfileId() {
         RuleAwarePluginProfile profile = newPluginProfile(null, null);
 
         profile.validate(getValidationContext(profile));
@@ -40,7 +40,7 @@ public abstract class AbstractRuleAwarePluginProfileTest {
     }
 
     @Test
-    public void shouldValidatePluginIdPattern() throws Exception {
+    public void shouldValidatePluginIdPattern() {
         RuleAwarePluginProfile profile = newPluginProfile("!123", "docker");
         profile.validate(getValidationContext(profile));
         assertThat(profile.errors().size()).isEqualTo(1);
@@ -48,7 +48,7 @@ public abstract class AbstractRuleAwarePluginProfileTest {
     }
 
     @Test
-    public void shouldValidateConfigPropertyNameUniqueness() throws Exception {
+    public void shouldValidateConfigPropertyNameUniqueness() {
         ConfigurationProperty prop1 = ConfigurationPropertyMother.create("USERNAME");
         ConfigurationProperty prop2 = ConfigurationPropertyMother.create("USERNAME");
         RuleAwarePluginProfile profile = newPluginProfile("docker.unit-test", "cd.go.elastic-agent.docker", prop1, prop2);

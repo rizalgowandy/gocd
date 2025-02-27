@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,8 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -42,14 +41,14 @@ public class RoleConfigDeleteCommandTest {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
         extension = mock(AuthorizationExtension.class);
         goConfigService = mock(GoConfigService.class);
     }
 
     @Test
-    public void currentUserShouldBeAnAdminToAddRole() throws Exception {
+    public void currentUserShouldBeAnAdminToAddRole() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         Username viewUser = new Username("view");
         BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
@@ -63,11 +62,11 @@ public class RoleConfigDeleteCommandTest {
 
         assertFalse(command.canContinue(cruiseConfig));
         assertFalse(result.isSuccessful());
-        assertThat(result.httpCode(), is(403));
+        assertThat(result.httpCode()).isEqualTo(403);
     }
 
     @Test
-    public void canContinue_shouldCheckIfRoleExists() throws Exception {
+    public void canContinue_shouldCheckIfRoleExists() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         Username viewUser = mock(Username.class);
         BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
@@ -79,35 +78,35 @@ public class RoleConfigDeleteCommandTest {
 
         assertFalse(command.canContinue(cruiseConfig));
         assertFalse(result.isSuccessful());
-        assertThat(result.httpCode(), is(404));
+        assertThat(result.httpCode()).isEqualTo(404);
 
     }
 
     @Test
-    public void shouldDeleteARole() throws Exception {
+    public void shouldDeleteARole() {
         PluginRoleConfig role = new PluginRoleConfig("blackbird", "ldap");
         cruiseConfig.server().security().getRoles().add(role);
 
         RoleConfigCommand command = new RoleConfigDeleteCommand(null, role, extension, null, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.server().security().getRoles(), is(empty()));
+        assertThat(cruiseConfig.server().security().getRoles()).isEmpty();
     }
 
     @Test
-    public void shouldRaiseExceptionInCaseRoleDoesNotExist() throws Exception {
+    public void shouldRaiseExceptionInCaseRoleDoesNotExist() {
         PluginRoleConfig role = new PluginRoleConfig("blackbird", "ldap");
 
-        assertThat(cruiseConfig.server().security().getRoles(), is(empty()));
+        assertThat(cruiseConfig.server().security().getRoles()).isEmpty();
         RoleConfigCommand command = new RoleConfigDeleteCommand(null, role, extension, null, new HttpLocalizedOperationResult());
 
         assertThatThrownBy(() -> command.update(cruiseConfig)).isInstanceOf(RecordNotFoundException.class);
 
-        assertThat(cruiseConfig.server().security().getRoles(), is(empty()));
+        assertThat(cruiseConfig.server().security().getRoles()).isEmpty();
     }
 
     @Test
-    public void shouldDeleteAllOccurrencesOfRoleSilentlyIfRoleIsInUse() throws Exception {
+    public void shouldDeleteAllOccurrencesOfRoleSilentlyIfRoleIsInUse() {
         PluginRoleConfig readOnly = new PluginRoleConfig("guest", "guest");
         cruiseConfig.server().security().addRole(readOnly);
 
@@ -143,17 +142,17 @@ public class RoleConfigDeleteCommandTest {
         RoleConfigCommand command = new RoleConfigDeleteCommand(null, readOnly, extension, null, new HttpLocalizedOperationResult());
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.server().security().adminsConfig().getRoles(), hasSize(1));
-        assertThat(cruiseConfig.server().security().getRoles().findByName(readOnly.getName()), is(nullValue()));
+        assertThat(cruiseConfig.server().security().adminsConfig().getRoles()).hasSize(1);
+        assertThat(cruiseConfig.server().security().getRoles().findByName(readOnly.getName())).isNull();
         assertFalse(cruiseConfig.getGroups().get(0).getAuthorization().getViewConfig().getRoles().contains(new AdminRole(readOnly.getName())));
         assertTrue(cruiseConfig.getGroups().get(0).getAuthorization().getViewConfig().getRoles().contains(new AdminRole(stageAdmin.getName())));
     }
 
     @Test
-    public void shouldValidateIfProfileIsNotInUseByPipeline() throws Exception {
+    public void shouldValidateIfProfileIsNotInUseByPipeline() {
         PluginRoleConfig role = new PluginRoleConfig("blackbird", "ldap");
 
-        assertThat(cruiseConfig.server().security().getRoles(), is(empty()));
+        assertThat(cruiseConfig.server().security().getRoles()).isEmpty();
         RoleConfigCommand command = new RoleConfigDeleteCommand(null, role, extension, null, new HttpLocalizedOperationResult());
         assertTrue(command.isValid(cruiseConfig));
     }

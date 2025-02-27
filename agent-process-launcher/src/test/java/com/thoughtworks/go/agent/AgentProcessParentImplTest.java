@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.util.*;
 
 import static com.thoughtworks.go.agent.common.util.Downloader.*;
@@ -40,8 +41,7 @@ import static com.thoughtworks.go.agent.testhelper.FakeGoServer.TestResource.*;
 import static com.thoughtworks.go.util.LogFixture.logFixtureFor;
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(FakeGoServerExtension.class)
@@ -87,9 +87,9 @@ public class AgentProcessParentImplTest {
         String expectedTfsMd5 = TEST_TFS_IMPL.getMd5();
         AgentProcessParentImpl bootstrapper = createBootstrapper(cmd);
         int returnCode = bootstrapper.run("launcher_version", "bar", getURLGenerator(), new HashMap<>(), context());
-        assertThat(returnCode, is(42));
-        assertThat(cmd.toArray(new String[]{}), equalTo(new String[]{
-                (getProperty("java.home") + getProperty("file.separator") + "bin" + getProperty("file.separator") + "java"),
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(cmd).containsExactly(
+                (getProperty("java.home") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "java"),
                 "-Dagent.plugins.md5=" + expectedAgentPluginsMd5,
                 "-Dagent.binary.md5=" + expectedAgentMd5,
                 "-Dagent.launcher.md5=bar",
@@ -103,7 +103,7 @@ public class AgentProcessParentImplTest {
                 "NONE",
                 "-rootCertFile",
                 new File("/path/to/cert.pem").getAbsolutePath()
-        }));
+        );
     }
 
     @Test
@@ -118,9 +118,9 @@ public class AgentProcessParentImplTest {
         context.put(GoConstants.AGENT_BOOTSTRAPPER_VERSION, "20.3.0-1234");
         int returnCode = bootstrapper.run("launcher_version", "bar", getURLGenerator(), new HashMap<>(), context);
 
-        assertThat(returnCode, is(42));
-        assertThat(cmd.toArray(new String[]{}), equalTo(new String[]{
-                (getProperty("java.home") + getProperty("file.separator") + "bin" + getProperty("file.separator") + "java"),
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(cmd).containsExactly(
+                (getProperty("java.home") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "java"),
                 "-Dagent.plugins.md5=" + expectedAgentPluginsMd5,
                 "-Dagent.binary.md5=" + expectedAgentMd5,
                 "-Dagent.launcher.md5=bar",
@@ -134,7 +134,7 @@ public class AgentProcessParentImplTest {
                 "NONE",
                 "-rootCertFile",
                 new File("/path/to/cert.pem").getAbsolutePath()
-        }));
+        );
     }
 
     @Test
@@ -148,9 +148,9 @@ public class AgentProcessParentImplTest {
         AgentProcessParentImpl bootstrapper = createBootstrapper(cmd);
         int returnCode = bootstrapper.run("launcher_version", "bar", getURLGenerator(), new HashMap<>(), context());
 
-        assertThat(returnCode, is(42));
-        assertThat(cmd.toArray(new String[]{}), equalTo(new String[]{
-                (getProperty("java.home") + getProperty("file.separator") + "bin" + getProperty("file.separator") + "java"),
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(cmd).containsExactly(
+                (getProperty("java.home") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "java"),
                 "-Dextra.property=value1 with space",
                 "-Dextra property with space=value2 with space",
                 "-Dagent.plugins.md5=" + expectedAgentPluginsMd5,
@@ -166,7 +166,7 @@ public class AgentProcessParentImplTest {
                 "NONE",
                 "-rootCertFile",
                 new File("/path/to/cert.pem").getAbsolutePath()
-        }));
+        );
     }
 
     @Test
@@ -184,9 +184,9 @@ public class AgentProcessParentImplTest {
         AgentProcessParentImpl bootstrapper = createBootstrapper(cmd);
         int returnCode = bootstrapper.run("launcher_version", "bar", getURLGenerator(), new HashMap<>(), context);
 
-        assertThat(returnCode, is(42));
-        assertThat(cmd.toArray(new String[]{}), equalTo(new String[]{
-                (getProperty("java.home") + getProperty("file.separator") + "bin" + getProperty("file.separator") + "java"),
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(cmd).containsExactly(
+                (getProperty("java.home") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "java"),
                 "-Dagent.plugins.md5=" + expectedAgentPluginsMd5,
                 "-Dagent.binary.md5=" + expectedAgentMd5,
                 "-Dagent.launcher.md5=bar",
@@ -206,7 +206,7 @@ public class AgentProcessParentImplTest {
                 new File("/path/to/private.key").getAbsolutePath(),
                 "-sslPrivateKeyPassphraseFile",
                 new File("/path/to/private_key_passphrase.key").getAbsolutePath()
-        }));
+        );
     }
 
     private Process mockProcess() throws InterruptedException {
@@ -231,9 +231,9 @@ public class AgentProcessParentImplTest {
         String expectedAgentPluginsMd5 = TEST_AGENT_PLUGINS.getMd5();
         String expectedTfsMd5 = TEST_TFS_IMPL.getMd5();
 
-        assertThat(returnCode, is(42));
-        assertThat(cmd.toArray(new String[]{}), equalTo(new String[]{
-                (getProperty("java.home") + getProperty("file.separator") + "bin" + getProperty("file.separator") + "java"),
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(cmd).containsExactly(
+                (getProperty("java.home") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "java"),
                 "foo",
                 "bar",
                 "baz",
@@ -251,7 +251,7 @@ public class AgentProcessParentImplTest {
                 "NONE",
                 "-rootCertFile",
                 new File("/path/to/cert.pem").getAbsolutePath()
-        }));
+        );
     }
 
     private Map<String, String> context() {
@@ -285,8 +285,8 @@ public class AgentProcessParentImplTest {
             when(subProcess.waitFor()).thenThrow(new InterruptedException("bang bang!"));
             AgentProcessParentImpl bootstrapper = createBootstrapper(cmd, subProcess);
             int returnCode = bootstrapper.run("bootstrapper_version", "bar", getURLGenerator(), new HashMap<>(), context());
-            assertThat(returnCode, is(0));
-            assertThat(logFixture.contains(Level.ERROR, "Agent was interrupted. Terminating agent and respawning. java.lang.InterruptedException: bang bang!"), is(true));
+            assertThat(returnCode).isEqualTo(0);
+            assertThat(logFixture.contains(Level.ERROR, "Agent was interrupted. Terminating agent and respawning. java.lang.InterruptedException: bang bang!")).isEqualTo(true);
             verify(subProcess).destroy();
         }
     }
@@ -303,9 +303,9 @@ public class AgentProcessParentImplTest {
         when(subProcess.waitFor()).thenAnswer(invocation -> 42);
         AgentProcessParentImpl bootstrapper = createBootstrapper(cmd, subProcess);
         int returnCode = bootstrapper.run("bootstrapper_version", "bar", getURLGenerator(), new HashMap<>(), context());
-        assertThat(returnCode, is(42));
-        assertThat(FileUtils.readFileToString(stderrLog, UTF_8).contains(stdErrMsg), is(true));
-        assertThat(FileUtils.readFileToString(stdoutLog, UTF_8).contains(stdOutMsg), is(true));
+        assertThat(returnCode).isEqualTo(42);
+        assertThat(FileUtils.readFileToString(stderrLog, UTF_8).contains(stdErrMsg)).isEqualTo(true);
+        assertThat(FileUtils.readFileToString(stdoutLog, UTF_8).contains(stdOutMsg)).isEqualTo(true);
     }
 
     @Test
@@ -321,8 +321,8 @@ public class AgentProcessParentImplTest {
                 }
             };
             int returnCode = bootstrapper.run("bootstrapper_version", "bar", getURLGenerator(), new HashMap<>(), context());
-            assertThat(returnCode, is(-373));
-            assertThat(logFixture.contains(Level.ERROR, "Exception while executing command: " + StringUtils.join(cmd, " ") + " - java.lang.RuntimeException: something failed!"), is(true));
+            assertThat(returnCode).isEqualTo(-373);
+            assertThat(logFixture.contains(Level.ERROR, "Exception while executing command: " + StringUtils.join(cmd, " ") + " - java.lang.RuntimeException: something failed!")).isEqualTo(true);
         }
     }
 
@@ -337,7 +337,7 @@ public class AgentProcessParentImplTest {
         });
         AgentProcessParentImpl bootstrapper = createBootstrapper(cmd, subProcess);
         int returnCode = bootstrapper.run("bootstrapper_version", "bar", getURLGenerator(), new HashMap<>(), context());
-        assertThat(returnCode, is(21));
+        assertThat(returnCode).isEqualTo(21);
     }
 
     @Test
@@ -349,7 +349,7 @@ public class AgentProcessParentImplTest {
         long expectedModifiedDate = AGENT_PLUGINS_ZIP.lastModified();
         AgentProcessParentImpl bootstrapper = createBootstrapper(new ArrayList<>());
         bootstrapper.run("launcher_version", "bar", getURLGenerator(), Map.of(AgentProcessParentImpl.AGENT_STARTUP_ARGS, "foo bar  baz with%20some%20space"), context());
-        assertThat(Downloader.AGENT_PLUGINS_ZIP.lastModified(), is(expectedModifiedDate));
+        assertThat(Downloader.AGENT_PLUGINS_ZIP.lastModified()).isEqualTo(expectedModifiedDate);
     }
 
     @Test
@@ -361,7 +361,7 @@ public class AgentProcessParentImplTest {
         AgentProcessParentImpl bootstrapper = createBootstrapper(new ArrayList<>());
         bootstrapper.run("launcher_version", "bar", getURLGenerator(), Map.of(AgentProcessParentImpl.AGENT_STARTUP_ARGS, "foo bar  baz with%20some%20space"), context());
 
-        assertThat(stalePluginZip.length(), not(original));
+        assertThat(stalePluginZip.length()).isNotEqualTo(original);
     }
 
     @Test
@@ -373,7 +373,7 @@ public class AgentProcessParentImplTest {
         AgentProcessParentImpl bootstrapper = createBootstrapper(new ArrayList<>());
         bootstrapper.run("launcher_version", "bar", getURLGenerator(), Map.of(AgentProcessParentImpl.AGENT_STARTUP_ARGS, "foo bar  baz with%20some%20space"), context());
 
-        assertThat(staleFile.length(), not(original));
+        assertThat(staleFile.length()).isNotEqualTo(original);
     }
 
     private File randomFile(final File pathname) throws IOException {

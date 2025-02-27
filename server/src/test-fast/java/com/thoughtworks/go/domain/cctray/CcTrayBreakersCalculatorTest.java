@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +41,7 @@ public class CcTrayBreakersCalculatorTest {
     private MaterialRepository materialRepo;
 
     @Test
-    public void shouldCaptureUniqueModificationAuthorNamesAsBreakers_inCaseOfFailure() throws Exception {
+    public void shouldCaptureUniqueModificationAuthorNamesAsBreakers_inCaseOfFailure() {
         Modification user1Commit = ModificationsMother.checkinWithComment("123", "comment 1", "user1", "user1@domain1.com", new Date(), "foo.c");
         Modification user2Commit = ModificationsMother.checkinWithComment("124", "comment 2", "user2", "user2@domain2.com", new Date(), "bar.c");
         Modification otherCommitOfUser1 = ModificationsMother.checkinWithComment("125", "comment 3", "user1", "user1@different-email.com", new Date(), "baz.c");
@@ -56,11 +55,11 @@ public class CcTrayBreakersCalculatorTest {
         Set<String> actualBreakers = status.calculateFor(failedStage());
 
 
-        assertThat(actualBreakers, is(Set.of("user1", "user2")));
+        assertThat(actualBreakers).isEqualTo(Set.of("user1", "user2"));
     }
 
     @Test
-    public void shouldCaptureAuthorNamesOfChangedRevisionsOnlyAsBreakers() throws Exception {
+    public void shouldCaptureAuthorNamesOfChangedRevisionsOnlyAsBreakers() {
         Modification user1Commit = ModificationsMother.checkinWithComment("123", "comment 1", "user1", "user1@domain1.com", new Date(), "foo.c");
         Modification user2Commit = ModificationsMother.checkinWithComment("124", "comment 2", "user2", "user2@domain2.com", new Date(), "bar.c");
         MaterialRevision changedRevision = new MaterialRevision(MaterialsMother.gitMaterial("foo.com"), user1Commit, user2Commit);
@@ -77,11 +76,11 @@ public class CcTrayBreakersCalculatorTest {
         Set<String> actualBreakers = status.calculateFor(failedStage());
 
 
-        assertThat(actualBreakers, is(Set.of("user1", "user2")));
+        assertThat(actualBreakers).isEqualTo(Set.of("user1", "user2"));
     }
 
     @Test
-    public void shouldCaptureAuthorNamesOfUnchangedRevisionsIfThereAreNoChangedRevisions() throws Exception {
+    public void shouldCaptureAuthorNamesOfUnchangedRevisionsIfThereAreNoChangedRevisions() {
         Modification user1Commit = ModificationsMother.checkinWithComment("123", "comment 1", "user1", "user1@domain1.com", new Date(), "foo.c");
         Modification user2Commit = ModificationsMother.checkinWithComment("124", "comment 2", "user2", "user2@domain2.com", new Date(), "bar.c");
         MaterialRevision firstUnchangedRevision = new MaterialRevision(MaterialsMother.gitMaterial("foo.com"), user1Commit, user2Commit);
@@ -97,11 +96,11 @@ public class CcTrayBreakersCalculatorTest {
         Set<String> actualBreakers = status.calculateFor(failedStage());
 
 
-        assertThat(actualBreakers, is(Set.of("user1", "user2", "user3")));
+        assertThat(actualBreakers).isEqualTo(Set.of("user1", "user2", "user3"));
     }
 
     @Test
-    public void shouldNotCaptureAuthorNamesForDependencyMaterial() throws Exception {
+    public void shouldNotCaptureAuthorNamesForDependencyMaterial() {
         Modification user1Commit = ModificationsMother.checkinWithComment("123", "comment 1", "user1", "user1@domain1.com", new Date(), "foo.c");
 
         MaterialRevision changedRevision = new MaterialRevision(MaterialsMother.gitMaterial("foo.com"), user1Commit);
@@ -118,11 +117,11 @@ public class CcTrayBreakersCalculatorTest {
         Set<String> actualBreakers = status.calculateFor(failedStage());
 
 
-        assertThat(actualBreakers, is(Set.of("user1")));
+        assertThat(actualBreakers).isEqualTo(Set.of("user1"));
     }
 
     @Test
-    public void shouldNotHaveAnyBreakersIfStageHasNotFailed() throws Exception {
+    public void shouldNotHaveAnyBreakersIfStageHasNotFailed() {
         Modification user1Commit = ModificationsMother.checkinWithComment("123", "comment 1", "user1", "user1@domain1.com", new Date(), "foo.c");
         MaterialRevision revision = new MaterialRevision(MaterialsMother.gitMaterial("foo.com"), user1Commit);
         revision.markAsChanged();
@@ -131,7 +130,7 @@ public class CcTrayBreakersCalculatorTest {
         Set<String> actualBreakers = status.calculateFor(StageMother.createPassedStage("pipeline1", 1, "stage1", 1, "job1", new Date()));
 
 
-        assertThat(actualBreakers, is(Collections.<String>emptySet()));
+        assertThat(actualBreakers).isEqualTo(Collections.<String>emptySet());
     }
 
     private Stage failedStage() {

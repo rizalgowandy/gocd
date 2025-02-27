@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@ package com.thoughtworks.go.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GoConstantsTest {
     @Test
-    public void shouldMatchURLs() throws Exception {
+    public void shouldMatchURLs() {
         String url = "http://java.sun.com:80/docs/books/tutorial/essential/regex/test_harness.html";
         String baseUrl = StringUtil.matchPattern(GoConstants.BASE_URL_PATTERN, url);
-        assertThat(baseUrl, is("http://java.sun.com:80"));
+        assertThat(baseUrl).isEqualTo("http://java.sun.com:80");
     }
 
 }

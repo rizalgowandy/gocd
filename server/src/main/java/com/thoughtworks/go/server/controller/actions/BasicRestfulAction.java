@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.thoughtworks.go.server.controller.actions;
 
-import com.thoughtworks.go.domain.JobIdentifier;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -36,10 +35,6 @@ public class BasicRestfulAction implements RestfulAction {
         this.status = status;
         this.contentType = contentType;
         this.message = String.valueOf(message);
-    }
-
-    public static RestfulAction jobNotFound(JobIdentifier job) {
-        return notFound("Job " + job.buildLocator() + " not found.");
     }
 
     public static RestfulAction notFound(String errorMessage) {

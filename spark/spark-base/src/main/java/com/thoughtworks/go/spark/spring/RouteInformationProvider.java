@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,7 @@ public class RouteInformationProvider {
         return (Service) ReflectionUtils.invokeMethod(getInstanceMethod, null);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getField(Object o, String fieldName) {
         Field field = ReflectionUtils.findField(o.getClass(), fieldName);
         ReflectionUtils.makeAccessible(field);

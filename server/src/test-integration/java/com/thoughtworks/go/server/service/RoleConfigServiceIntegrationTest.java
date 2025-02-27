@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,12 +57,12 @@ public class RoleConfigServiceIntegrationTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         configFileHelper.onTearDown();
     }
 
     @Test
-    public void delete_shouldBeAbleToDeleteAnExistingGoCDRole() throws Exception {
+    public void delete_shouldBeAbleToDeleteAnExistingGoCDRole() {
         RoleConfig role = new RoleConfig(new CaseInsensitiveString("committer"));
 
         roleConfigService.delete(new Username("loser"), role, new HttpLocalizedOperationResult());
@@ -74,7 +74,7 @@ public class RoleConfigServiceIntegrationTest {
     }
 
     @Test
-    public void delete_shouldBeAbleToDeleteAnExistingPluginRole() throws Exception {
+    public void delete_shouldBeAbleToDeleteAnExistingPluginRole() {
         PluginRoleConfig role = new PluginRoleConfig("go_admins", "tw-ldap");
 
         roleConfigService.delete(new Username("loser"), role, new HttpLocalizedOperationResult());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class BuildStateTypeHandlerCallbackTest {
@@ -36,7 +35,7 @@ public class BuildStateTypeHandlerCallbackTest {
         when(rs.getString("foo")).thenReturn(JobState.Scheduled.toString());
         BuildStateTypeHandlerCallback callback = new BuildStateTypeHandlerCallback(JobState.class);
         JobState result = callback.getResult(rs, "foo");
-        assertThat(result, is(JobState.Scheduled));
+        assertThat(result).isEqualTo(JobState.Scheduled);
     }
 
     @Test
@@ -45,7 +44,7 @@ public class BuildStateTypeHandlerCallbackTest {
         when(rs.getString(42)).thenReturn(JobState.Scheduled.toString());
         BuildStateTypeHandlerCallback callback = new BuildStateTypeHandlerCallback(JobState.class);
         JobState result = callback.getResult(rs, 42);
-        assertThat(result, is(JobState.Scheduled));
+        assertThat(result).isEqualTo(JobState.Scheduled);
     }
 
     @Test
@@ -54,7 +53,7 @@ public class BuildStateTypeHandlerCallbackTest {
         when(rs.getString(42)).thenReturn(JobState.Scheduled.toString());
         BuildStateTypeHandlerCallback callback = new BuildStateTypeHandlerCallback(JobState.class);
         JobState result = callback.getResult(rs, 42);
-        assertThat(result, is(JobState.Scheduled));
+        assertThat(result).isEqualTo(JobState.Scheduled);
     }
 
     @Test

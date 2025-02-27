@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class DummyDeprecatedApiController implements SparkSpringController {
     public void setupRoutes() {
     }
 
-    public String doNothing(Request request, Response response) throws Exception {
+    public String doNothing(Request request, Response response) {
         return "";
     }
 

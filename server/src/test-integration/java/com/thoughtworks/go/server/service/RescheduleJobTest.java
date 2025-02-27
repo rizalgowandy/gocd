@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -106,7 +103,7 @@ public class RescheduleJobTest {
         });
 
         scheduleService.rescheduleJob(hungJob);
-        assertThat(jobStatusCache.currentJob(hungJob.getIdentifier().jobConfigIdentifier()).getState(), is(JobState.Scheduled));
+        assertThat(jobStatusCache.currentJob(hungJob.getIdentifier().jobConfigIdentifier()).getState()).isEqualTo(JobState.Scheduled);
     }
 
     @Test
@@ -121,11 +118,11 @@ public class RescheduleJobTest {
             }
         });
 
-        assertThat(hungJob.isCompleted(), is(true));
-        assertThat(hungJob.isIgnored(), is(false));
+        assertThat(hungJob.isCompleted()).isTrue();
+        assertThat(hungJob.isIgnored()).isFalse();
 
         scheduleService.rescheduleJob(hungJob);
-        assertThat(jobInstanceService.buildById(hungJob.getId()).isIgnored(), is(false));
+        assertThat(jobInstanceService.buildById(hungJob.getId()).isIgnored()).isFalse();
     }
 
     @Test
@@ -135,15 +132,15 @@ public class RescheduleJobTest {
         scheduleService.rescheduleJob(hungJob);
 
         JobInstance reloaded = dbHelper.getBuildInstanceDao().buildByIdWithTransitions(hungJob.getId());
-        assertThat(reloaded.isIgnored(), is(true));
-        assertThat(reloaded.getState(), is(JobState.Rescheduled));
+        assertThat(reloaded.isIgnored()).isTrue();
+        assertThat(reloaded.getState()).isEqualTo(JobState.Rescheduled);
 
         JobPlan newPlan = dbHelper.getBuildInstanceDao().orderedScheduledBuilds().get(0);
-        assertThat(newPlan.getJobId(), is(not(hungJob.getId())));
-        assertThat(newPlan.getStageName(), is(hungJob.getStageName()));
+        assertThat(newPlan.getJobId()).isNotEqualTo(hungJob.getId());
+        assertThat(newPlan.getStageName()).isEqualTo(hungJob.getStageName());
 
         JobInstance newJob = dbHelper.getBuildInstanceDao().buildByIdWithTransitions(newPlan.getJobId());
-        assertThat(newJob.getState(), is(JobState.Scheduled));
+        assertThat(newJob.getState()).isEqualTo(JobState.Scheduled);
     }
 
     @Test
@@ -157,62 +154,62 @@ public class RescheduleJobTest {
         dbHelper.schedulePipeline(configHelper.currentConfig().getPipelineConfigByName(new CaseInsensitiveString(PIPELINE_NAME)), new TimeProvider());
 
         JobPlan oldJobPlan = dbHelper.getBuildInstanceDao().orderedScheduledBuilds().get(0);
-        assertThat(oldJobPlan.getResources().size(), is(2));
-        assertThat(oldJobPlan.getArtifactPlans().size(), is(2));
+        assertThat(oldJobPlan.getResources().size()).isEqualTo(2);
+        assertThat(oldJobPlan.getArtifactPlans().size()).isEqualTo(2);
 
         JobInstance oldJobInstance = dbHelper.getBuildInstanceDao().buildById(oldJobPlan.getJobId());
         scheduleService.rescheduleJob(oldJobInstance);
 
         JobInstance reloadedOldJobInstance = dbHelper.getBuildInstanceDao().buildById(oldJobInstance.getId());
-        assertThat(reloadedOldJobInstance.isIgnored(), is(true));
-        assertThat(reloadedOldJobInstance.getState(), is(JobState.Rescheduled));
+        assertThat(reloadedOldJobInstance.isIgnored()).isTrue();
+        assertThat(reloadedOldJobInstance.getState()).isEqualTo(JobState.Rescheduled);
 
         JobPlan newJobPlan = dbHelper.getBuildInstanceDao().orderedScheduledBuilds().get(1);
-        assertThat(newJobPlan.getJobId(), is(not(oldJobInstance.getId())));
+        assertThat(newJobPlan.getJobId()).isNotEqualTo(oldJobInstance.getId());
 
-        assertThat(newJobPlan.getResources().size(), is(2));
+        assertThat(newJobPlan.getResources().size()).isEqualTo(2);
         for (int i = 0; i < newJobPlan.getResources().size(); i++) {
             Resource newResource = newJobPlan.getResources().get(i);
             Resource oldResource = oldJobPlan.getResources().get(i);
-            assertThat(newResource.getId(), is(not(oldResource.getId())));
-            assertThat(newResource.getName(), is(oldResource.getName()));
-            assertThat(ReflectionUtil.getField(newResource, "buildId"), is(newJobPlan.getJobId()));
+            assertThat(newResource.getId()).isNotEqualTo(oldResource.getId());
+            assertThat(newResource.getName()).isEqualTo(oldResource.getName());
+            assertThat((Object) ReflectionUtil.getField(newResource, "buildId")).isEqualTo(newJobPlan.getJobId());
         }
 
-        assertThat(newJobPlan.getArtifactPlans().size(), is(2));
+        assertThat(newJobPlan.getArtifactPlans().size()).isEqualTo(2);
         for (int i = 0; i < newJobPlan.getArtifactPlans().size(); i++) {
             ArtifactPlan newArtifactPlan = newJobPlan.getArtifactPlans().get(i);
             ArtifactPlan oldArtifactPlan = oldJobPlan.getArtifactPlans().get(i);
-            assertThat(newArtifactPlan.getId(), is(not(oldArtifactPlan.getId())));
-            assertThat(newArtifactPlan.getArtifactPlanType(), is(oldArtifactPlan.getArtifactPlanType()));
-            assertThat(newArtifactPlan.getSrc(), is(oldArtifactPlan.getSrc()));
-            assertThat(newArtifactPlan.getDest(), is(oldArtifactPlan.getDest()));
-            assertThat(newArtifactPlan.getArtifactPlanType(), is(oldArtifactPlan.getArtifactPlanType()));
-            assertThat(ReflectionUtil.getField(newArtifactPlan, "buildId"), is(newJobPlan.getJobId()));
+            assertThat(newArtifactPlan.getId()).isNotEqualTo(oldArtifactPlan.getId());
+            assertThat(newArtifactPlan.getArtifactPlanType()).isEqualTo(oldArtifactPlan.getArtifactPlanType());
+            assertThat(newArtifactPlan.getSrc()).isEqualTo(oldArtifactPlan.getSrc());
+            assertThat(newArtifactPlan.getDest()).isEqualTo(oldArtifactPlan.getDest());
+            assertThat(newArtifactPlan.getArtifactPlanType()).isEqualTo(oldArtifactPlan.getArtifactPlanType());
+            assertThat((Object) ReflectionUtil.getField(newArtifactPlan, "buildId")).isEqualTo(newJobPlan.getJobId());
         }
 
         JobInstance newJobInstance = dbHelper.getBuildInstanceDao().buildById(newJobPlan.getJobId());
-        assertThat(newJobInstance.getState(), is(JobState.Scheduled));
+        assertThat(newJobInstance.getState()).isEqualTo(JobState.Scheduled);
     }
 
     @Test
     // #2882
-    public void rescheduleShouldNotDuplicateResourcesEtc() throws Exception {
+    public void rescheduleShouldNotDuplicateResourcesEtc() {
         JobInstance job = scheduledJob();
         JobPlan oldPlan = loadJobPlan(job);
 
         scheduleService.rescheduleJob(job);
 
         JobPlan newPlan = dbHelper.getBuildInstanceDao().orderedScheduledBuilds().get(0);
-        assertThat(newPlan.getResources(), is(oldPlan.getResources()));
-        assertThat(newPlan.getArtifactPlans(), is(oldPlan.getArtifactPlans()));
+        assertThat(newPlan.getResources()).isEqualTo(oldPlan.getResources());
+        assertThat(newPlan.getArtifactPlans()).isEqualTo(oldPlan.getArtifactPlans());
     }
 
     private JobPlan loadJobPlan(JobInstance job) {
         return dbHelper.getBuildInstanceDao().loadPlan(job.getId());
     }
 
-    private JobInstance scheduledJob() throws SQLException {
+    private JobInstance scheduledJob() {
         JobInstance hungJob = stage.getJobInstances().get(0);
         return jobInstanceService.buildByIdWithTransitions(hungJob.getId());
     }

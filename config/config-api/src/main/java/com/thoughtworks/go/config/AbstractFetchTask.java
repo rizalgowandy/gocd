@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractFetchTask extends AbstractTask implements FetchArtifactConfig {
     public static final String PIPELINE_NAME = "pipelineName";
@@ -67,10 +68,6 @@ public abstract class AbstractFetchTask extends AbstractTask implements FetchArt
 
     public CaseInsensitiveString getJob() {
         return job;
-    }
-
-    public void setPipelineName(PathFromAncestor pipelineName) {
-        this.pipelineName = pipelineName;
     }
 
     public void setPipelineName(CaseInsensitiveString pipelineName) {
@@ -167,7 +164,7 @@ public abstract class AbstractFetchTask extends AbstractTask implements FetchArt
             }
         }
 
-        boolean foundStageAtOrBeforeDependency = dependencyStage.equals(stage);
+        boolean foundStageAtOrBeforeDependency = Objects.equals(dependencyStage, stage);
         if (!foundStageAtOrBeforeDependency) {
             for (StageConfig stageConfig : pipeline.allStagesBefore(dependencyStage)) {
                 foundStageAtOrBeforeDependency = stage.equals(stageConfig.name());
@@ -221,7 +218,7 @@ public abstract class AbstractFetchTask extends AbstractTask implements FetchArt
     }
 
     private void validateStagesOfSamePipeline(ValidationContext validationContext, PipelineConfig currentPipeline) {
-        List<StageConfig> validStages = currentPipeline.validStagesForFetchArtifact(currentPipeline, validationContext.getStage().name());
+        @SuppressWarnings("CollectionAddedToSelf") List<StageConfig> validStages = currentPipeline.validStagesForFetchArtifact(currentPipeline, validationContext.getStage().name());
         StageConfig matchingStage = validStages.stream().filter(stageConfig -> stageConfig.name().equals(stage)).findFirst().orElse(null);
         if (matchingStage == null) {
             addError(STAGE, String.format("\"%s :: %s :: %s\" tries to fetch artifact from its stage \"%s\" which does not complete before the current stage \"%s\"."
@@ -291,7 +288,7 @@ public abstract class AbstractFetchTask extends AbstractTask implements FetchArt
     }
 
     @Override
-    protected void setTaskConfigAttributes(Map attributeMap) {
+    protected void setTaskConfigAttributes(Map<String, ?> attributeMap) {
         if (attributeMap == null || attributeMap.isEmpty()) {
             return;
         }
@@ -308,7 +305,7 @@ public abstract class AbstractFetchTask extends AbstractTask implements FetchArt
         setFetchTaskAttributes(attributeMap);
     }
 
-    protected abstract void setFetchTaskAttributes(Map attributeMap);
+    protected abstract void setFetchTaskAttributes(Map<String, ?> attributeMap);
 
     public String checksumPath() {
         return String.format("%s_%s_%s_md5.checksum", pipelineName, stage, job);

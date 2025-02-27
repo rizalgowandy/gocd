@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@ package com.thoughtworks.go.config.security.users;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class NoOneTest {
     @Test
-    public void shouldSayItContainsNoUsersAlways() throws Exception {
+    public void shouldSayItContainsNoUsersAlways() {
         Users noUsers = NoOne.INSTANCE;
 
-        assertThat(noUsers.contains("abc"), is(false));
-        assertThat(noUsers.contains("def"), is(false));
-        assertThat(noUsers.contains(null), is(false));
-        assertThat(noUsers.contains(""), is(false));
+        assertThat(noUsers.contains("abc")).isFalse();
+        assertThat(noUsers.contains("def")).isFalse();
+        assertThat(noUsers.contains(null)).isFalse();
+        assertThat(noUsers.contains("")).isFalse();
     }
 }

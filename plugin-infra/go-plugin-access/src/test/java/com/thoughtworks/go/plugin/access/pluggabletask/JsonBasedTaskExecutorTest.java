@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.thoughtworks.go.plugin.domain.common.PluginConstants.PLUGGABLE_TASK_EXTENSION;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class JsonBasedTaskExecutorTest {
@@ -50,7 +48,7 @@ public class JsonBasedTaskExecutorTest {
     private GoPluginApiResponse response;
     private JsonBasedTaskExtensionHandler handler;
     private PluginRequestHelper pluginRequestHelper;
-    private HashMap<String, JsonBasedTaskExtensionHandler> handlerHashMap = new HashMap<>();
+    private final Map<String, JsonBasedTaskExtensionHandler> handlerHashMap = new HashMap<>();
 
     @BeforeEach
     public void setup() {
@@ -74,14 +72,14 @@ public class JsonBasedTaskExecutorTest {
 
         ExecutionResult result = new JsonBasedTaskExecutor(pluginId, pluginRequestHelper, handlerHashMap).execute(config(), context);
 
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(result.getMessagesForDisplay(), is("message1"));
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(result.getMessagesForDisplay()).isEqualTo("message1");
 
         ArgumentCaptor<GoPluginApiRequest> argument = ArgumentCaptor.forClass(GoPluginApiRequest.class);
         verify(pluginManager).submitTo(eq(pluginId), eq(PLUGGABLE_TASK_EXTENSION), argument.capture());
-        assertThat(argument.getValue().extension(), is(PLUGGABLE_TASK_EXTENSION));
-        assertThat(argument.getValue().extensionVersion(), is(extensionVersion));
-        assertThat(argument.getValue().requestName(), is(TaskExtension.EXECUTION_REQUEST));
+        assertThat(argument.getValue().extension()).isEqualTo(PLUGGABLE_TASK_EXTENSION);
+        assertThat(argument.getValue().extensionVersion()).isEqualTo(extensionVersion);
+        assertThat(argument.getValue().requestName()).isEqualTo(TaskExtension.EXECUTION_REQUEST);
     }
 
     @Test
@@ -91,10 +89,11 @@ public class JsonBasedTaskExecutorTest {
 
         ExecutionResult result = new JsonBasedTaskExecutor(pluginId, pluginRequestHelper, handlerHashMap).execute(config(), context);
 
-        assertThat(result.isSuccessful(), is(false));
-        assertThat(result.getMessagesForDisplay(), is("error1"));
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(result.getMessagesForDisplay()).isEqualTo("error1");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldConstructExecutionRequestWithRequiredDetails() {
         String workingDir = "working-dir";
@@ -116,23 +115,23 @@ public class JsonBasedTaskExecutorTest {
         handlerHashMap.put("1.0", handler);
         new JsonBasedTaskExecutor(pluginId, pluginRequestHelper, handlerHashMap).execute(config(), context);
 
-        assertTrue(executionRequest.length == 1);
-        Map result = (Map) new GsonBuilder().create().fromJson(executionRequest[0].requestBody(), Object.class);
-        Map context = (Map) result.get("context");
+        assertThat(executionRequest).hasSize(1);
+        Map<String, Object> result = (Map<String, Object>) new GsonBuilder().create().fromJson(executionRequest[0].requestBody(), Object.class);
+        Map<String, Object> context = (Map<String, Object>) result.get("context");
 
-        assertThat(context.get("workingDirectory"), is(workingDir));
-        Map environmentVariables = (Map) context.get("environmentVariables");
-        assertThat(environmentVariables.size(), is(2));
-        assertThat(environmentVariables.get("ENV1").toString(), is("VAL1"));
-        assertThat(environmentVariables.get("ENV2").toString(), is("VAL2"));
-        assertThat(executionRequest[0].requestParameters().size(), is(0));
+        assertThat(context.get("workingDirectory")).isEqualTo(workingDir);
+        Map<String, Object> environmentVariables = (Map<String, Object>) context.get("environmentVariables");
+        assertThat(environmentVariables.size()).isEqualTo(2);
+        assertThat(environmentVariables.get("ENV1").toString()).isEqualTo("VAL1");
+        assertThat(environmentVariables.get("ENV2").toString()).isEqualTo("VAL2");
+        assertThat(executionRequest[0].requestParameters().size()).isEqualTo(0);
     }
 
     private EnvironmentVariables getEnvironmentVariables() {
         return new EnvironmentVariables() {
             @Override
             public Map<String, String> asMap() {
-                final HashMap<String, String> map = new HashMap<>();
+                final Map<String, String> map = new HashMap<>();
                 map.put("ENV1", "VAL1");
                 map.put("ENV2", "VAL2");
                 return map;

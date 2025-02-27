@@ -4,7 +4,7 @@ import com.thoughtworks.go.build.VerifyJarTask
 import org.apache.commons.codec.digest.DigestUtils
 
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,42 +27,42 @@ def dependencies = [
   new GithubArtifact(
     user: 'gocd',
     repo: 'gocd-ldap-authentication-plugin',
-    tagName: 'v2.2.2-264',
-    asset: 'gocd-ldap-authentication-plugin-2.2.2-264.jar',
-    checksum: '703c994c760ed7bdd66d0e5ac8b9aaef8f8bfce521613ccd87f6ba5914141b1c'
+    tagName: 'v2.3.0-386',
+    asset: 'gocd-ldap-authentication-plugin-2.3.0-386.jar',
+    checksum: 'c24ba5e9943d8aacb70f8dc4b0f91a7e387cb92799cfbc980b0fd85b7dd055f3'
   ),
   new GithubArtifact(
     user: 'gocd',
     repo: 'gocd-filebased-authentication-plugin',
-    tagName: 'v2.1.2-210',
-    asset: 'gocd-filebased-authentication-plugin-2.1.2-210.jar',
-    checksum: 'd25cde68fe700b80bd134fe0582ad6dea71075424e87f64ab797b194ee2ee6d3'
+    tagName: 'v2.2.0-300',
+    asset: 'gocd-filebased-authentication-plugin-2.2.0-300.jar',
+    checksum: '87432d1d830e333e9cf950d802501bce76e6af182ad567b38b5d6a6233c9ebc9'
   ),
   new GithubArtifact(
     user: 'tomzo',
     repo: 'gocd-yaml-config-plugin',
-    tagName: 'v0.14.3-338',
-    asset: 'yaml-config-plugin-0.14.3-338.jar',
-    checksum: 'ef56a15745bb12fd7374d01edf91e869ce2441b2ba90d9e91541ed7d22a76f97'
+    tagName: 'v1.0.0-423',
+    asset: 'yaml-config-plugin-1.0.0-423.jar',
+    checksum: '8501cd8de9b9b21f673e65f1658552a11073a602a6c4a99ca7575b6f4854da88'
   ),
   new GithubArtifact(
     user: 'tomzo',
     repo: 'gocd-json-config-plugin',
-    tagName: 'v0.6.1-191',
-    asset: 'json-config-plugin-0.6.1-191.jar',
-    checksum: '4958f52f1705a9ad7c1290ff04441fa116ab33a12f48258ce6a3a17d0a5e5ab6'
+    tagName: 'v1.0.0-273',
+    asset: 'json-config-plugin-1.0.0-273.jar',
+    checksum: '4e90500660813d1f570e6d3ba6646a1c279ad72bcf86236cf744846ff5bc0418'
   ),
   new GithubArtifact(
     user: 'gocd',
     repo: 'gocd-file-based-secrets-plugin',
-    tagName: 'v1.1.2-191',
-    asset: 'gocd-file-based-secrets-plugin-1.1.2-191.jar',
-    checksum: '8b381825add2202b587caa8a181c8ced9b0d97fd216cae6eaf904a2f612ae846'
+    tagName: 'v1.2.0-310',
+    asset: 'gocd-file-based-secrets-plugin-1.2.0-310.jar',
+    checksum: '1455ac9874f44daf14c6fc4d9e3cf517de3e23cff6f5437fb224cabccc919ba8'
   )
 ]
 
 task createVersionFile {
-  def file = file("${project.buildDir}/version.txt")
+  def file = layout.buildDirectory.file("version.txt").get().asFile
   inputs.property('version', rootProject.version)
   inputs.property('gitRevision', rootProject.gitRevision)
 
@@ -107,7 +107,7 @@ dependencies.each { dep ->
     downloadPlugins.dependsOn downloadTask
     downloadTask.src dep.downloadUrl
     downloadTask.dest destFile(dep)
-    downloadTask.checksum dep.checksum
+    downloadTask.checksum = dep.checksum
   }
 
   pluginsZip.from(destFile(dep))

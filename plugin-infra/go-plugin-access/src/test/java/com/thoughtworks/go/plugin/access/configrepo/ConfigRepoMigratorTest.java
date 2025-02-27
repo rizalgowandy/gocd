@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,13 @@
  */
 package com.thoughtworks.go.plugin.access.configrepo;
 
-import com.thoughtworks.go.plugin.access.configrepo.v1.JsonMessageHandler1_0;
-import com.thoughtworks.go.plugin.access.configrepo.v2.JsonMessageHandler2_0;
 import com.thoughtworks.go.plugin.access.configrepo.v3.JsonMessageHandler3_0;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ConfigRepoMigratorTest {
     private ConfigRepoMigrator migrator;
@@ -46,7 +40,7 @@ class ConfigRepoMigratorTest {
         assertThatJson(transformedJSON).node("target_version").isEqualTo("\"2\"");
         assertThatJson(transformedJSON).node("pipelines[0].name").isEqualTo("firstpipe");
         assertThatJson(transformedJSON).node("pipelines[0].lock_behavior").isEqualTo("lockOnFailure");
-        assertThatJson(transformedJSON).node("errors").isArray().ofLength(0);
+        assertThatJson(transformedJSON).node("errors").isArray().isEmpty();
     }
 
     @Test
@@ -58,7 +52,7 @@ class ConfigRepoMigratorTest {
         assertThatJson(transformedJSON).node("target_version").isEqualTo("\"2\"");
         assertThatJson(transformedJSON).node("pipelines[0].name").isEqualTo("firstpipe");
         assertThatJson(transformedJSON).node("pipelines[0].lock_behavior").isEqualTo("none");
-        assertThatJson(transformedJSON).node("errors").isArray().ofLength(0);
+        assertThatJson(transformedJSON).node("errors").isArray().isEmpty();
     }
 
     @Test
@@ -211,7 +205,7 @@ class ConfigRepoMigratorTest {
     @Nested
     class MigrateV9ToV10 {
         @Test
-        void shouldReplaceWhitelistWithIncludes() throws IOException {
+        void shouldReplaceWhitelistWithIncludes() {
             ConfigRepoDocumentMother documentMother = new ConfigRepoDocumentMother();
 
             String oldJSON = documentMother.v9WithWhitelist();
@@ -225,7 +219,7 @@ class ConfigRepoMigratorTest {
     @Nested
     class MigrateV10ToV11 {
         @Test
-        void shouldAddDefaultEchoTask() throws IOException {
+        void shouldAddDefaultEchoTask() {
             ConfigRepoDocumentMother documentMother = new ConfigRepoDocumentMother();
 
             String oldJSON = documentMother.v10WithoutTasks();
@@ -251,16 +245,11 @@ class ConfigRepoMigratorTest {
 
     @Test
     void currentContractVersionShouldBeTheHighestPossibleMigration() {
-        assertThat(JsonMessageHandler1_0.CURRENT_CONTRACT_VERSION, is(JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION));
-        assertThat(JsonMessageHandler2_0.CURRENT_CONTRACT_VERSION, is(JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION));
-
         new ConfigRepoMigrator().migrate("{}", JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION);
 
-        try {
-            new ConfigRepoMigrator().migrate("{}", JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION + 1);
-            fail("Should have failed to migrate to wrong version which is one more than the current contract version");
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is(String.format("Failed to migrate to version %s", JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION + 1)));
-        }
+        assertThatThrownBy(() -> new ConfigRepoMigrator().migrate("{}", JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION + 1))
+            .describedAs("Should have failed to migrate to wrong version which is one more than the current contract version")
+            .isInstanceOf(RuntimeException.class)
+            .hasMessage(String.format("Failed to migrate to version %s", JsonMessageHandler3_0.CURRENT_CONTRACT_VERSION + 1));
     }
 }

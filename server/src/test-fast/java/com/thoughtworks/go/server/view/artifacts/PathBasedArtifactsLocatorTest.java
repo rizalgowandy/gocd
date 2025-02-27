@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathBasedArtifactsLocatorTest {
 
@@ -30,20 +29,20 @@ public class PathBasedArtifactsLocatorTest {
     public void shouldUsePipelineCounterForArtifactDirectory() {
         PathBasedArtifactsLocator locator = new PathBasedArtifactsLocator(new File("root"));
         File directory = locator.directoryFor(new JobIdentifier("cruise", 1, "1.1", "dev", "2", "linux-firefox", null));
-        assertThat(directory, is(new File("root/pipelines/cruise/1/dev/2/linux-firefox")));
+        assertThat(directory).isEqualTo(new File("root/pipelines/cruise/1/dev/2/linux-firefox"));
     }
 
     @Test
-    public void shouldFindCachedArtifact() throws Exception {
+    public void shouldFindCachedArtifact() {
         PathBasedArtifactsLocator locator = new PathBasedArtifactsLocator(new File("root"));
         File directory = locator.findCachedArtifact(new StageIdentifier("P1", 1, "S1", "1"));
-        assertThat(directory, is(new File("root/cache/artifacts/pipelines/P1/1/S1/1")));
+        assertThat(directory).isEqualTo(new File("root/cache/artifacts/pipelines/P1/1/S1/1"));
     }
 
     @Test
     public void shouldUsePipelineLabelForArtifactDirectory() {
         PathBasedArtifactsLocator locator = new PathBasedArtifactsLocator(new File("root"));
         File directory = locator.directoryFor(new JobIdentifier("cruise", -2, "1.1", "dev", "2", "linux-firefox", null));
-        assertThat(directory, is(new File("root/pipelines/cruise/1.1/dev/2/linux-firefox")));
+        assertThat(directory).isEqualTo(new File("root/pipelines/cruise/1.1/dev/2/linux-firefox"));
     }
 }

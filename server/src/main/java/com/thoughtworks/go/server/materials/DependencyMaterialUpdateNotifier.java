@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class DependencyMaterialUpdateNotifier implements StageStatusListener, Co
         goConfigService.register(pipelineConfigChangedListener());
         materialUpdateService.registerMaterialUpdateCompleteListener(this);
 
-        updateMaterialsOnIntialization();
+        updateMaterialsOnInitialization();
     }
 
     @Override
@@ -146,7 +146,7 @@ public class DependencyMaterialUpdateNotifier implements StageStatusListener, Co
         }
     }
 
-    private void updateMaterialsOnIntialization() {
+    private void updateMaterialsOnInitialization() {
         for (Material material : this.dependencyMaterials.values()) {
             updateMaterial(material);
         }
@@ -159,15 +159,15 @@ public class DependencyMaterialUpdateNotifier implements StageStatusListener, Co
 
         Collection<Material> materialsAfterConfigChange = dependencyMaterials.values();
 
-        Collection newMaterials = CollectionUtils.subtract(materialsAfterConfigChange, materialsBeforeConfigChange);
+        Collection<Material> newMaterials = CollectionUtils.subtract(materialsAfterConfigChange, materialsBeforeConfigChange);
 
         for (Object material : newMaterials) {
             updateMaterial((Material) material);
         }
     }
 
-    private HashMap<String, Material> dependencyMaterials() {
-        HashMap<String, Material> map = new HashMap<>();
+    private Map<String, Material> dependencyMaterials() {
+        Map<String, Material> map = new HashMap<>();
         for (DependencyMaterialConfig materialConfig : goConfigService.getSchedulableDependencyMaterials()) {
             String stageIdentifier = stageIdentifier(materialConfig.getPipelineName().toString(), materialConfig.getStageName().toString());
             map.put(stageIdentifier, materialConfigConverter.toMaterial(materialConfig));

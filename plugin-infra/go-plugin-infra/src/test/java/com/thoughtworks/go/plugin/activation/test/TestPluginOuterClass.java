@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
-import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -33,7 +32,7 @@ public class TestPluginOuterClass implements GoPlugin {
     }
 
     @Override
-    public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+    public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
         throw new UnsupportedOperationException();
     }
 
@@ -50,7 +49,7 @@ public class TestPluginOuterClass implements GoPlugin {
         }
 
         @Override
-        public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+        public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
             throw new UnsupportedOperationException();
         }
 
@@ -68,7 +67,7 @@ public class TestPluginOuterClass implements GoPlugin {
         }
 
         @Override
-        public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+        public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
             throw new UnsupportedOperationException();
         }
 
@@ -87,7 +86,7 @@ public class TestPluginOuterClass implements GoPlugin {
                 }
 
                 @Override
-                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
                     throw new UnsupportedOperationException();
                 }
 
@@ -110,7 +109,7 @@ public class TestPluginOuterClass implements GoPlugin {
                 }
 
                 @Override
-                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
                     throw new UnsupportedOperationException();
                 }
 

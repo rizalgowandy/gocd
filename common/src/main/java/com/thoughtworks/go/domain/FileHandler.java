@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class FileHandler implements FetchHandler {
     }
 
     @Override
-    public String url(String remoteHost, String workingUrl) throws IOException {
+    public String url(String remoteHost, String workingUrl) {
         boolean fileExist = artifact.exists();
         LOG.debug("Requesting the file [{}], exist? [{}]", artifact.getAbsolutePath(), fileExist);
         if (fileExist && artifact.isFile()) {

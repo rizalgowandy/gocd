@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,19 +50,19 @@ public abstract class IdFileServiceTestBase {
     }
 
     @Test
-    public void shouldLoadDataFromFile() throws Exception {
+    public void shouldLoadDataFromFile() {
         assertThat(idFileService.load()).isEqualTo(DATA);
     }
 
     @Test
-    public void shouldStoreDataToFile() throws Exception {
+    public void shouldStoreDataToFile() {
         idFileService.store("some-id");
 
         assertThat(idFileService.load()).isEqualTo("some-id");
     }
 
     @Test
-    public void shouldCheckIfDataPresent() throws Exception {
+    public void shouldCheckIfDataPresent() {
         assertTrue(idFileService.dataPresent());
 
         idFileService.delete();
@@ -74,7 +74,7 @@ public abstract class IdFileServiceTestBase {
     }
 
     @Test
-    public void shouldDeleteFile() throws Exception {
+    public void shouldDeleteFile() {
         assertTrue(idFileService.file.exists());
 
         idFileService.delete();

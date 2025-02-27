@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,20 +34,19 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class CcTrayActivityListenerTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigService = mock(GoConfigService.class);
     }
 
     @Test
-    public void shouldRegisterSelfForConfigChangeHandlingOnInitialization() throws Exception {
+    public void shouldRegisterSelfForConfigChangeHandlingOnInitialization() {
         CcTrayActivityListener listener = new CcTrayActivityListener(goConfigService, null, null, null);
 
         listener.initialize();
@@ -56,7 +55,7 @@ public class CcTrayActivityListenerTest {
     }
 
     @Test
-    public void onIntializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesJobChangeHandler_WhenJobStatusChanges() throws Exception {
+    public void onInitializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesJobChangeHandler_WhenJobStatusChanges() throws Exception {
         JobInstance aJob = JobInstanceMother.cancelled("job1");
         CcTrayJobStatusChangeHandler handler = mock(CcTrayJobStatusChangeHandler.class);
         CcTrayActivityListener listener = new CcTrayActivityListener(goConfigService, handler, null, null);
@@ -70,7 +69,7 @@ public class CcTrayActivityListenerTest {
     }
 
     @Test
-    public void onIntializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesStageChangeHandler_WhenStageStatusChanges() throws Exception {
+    public void onInitializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesStageChangeHandler_WhenStageStatusChanges() throws Exception {
         Stage aStage = StageMother.custom("stage1");
         CcTrayStageStatusChangeHandler handler = mock(CcTrayStageStatusChangeHandler.class);
         CcTrayActivityListener listener = new CcTrayActivityListener(goConfigService, null, handler, null);
@@ -84,7 +83,7 @@ public class CcTrayActivityListenerTest {
     }
 
     @Test
-    public void onIntializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesConfigChangeHandler_WhenConfigChanges() throws Exception {
+    public void onInitializationAndStartOfDaemon_ShouldRegisterAListener_WhichInvokesConfigChangeHandler_WhenConfigChanges() throws Exception {
         CruiseConfig aConfig = GoConfigMother.defaultCruiseConfig();
         CcTrayConfigChangeHandler handler = mock(CcTrayConfigChangeHandler.class);
         CcTrayActivityListener listener = new CcTrayActivityListener(goConfigService, null, null, handler);
@@ -98,7 +97,7 @@ public class CcTrayActivityListenerTest {
     }
 
     @Test
-    public void postIntializationAndStartOfDaemon_WhenPipelineConfigChanges_ShouldInvokeConfigChangeHandler() throws InterruptedException {
+    public void postInitializationAndStartOfDaemon_WhenPipelineConfigChanges_ShouldInvokeConfigChangeHandler() throws InterruptedException {
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
         CaseInsensitiveString p1 = new CaseInsensitiveString("p1");
 
@@ -112,8 +111,8 @@ public class CcTrayActivityListenerTest {
         listener.startDaemon();
 
         List<ConfigChangedListener> listeners = captor.getAllValues();
-        assertThat(listeners.get(1) instanceof EntityConfigChangedListener, is(true));
-        EntityConfigChangedListener<PipelineConfig> pipelineConfigChangeListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
+        assertThat(listeners.get(1) instanceof EntityConfigChangedListener).isTrue();
+        @SuppressWarnings("unchecked") EntityConfigChangedListener<PipelineConfig> pipelineConfigChangeListener = (EntityConfigChangedListener<PipelineConfig>) listeners.get(1);
 
         pipelineConfigChangeListener.onEntityConfigChange(pipelineConfig);
         waitForProcessingToHappen();
@@ -136,7 +135,7 @@ public class CcTrayActivityListenerTest {
         listener.startDaemon();
 
         List<ConfigChangedListener> listeners = captor.getAllValues();
-        assertThat(listeners.get(2) instanceof SecurityConfigChangeListener, is(true));
+        assertThat(listeners.get(2) instanceof SecurityConfigChangeListener).isTrue();
         SecurityConfigChangeListener securityConfigChangeListener = (SecurityConfigChangeListener) listeners.get(2);
 
         securityConfigChangeListener.onEntityConfigChange(new PluginRoleConfig());

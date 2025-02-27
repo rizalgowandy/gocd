@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.thoughtworks.go.domain.JobResult.*;
 import static com.thoughtworks.go.domain.JobState.Building;
 import static com.thoughtworks.go.domain.JobState.Completed;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -90,10 +89,10 @@ public class ScheduleServiceTest {
         doNothing().when(spyedService).automaticallyTriggerRelevantStagesFollowingCompletionOf(spiedStage);
         Stage resultStage = spyedService.cancelAndTriggerRelevantStages(stageId, admin, result);
 
-        assertThat(resultStage, is(spiedStage));
-        assertThat(result.httpCode(), is(SC_OK));
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(result.message(), is("Stage cancelled successfully."));
+        assertThat(resultStage).isEqualTo(spiedStage);
+        assertThat(result.httpCode()).isEqualTo(SC_OK);
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(result.message()).isEqualTo("Stage cancelled successfully.");
 
         verify(securityService).hasOperatePermissionForStage(pipeline.getName(), spiedStage.getName(), admin.getUsername().toString());
         verify(stageService).cancelStage(spiedStage, admin.getUsername().toString());
@@ -109,12 +108,12 @@ public class ScheduleServiceTest {
         Username admin = new Username(new CaseInsensitiveString("admin"));
         when(stageService.stageById(stageId)).thenReturn(firstStage);
         Stage resultStage = service.cancelAndTriggerRelevantStages(stageId, admin, result);
-        assertThat(resultStage, is(firstStage));
-        assertThat(result.httpCode(), is(SC_OK));
-        assertThat(result.isSuccessful(), is(true));
-        assertThat(result.hasMessage(), is(true));
+        assertThat(resultStage).isEqualTo(firstStage);
+        assertThat(result.httpCode()).isEqualTo(SC_OK);
+        assertThat(result.isSuccessful()).isTrue();
+        assertThat(result.hasMessage()).isTrue();
         String respMsg = "Stage is not active. Cancellation Ignored.";
-        assertThat(result.message(), is(respMsg));
+        assertThat(result.message()).isEqualTo(respMsg);
         verify(stageService).stageById(stageId);
     }
 
@@ -133,9 +132,9 @@ public class ScheduleServiceTest {
 
         Stage resultStage = service.cancelAndTriggerRelevantStages(stageId, admin, result);
 
-        assertThat(resultStage, is(nullValue()));
-        assertThat(result.httpCode(), is(SC_FORBIDDEN));
-        assertThat(result.isSuccessful(), is(false));
+        assertThat(resultStage).isNull();
+        assertThat(result.httpCode()).isEqualTo(SC_FORBIDDEN);
+        assertThat(result.isSuccessful()).isFalse();
         verify(securityService).hasOperatePermissionForStage(pipeline.getName(), spiedStage.getName(), admin.getUsername().toString());
         verify(stageService, never()).cancelStage(spiedStage, admin.getUsername().toString());
         verify(spiedStage).isActive();
@@ -169,7 +168,7 @@ public class ScheduleServiceTest {
                     new ScheduleService.NewStageInstanceCreator(goConfigService), new ScheduleService.ExceptioningErrorHandler());
             fail("should have failed as stage could not be scheduled");
         } catch (CannotScheduleException e) {
-            assertThat(e.getMessage(), is("foo"));
+            assertThat(e.getMessage()).isEqualTo("foo");
         }
         verify(serverHealthService).update(ServerHealthState.failedToScheduleStage(HealthStateType.general(HealthStateScope.forStage("pipeline-quux", "stage-baz")),
                 "pipeline-quux", "stage-baz", "foo"));
@@ -197,7 +196,7 @@ public class ScheduleServiceTest {
         when(schedulingChecker.canAutoTriggerConsumer(pipelineConfig)).thenReturn(true);
         when(pipelineScheduleQueue.createPipeline(any(BuildCause.class), eq(pipelineConfig), any(SchedulingContext.class), eq("md5-test"), eq(timeProvider))).thenThrow(
                 new CannotScheduleException("foo", "stage-baz"));
-        final HashMap<CaseInsensitiveString, BuildCause> map = new HashMap<>();
+        final Map<CaseInsensitiveString, BuildCause> map = new HashMap<>();
         map.put(new CaseInsensitiveString("pipeline-quux"), BuildCause.createManualForced());
         when(pipelineScheduleQueue.toBeScheduled()).thenReturn(map);
 
@@ -218,7 +217,7 @@ public class ScheduleServiceTest {
         when(schedulingChecker.canAutoTriggerConsumer(pipelineConfig)).thenReturn(true);
         when(pipelineScheduleQueue.createPipeline(any(BuildCause.class), eq(pipelineConfig), any(SchedulingContext.class), eq("md5-test"), eq(timeProvider))).thenReturn(PipelineMother.schedule(pipelineConfig,
                 BuildCause.createManualForced(new MaterialRevisions(new MaterialRevision(new MaterialConfigConverter().toMaterial(materialConfig), ModificationsMother.aCheckIn("123", "foo.c"))), new Username(new CaseInsensitiveString("loser")))));
-        final HashMap<CaseInsensitiveString, BuildCause> map = new HashMap<>();
+        final Map<CaseInsensitiveString, BuildCause> map = new HashMap<>();
         map.put(new CaseInsensitiveString("pipeline-quux"), BuildCause.createManualForced());
         when(pipelineScheduleQueue.toBeScheduled()).thenReturn(map);
 
@@ -234,7 +233,7 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    public void shouldUnlockPipelineBasedOnLockSetting() throws Exception {
+    public void shouldUnlockPipelineBasedOnLockSetting() {
         assertUnlockPipeline("unlock when next stage is manual, this stage is passed and pipeline is unlockable", Completed, Passed, false, true, true, true);
         assertUnlockPipeline("don't unlock when next stage manual, this stage is passed and pipeline is not unlockable", Completed, Passed, false, true, false, false);
         assertUnlockPipeline("unlock when next stage is manual, this stage is failed and pipeline is unlockable", Completed, Failed, false, true, true, true);

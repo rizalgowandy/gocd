@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,45 +25,43 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SecurityAuthConfigDeleteCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldDeleteAProfile() throws Exception {
+    public void shouldDeleteAProfile() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("foo", "ldap");
         cruiseConfig.server().security().securityAuthConfigs().add(authConfig);
 
         SecurityAuthConfigDeleteCommand command = new SecurityAuthConfigDeleteCommand(null, authConfig, null, null, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.server().security().securityAuthConfigs(), is(empty()));
+        assertThat(cruiseConfig.server().security().securityAuthConfigs()).isEmpty();
     }
 
     @Test
-    public void shouldRaiseExceptionInCaseProfileDoesNotExist() throws Exception {
+    public void shouldRaiseExceptionInCaseProfileDoesNotExist() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("foo", "ldap");
 
-        assertThat(cruiseConfig.server().security().securityAuthConfigs(), is(empty()));
+        assertThat(cruiseConfig.server().security().securityAuthConfigs()).isEmpty();
         SecurityAuthConfigDeleteCommand command = new SecurityAuthConfigDeleteCommand(null, authConfig, null, null, new HttpLocalizedOperationResult());
 
         assertThatThrownBy(() -> command.update(cruiseConfig)).isInstanceOf(RecordNotFoundException.class);
 
-        assertThat(cruiseConfig.server().security().securityAuthConfigs(), is(empty()));
+        assertThat(cruiseConfig.server().security().securityAuthConfigs()).isEmpty();
     }
 
     @Test
-    public void shouldNotValidateIfProfileIsInUseByRole() throws Exception {
+    public void shouldNotValidateIfProfileIsInUseByRole() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("foo", "ldap");
         cruiseConfig.server().security().addRole(new PluginRoleConfig("blackbird", "foo"));
 
@@ -74,10 +72,10 @@ public class SecurityAuthConfigDeleteCommandTest {
     }
 
     @Test
-    public void shouldValidateIfProfileIsNotInUseByPipeline() throws Exception {
+    public void shouldValidateIfProfileIsNotInUseByPipeline() {
         SecurityAuthConfig authConfig = new SecurityAuthConfig("foo", "ldap");
 
-        assertThat(cruiseConfig.server().security().securityAuthConfigs(), is(empty()));
+        assertThat(cruiseConfig.server().security().securityAuthConfigs()).isEmpty();
         SecurityAuthConfigDeleteCommand command = new SecurityAuthConfigDeleteCommand(null, authConfig, null, null, new HttpLocalizedOperationResult());
         assertTrue(command.isValid(cruiseConfig));
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,7 +218,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
         return new TypeAdapter<R>() {
             @Override
-            public R read(JsonReader in) throws IOException {
+            public R read(JsonReader in) {
                 JsonElement jsonElement = Streams.parse(in);
                 JsonElement labelJsonElement;
                 if (maintainType) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  */
 package com.thoughtworks.go.remote.work;
 
-import java.io.IOException;
-
 public class SlowResource implements ConsoleAppender {
     public int invokedCount = 0;
 
     @Override
-    public void append(String content) throws IOException {
+    public void append(String content) {
         try {
             Thread.sleep(1000);
             invokedCount += 1;

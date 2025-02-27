@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class AbstractMaterialConfigTest {
     }
 
     @Test
-    void shouldNotUseNameFieldButInsteadUseTheNameMethodToCheckIfTheMaterialNameIsUsedInThePipelineLabel() throws Exception {
+    void shouldNotUseNameFieldButInsteadUseTheNameMethodToCheckIfTheMaterialNameIsUsedInThePipelineLabel() {
         PipelineConfig pipelineConfig = mock(PipelineConfig.class);
         when(pipelineConfig.getLabelTemplate()).thenReturn("${COUNT}-${hg}-${dep}-${pkg}-${scm}");
         MaterialConfig hg = mock(HgMaterialConfig.class);
@@ -161,11 +161,6 @@ class AbstractMaterialConfigTest {
         }
 
         @Override
-        protected void appendAttributes(Map<String, Object> parameters) {
-            parameters.put("baz", quux);
-        }
-
-        @Override
         public String getFolder() {
             throw new UnsupportedOperationException();
         }
@@ -183,12 +178,12 @@ class AbstractMaterialConfigTest {
         @Override
         public void setConfigAttributes(Object attributes) {
             super.setConfigAttributes(attributes);
-            Map map = (Map) attributes;
+            @SuppressWarnings("unchecked") Map<String, String> map = (Map<String, String>) attributes;
             if (map.containsKey("bar")) {
-                bar = (String) map.get("bar");
+                bar = map.get("bar");
             }
             if (map.containsKey("quux")) {
-                quux = (String) map.get("quux");
+                quux = map.get("quux");
             }
         }
 

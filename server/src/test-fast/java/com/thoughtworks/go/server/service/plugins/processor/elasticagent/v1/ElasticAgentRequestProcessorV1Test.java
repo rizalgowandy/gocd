@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import java.util.List;
 
 import static com.thoughtworks.go.server.service.plugins.processor.elasticagent.v1.ElasticAgentProcessorRequestsV1.*;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +49,7 @@ public class ElasticAgentRequestProcessorV1Test {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         when(pluginDescriptor.id()).thenReturn("cd.go.example.plugin");
 
@@ -57,7 +57,7 @@ public class ElasticAgentRequestProcessorV1Test {
     }
 
     @Test
-    public void shouldProcessListAgentRequest() throws Exception {
+    public void shouldProcessListAgentRequest() {
         LinkedMultiValueMap<String, ElasticAgentMetadata> allAgents = new LinkedMultiValueMap<>();
         ElasticAgentMetadata agent = new ElasticAgentMetadata("foo", "bar", "cd.go.example.plugin", AgentRuntimeStatus.Building, AgentConfigStatus.Disabled);
         allAgents.put("cd.go.example.plugin", List.of(agent));

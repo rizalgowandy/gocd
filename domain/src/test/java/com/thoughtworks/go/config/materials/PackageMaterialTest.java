@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ class PackageMaterialTest {
         Date date = new Date(1367472329111L);
         material.emailContent(content, new Modification(null, null, null, date, "rev123"));
 
-        assertThat(content.toString()).isEqualTo(String.format("Package : repo-name_package-name\nrevision: rev123, completed on %s", date.toString()));
+        assertThat(content.toString()).isEqualTo(String.format("Package : repo-name_package-name\nrevision: rev123, completed on %s", date));
     }
 
     @Test
@@ -241,7 +241,7 @@ class PackageMaterialTest {
         PackageRepository repository = PackageRepositoryMother.create("repo-id", "tw-dev", "pluginid", "version", new Configuration(ConfigurationPropertyMother.create("k1", false, "v1")));
         material.setPackageDefinition(PackageDefinitionMother.create("p-id", "go-agent", new Configuration(ConfigurationPropertyMother.create("k2", false, "v2")), repository));
         material.setName(new CaseInsensitiveString("tw-dev:go-agent"));
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("MY_NEW_KEY", "my_value");
         Modification modification = new Modification("loser", "comment", "email", new Date(), "revision-123", JsonHelper.toJsonString(map));
         Modifications modifications = new Modifications(modification);
@@ -263,7 +263,7 @@ class PackageMaterialTest {
         material.setPackageDefinition(PackageDefinitionMother.create("p-id", "go-agent", new Configuration(ConfigurationPropertyMother.create("k2", true, "!secure_value:with_special_chars"),
                 ConfigurationPropertyMother.create("k3", true, "secure_value_with_regular_chars")), repository));
         material.setName(new CaseInsensitiveString("tw-dev:go-agent"));
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("ADDITIONAL_DATA_ONE", "foobar:!secure_value:with_special_chars");
         map.put("ADDITIONAL_DATA_URL_ENCODED", "something:%21secure_value%3Awith_special_chars");
         map.put("ADDITIONAL_DATA_TWO", "foobar:secure_value_with_regular_chars");
@@ -370,7 +370,7 @@ class PackageMaterialTest {
     }
 
     @Test
-    void shouldReturnSomethingMoreSaneForToString() throws Exception {
+    void shouldReturnSomethingMoreSaneForToString() {
         PackageMaterial material = MaterialsMother.packageMaterial();
 
         RepositoryMetadataStore.getInstance().addMetadataFor(material.getPluginId(), new PackageConfigurations());
@@ -396,7 +396,7 @@ class PackageMaterialTest {
     }
 
     @Test
-    void shouldTakeValueOfIsAutoUpdateFromPackageDefinition() throws Exception {
+    void shouldTakeValueOfIsAutoUpdateFromPackageDefinition() {
         PackageMaterial material = MaterialsMother.packageMaterial();
 
         material.getPackageDefinition().setAutoUpdate(true);
@@ -413,10 +413,10 @@ class PackageMaterialTest {
 
         assertThat(attributes.get("type")).isEqualTo("package");
         assertThat(attributes.get("plugin-id")).isEqualTo("pluginid");
-        Map<String, Object> repositoryConfiguration = (Map<String, Object>) attributes.get("repository-configuration");
+        @SuppressWarnings("unchecked") Map<String, Object> repositoryConfiguration = (Map<String, Object>) attributes.get("repository-configuration");
         assertThat(repositoryConfiguration.get("k1")).isEqualTo("repo-v1");
         assertThat(repositoryConfiguration.get("k2")).isEqualTo("repo-v2");
-        Map<String, Object> packageConfiguration = (Map<String, Object>) attributes.get("package-configuration");
+        @SuppressWarnings("unchecked") Map<String, Object> packageConfiguration = (Map<String, Object>) attributes.get("package-configuration");
         assertThat(packageConfiguration.get("k3")).isEqualTo("package-v1");
         assertThat(packageConfiguration.get("k4")).isEqualTo("package-v2");
     }
@@ -428,10 +428,10 @@ class PackageMaterialTest {
 
         assertThat(attributes.get("type")).isEqualTo("package");
         assertThat(attributes.get("plugin-id")).isEqualTo("pluginid");
-        Map<String, Object> repositoryConfiguration = (Map<String, Object>) attributes.get("repository-configuration");
+        @SuppressWarnings("unchecked") Map<String, Object> repositoryConfiguration = (Map<String, Object>) attributes.get("repository-configuration");
         assertThat(repositoryConfiguration.get("k1")).isEqualTo("repo-v1");
         assertThat(repositoryConfiguration.get("k2")).isNull();
-        Map<String, Object> packageConfiguration = (Map<String, Object>) attributes.get("package-configuration");
+        @SuppressWarnings("unchecked") Map<String, Object> packageConfiguration = (Map<String, Object>) attributes.get("package-configuration");
         assertThat(packageConfiguration.get("k3")).isEqualTo("package-v1");
         assertThat(packageConfiguration.get("k4")).isNull();
     }
@@ -445,7 +445,7 @@ class PackageMaterialTest {
     }
 
     @Test
-    void shouldReturnFalseForPackageMaterial_supportsDestinationFolder() throws Exception {
+    void shouldReturnFalseForPackageMaterial_supportsDestinationFolder() {
         PackageMaterial material = new PackageMaterial();
         assertThat(material.supportsDestinationFolder()).isFalse();
     }

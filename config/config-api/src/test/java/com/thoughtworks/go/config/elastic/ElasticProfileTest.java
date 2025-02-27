@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -51,7 +49,7 @@ public class ElasticProfileTest {
     private BasicCruiseConfig config;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         pluginId = "cd.go.elastic-agent.docker-swarm";
         clusterProfileId = "prod-cluster";
         config = new BasicCruiseConfig();
@@ -60,49 +58,49 @@ public class ElasticProfileTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         store.clear();
     }
 
     @Test
-    public void shouldNotAllowNullId() throws Exception {
+    public void shouldNotAllowNullId() {
         ElasticProfile profile = new ElasticProfile();
 
         profile.validate(validationContext);
-        assertThat(profile.errors().on(ElasticProfile.ID), is("Elastic agent profile cannot have a blank id."));
+        assertThat(profile.errors().on(ElasticProfile.ID)).isEqualTo("Elastic agent profile cannot have a blank id.");
     }
 
     @Test
-    public void shouldVerifyExistenceOfReferencedClusterProfile() throws Exception {
+    public void shouldVerifyExistenceOfReferencedClusterProfile() {
         ElasticProfile profile = new ElasticProfile("foo", "non-existing-cluster");
 
         profile.validate(validationContext);
-        assertThat(profile.errors().on(ElasticProfile.CLUSTER_PROFILE_ID), is("No Cluster Profile exists with the specified cluster_profile_id 'non-existing-cluster'."));
+        assertThat(profile.errors().on(ElasticProfile.CLUSTER_PROFILE_ID)).isEqualTo("No Cluster Profile exists with the specified cluster_profile_id 'non-existing-cluster'.");
     }
 
     @Test
-    public void shouldValidateElasticPluginIdPattern() throws Exception {
+    public void shouldValidateElasticPluginIdPattern() {
         ElasticProfile profile = new ElasticProfile("!123", "prod-cluster");
         profile.validate(null);
-        assertThat(profile.errors().size(), is(1));
-        assertThat(profile.errors().on(ElasticProfile.ID), is("Invalid id '!123'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters."));
+        assertThat(profile.errors().size()).isEqualTo(1);
+        assertThat(profile.errors().on(ElasticProfile.ID)).isEqualTo("Invalid id '!123'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.");
     }
 
     @Test
-    public void shouldValidateConfigPropertyNameUniqueness() throws Exception {
+    public void shouldValidateConfigPropertyNameUniqueness() {
         ConfigurationProperty prop1 = ConfigurationPropertyMother.create("USERNAME");
         ConfigurationProperty prop2 = ConfigurationPropertyMother.create("USERNAME");
         ElasticProfile profile = new ElasticProfile("docker.unit-test", "prod-cluster", prop1, prop2);
 
         profile.validate(validationContext);
 
-        assertThat(profile.errors().size(), is(0));
+        assertThat(profile.errors().size()).isEqualTo(0);
 
-        assertThat(prop1.errors().size(), is(1));
-        assertThat(prop2.errors().size(), is(1));
+        assertThat(prop1.errors().size()).isEqualTo(1);
+        assertThat(prop2.errors().size()).isEqualTo(1);
 
-        assertThat(prop1.errors().on(ConfigurationProperty.CONFIGURATION_KEY), is("Duplicate key 'USERNAME' found for Elastic agent profile 'docker.unit-test'"));
-        assertThat(prop2.errors().on(ConfigurationProperty.CONFIGURATION_KEY), is("Duplicate key 'USERNAME' found for Elastic agent profile 'docker.unit-test'"));
+        assertThat(prop1.errors().on(ConfigurationProperty.CONFIGURATION_KEY)).isEqualTo("Duplicate key 'USERNAME' found for Elastic agent profile 'docker.unit-test'");
+        assertThat(prop2.errors().on(ConfigurationProperty.CONFIGURATION_KEY)).isEqualTo("Duplicate key 'USERNAME' found for Elastic agent profile 'docker.unit-test'");
     }
 
     @Test
@@ -112,42 +110,42 @@ public class ElasticProfileTest {
         config.getElasticConfig().setClusterProfiles(new ClusterProfiles(new ClusterProfile("prod-cluster", "cd.go.elastic-agent.docker")));
         profile.validate(new ConfigSaveValidationContext(config));
 
-        assertThat(profile.errors().size(), is(0));
+        assertThat(profile.errors().size()).isEqualTo(0);
     }
 
     @Test
-    public void addConfigurations_shouldAddConfigurationsWithValue() throws Exception {
+    public void addConfigurations_shouldAddConfigurationsWithValue() {
         ConfigurationProperty property = new ConfigurationProperty(new ConfigurationKey("username"), new ConfigurationValue("some_name"));
 
         ElasticProfile profile = new ElasticProfile("id", "prod-cluster");
         profile.addConfigurations(List.of(property));
 
-        assertThat(profile.size(), is(1));
-        assertThat(profile, contains(new ConfigurationProperty(new ConfigurationKey("username"), new ConfigurationValue("some_name"))));
+        assertThat(profile.size()).isEqualTo(1);
+        assertThat(profile).contains(new ConfigurationProperty(new ConfigurationKey("username"), new ConfigurationValue("some_name")));
     }
 
     @Test
-    public void addConfigurations_shouldAddConfigurationsWithEncryptedValue() throws Exception {
+    public void addConfigurations_shouldAddConfigurationsWithEncryptedValue() {
         ConfigurationProperty property = new ConfigurationProperty(new ConfigurationKey("username"), new EncryptedConfigurationValue("some_name"));
 
         ElasticProfile profile = new ElasticProfile("id", "prod-cluster");
         profile.addConfigurations(List.of(property));
 
-        assertThat(profile.size(), is(1));
-        assertThat(profile, contains(new ConfigurationProperty(new ConfigurationKey("username"), new EncryptedConfigurationValue("some_name"))));
+        assertThat(profile.size()).isEqualTo(1);
+        assertThat(profile).contains(new ConfigurationProperty(new ConfigurationKey("username"), new EncryptedConfigurationValue("some_name")));
     }
 
     @Test
-    public void addConfiguration_shouldIgnoreEncryptionInAbsenceOfCorrespondingConfigurationInStore() throws Exception {
+    public void addConfiguration_shouldIgnoreEncryptionInAbsenceOfCorrespondingConfigurationInStore() {
         ElasticAgentPluginInfo pluginInfo = new ElasticAgentPluginInfo(pluginDescriptor("plugin_id"), new PluggableInstanceSettings(new ArrayList<>()), null, null, null, null);
 
         store.setPluginInfo(pluginInfo);
         ElasticProfile profile = new ElasticProfile("id", "prod-cluster");
         profile.addConfigurations(List.of(new ConfigurationProperty(new ConfigurationKey("password"), new ConfigurationValue("pass"))));
 
-        assertThat(profile.size(), is(1));
+        assertThat(profile.size()).isEqualTo(1);
         assertFalse(profile.first().isSecure());
-        assertThat(profile, contains(new ConfigurationProperty(new ConfigurationKey("password"), new ConfigurationValue("pass"))));
+        assertThat(profile).contains(new ConfigurationProperty(new ConfigurationKey("password"), new ConfigurationValue("pass")));
     }
 
     @Test
@@ -160,7 +158,7 @@ public class ElasticProfileTest {
 
         profile.encryptSecureProperties(config);
 
-        assertThat(profile.size(), is(1));
+        assertThat(profile.size()).isEqualTo(1);
         assertTrue(profile.first().isSecure());
     }
 
@@ -170,7 +168,7 @@ public class ElasticProfileTest {
 
 //        profile.encryptSecureConfigurations();
 
-        assertThat(profile.size(), is(1));
+        assertThat(profile.size()).isEqualTo(1);
         assertFalse(profile.first().isSecure());
     }
 

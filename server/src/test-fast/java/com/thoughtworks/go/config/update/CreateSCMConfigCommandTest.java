@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -53,19 +52,19 @@ public class CreateSCMConfigCommandTest {
 
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = new GoConfigMother().defaultCruiseConfig();
         scm = new SCM("id", new PluginConfiguration("non-existent-plugin-id", "1"), new Configuration(new ConfigurationProperty(new ConfigurationKey("key"),new ConfigurationValue("value"))));
     }
 
     @Test
-    public void shouldAddANewScmToTheGivenConfig() throws Exception{
+    public void shouldAddANewScmToTheGivenConfig() {
         CreateSCMConfigCommand command = new CreateSCMConfigCommand(scm, pluggableScmService, result, currentUser, goConfigService);
 
-        assertThat(cruiseConfig.getSCMs().contains(scm), is(false));
+        assertThat(cruiseConfig.getSCMs().contains(scm)).isFalse();
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.getSCMs().contains(scm), is(true));
+        assertThat(cruiseConfig.getSCMs().contains(scm)).isTrue();
     }
 
     @Test
@@ -75,7 +74,7 @@ public class CreateSCMConfigCommandTest {
 
         CreateSCMConfigCommand command = new CreateSCMConfigCommand(scm, pluggableScmService, result, currentUser, goConfigService);
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
     }
 
     @Test
@@ -85,7 +84,7 @@ public class CreateSCMConfigCommandTest {
 
         CreateSCMConfigCommand command = new CreateSCMConfigCommand(scm, pluggableScmService, result, currentUser, goConfigService);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -95,7 +94,7 @@ public class CreateSCMConfigCommandTest {
 
         CreateSCMConfigCommand command = new CreateSCMConfigCommand(scm, pluggableScmService, result, currentUser, goConfigService);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import com.thoughtworks.go.server.messaging.StartServerBackupMessage;
 import com.thoughtworks.go.server.persistence.ServerBackupRepository;
 import com.thoughtworks.go.service.ConfigRepository;
 import com.thoughtworks.go.util.SystemEnvironment;
-import com.thoughtworks.go.util.ThrowingFn;
 import com.thoughtworks.go.util.TimeProvider;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -43,8 +42,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.thoughtworks.go.server.service.BackupService.ABORTED_BACKUPS_MESSAGE;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,9 +73,9 @@ public class BackupServiceTest {
     private ArtifactsDirHolder artifactsDirHolder;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         lenient().when(systemEnvironment.getConfigDir()).thenReturn(configDir.getAbsolutePath());
-        lenient().when(configRepo.doLocked(any(ThrowingFn.class))).thenCallRealMethod();
+        lenient().when(configRepo.doLocked(any())).thenCallRealMethod();
     }
 
     @Test
@@ -87,7 +85,7 @@ public class BackupServiceTest {
         when(artifactsDirHolder.getBackupsDir()).thenReturn(new File(location));
 
         BackupService backupService = new BackupService(artifactsDirHolder, mock(GoConfigService.class), null, null, systemEnvironment, configRepo, databaseStrategy, null);
-        assertThat(backupService.backupLocation(), is(new File(location).getAbsolutePath()));
+        assertThat(backupService.backupLocation()).isEqualTo(new File(location).getAbsolutePath());
     }
 
     @Test
@@ -98,7 +96,7 @@ public class BackupServiceTest {
         BackupService backupService = new BackupService(null, mock(GoConfigService.class), null, repo, systemEnvironment, configRepo, databaseStrategy, null);
 
         Optional<Date> date = backupService.lastBackupTime();
-        assertThat(date.get(), is(serverBackupTime));
+        assertThat(date.get()).isEqualTo(serverBackupTime);
     }
 
     @Test
@@ -107,7 +105,7 @@ public class BackupServiceTest {
         when(repo.lastSuccessfulBackup()).thenReturn(Optional.empty());
         BackupService backupService = new BackupService(null, mock(GoConfigService.class), null, repo, systemEnvironment, configRepo, databaseStrategy, null);
 
-        assertThat(backupService.lastBackupTime().isPresent(), is(false));
+        assertThat(backupService.lastBackupTime().isPresent()).isFalse();
     }
     @Test
     public void shouldReturnTheUserThatTriggeredTheLastBackup() {
@@ -116,7 +114,7 @@ public class BackupServiceTest {
         BackupService backupService = new BackupService(null, mock(GoConfigService.class), null, repo, systemEnvironment, configRepo, databaseStrategy, null);
 
         Optional<String> username = backupService.lastBackupUser();
-        assertThat(username.get(), is("loser"));
+        assertThat(username.get()).isEqualTo("loser");
     }
 
     @Test
@@ -125,7 +123,7 @@ public class BackupServiceTest {
         when(repo.lastSuccessfulBackup()).thenReturn(Optional.empty());
         BackupService backupService = new BackupService(null, mock(GoConfigService.class), null, repo, systemEnvironment, configRepo, databaseStrategy, null);
 
-        assertThat(backupService.lastBackupUser().isPresent(), is(false));
+        assertThat(backupService.lastBackupUser().isPresent()).isFalse();
     }
 
     @Test
@@ -136,7 +134,7 @@ public class BackupServiceTest {
         when(artifactDirectory.getUsableSpace()).thenReturn(42424242L);
         BackupService backupService = new BackupService(artifactsDirHolder, mock(GoConfigService.class), null, null, systemEnvironment, configRepo, databaseStrategy, null);
 
-        assertThat(backupService.availableDiskSpace(), is("40 MB"));
+        assertThat(backupService.availableDiskSpace()).isEqualTo("40 MB");
 
     }
 
@@ -162,7 +160,7 @@ public class BackupServiceTest {
         verify(backupQueue).post(captor.capture());
 
         StartServerBackupMessage serverBackupMessage = captor.getValue();
-        assertThat(serverBackupMessage.getId(), is(99L));
+        assertThat(serverBackupMessage.getId()).isEqualTo(99L);
     }
 
     @Test

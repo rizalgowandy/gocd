@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.thoughtworks.go.config.update;
 
 import com.thoughtworks.go.config.BasicCruiseConfig;
 import com.thoughtworks.go.config.SecretConfig;
+import com.thoughtworks.go.config.SecretConfigs;
 import com.thoughtworks.go.config.exceptions.EntityType;
 import com.thoughtworks.go.config.exceptions.RecordNotFoundException;
 import com.thoughtworks.go.domain.config.ConfigurationKey;
@@ -31,9 +32,8 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -44,28 +44,28 @@ public class SecretConfigCreateCommandTest {
     private SecretsExtension extension;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         extension = mock(SecretsExtension.class);
     }
 
     @Test
-    public void shouldAddSecretConfig() throws Exception {
+    public void shouldAddSecretConfig() {
         BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
         SecretConfig secretConfig = new SecretConfig("CreateTest", "File");
         SecretConfigCreateCommand command = new SecretConfigCreateCommand(null, secretConfig, extension, null, null);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.getSecretConfigs().find("CreateTest"), equalTo(secretConfig));
+        assertThat(cruiseConfig.getSecretConfigs().find("CreateTest")).isEqualTo(secretConfig);
     }
 
     @Test
-    public void shouldInvokePluginValidations() throws Exception {
+    public void shouldInvokePluginValidations() {
         ValidationResult validationResult = new ValidationResult();
         validationResult.addError(new ValidationError("key", "error"));
 
         SecretConfig newSecretConfig = new SecretConfig("foo", "file", new ConfigurationProperty(new ConfigurationKey("key"), new ConfigurationValue("val")));
 
-        RuleAwarePluginProfileCommand command = new SecretConfigCreateCommand(mock(GoConfigService.class), newSecretConfig, extension, null, new HttpLocalizedOperationResult());
+        RuleAwarePluginProfileCommand<SecretConfig, SecretConfigs> command = new SecretConfigCreateCommand(mock(GoConfigService.class), newSecretConfig, extension, null, new HttpLocalizedOperationResult());
 
         when(extension.validateSecretsConfig(eq("file"), anyMap())).thenReturn(validationResult);
 

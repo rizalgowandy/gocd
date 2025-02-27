@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AgentRuntimeStatusTest {
 
     @Test
-    public void shouldConvertToBuildState() throws Exception {
+    public void shouldConvertToBuildState() {
         List<AgentRuntimeStatus> agentRuntimeStatuses = List.of(AgentRuntimeStatus.Idle, AgentRuntimeStatus.Building, AgentRuntimeStatus.Cancelled);
 
         for (AgentRuntimeStatus status : AgentRuntimeStatus.values()) {
@@ -37,7 +37,7 @@ public class AgentRuntimeStatusTest {
     }
 
     @Test
-    public void shouldConvertToAgentState() throws Exception {
+    public void shouldConvertToAgentState() {
         List<AgentRuntimeStatus> agentRuntimeStatuses = List.of(AgentRuntimeStatus.Idle, AgentRuntimeStatus.Building, AgentRuntimeStatus.LostContact, AgentRuntimeStatus.Missing);
 
         for (AgentRuntimeStatus status : AgentRuntimeStatus.values()) {

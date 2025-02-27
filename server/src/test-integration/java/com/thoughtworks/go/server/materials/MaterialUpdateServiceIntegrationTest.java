@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ import com.thoughtworks.go.server.perf.MDUPerformanceLogger;
 import com.thoughtworks.go.server.service.GoConfigService;
 import com.thoughtworks.go.server.service.MaintenanceModeService;
 import com.thoughtworks.go.server.service.MaterialConfigConverter;
-import com.thoughtworks.go.serverhealth.*;
+import com.thoughtworks.go.serverhealth.HealthStateScope;
+import com.thoughtworks.go.serverhealth.HealthStateType;
+import com.thoughtworks.go.serverhealth.ServerHealthService;
+import com.thoughtworks.go.serverhealth.ServerHealthState;
 import com.thoughtworks.go.util.SystemEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +38,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.svn;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.thoughtworks.go.serverhealth.ServerHealthMatcher.containsState;
+import static com.thoughtworks.go.serverhealth.ServerHealthMatcher.doesNotContainState;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
@@ -52,7 +57,7 @@ public class MaterialUpdateServiceIntegrationTest {
     @Autowired private MaintenanceModeService maintenanceModeService;
 
     @Test
-    public void shouldClearServerHealthLogsForMaterialThatNoLongerExistsInCruiseConfig() throws Exception {
+    public void shouldClearServerHealthLogsForMaterialThatNoLongerExistsInCruiseConfig() {
         HealthStateScope badScope = HealthStateScope.forMaterial(new SvnMaterial("non-existent-url!", "user", "pwd", false));
         serverHealthService.update(ServerHealthState.error("where's the material!", "fubar", HealthStateType.general(badScope)));
 
@@ -66,11 +71,11 @@ public class MaterialUpdateServiceIntegrationTest {
 
         materialUpdateService.onConfigChange(configWithMaterial(goodMaterial));
 
-        assertThat(serverHealthService, ServerHealthMatcher.containsState(HealthStateType.general(goodScope)));
+        assertThat(serverHealthService).satisfies(containsState(HealthStateType.general(goodScope)));
     }
 
     @Test
-    public void shouldClearServerHealthLogsForMaterialWhereAutoUpdateChanged() throws Exception {
+    public void shouldClearServerHealthLogsForMaterialWhereAutoUpdateChanged() {
         SvnMaterialConfig material = svn("non-existent-url!", "user", "pwd2", false);
         HealthStateScope scope = HealthStateScope.forMaterialConfig(material);
         serverHealthService.update(ServerHealthState.error("where's the material!", "fubar", HealthStateType.general(scope)));
@@ -83,7 +88,7 @@ public class MaterialUpdateServiceIntegrationTest {
 
         materialUpdateService.onConfigChange(configWithMaterial(material));
 
-        assertThat(serverHealthService, ServerHealthMatcher.doesNotContainState(HealthStateType.general(scope)));
+        assertThat(serverHealthService).satisfies(doesNotContainState(HealthStateType.general(scope)));
     }
 
     private CruiseConfig configWithMaterial(SvnMaterialConfig goodMaterial) {

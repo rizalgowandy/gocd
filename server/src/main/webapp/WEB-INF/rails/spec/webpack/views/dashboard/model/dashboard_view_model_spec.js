@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -201,7 +201,7 @@ describe("Dashboard View Model", () => {
                 "href": "http://localhost:8153/go/api/config/pipeline_groups/first"
               },
               "doc":  {
-                "href": "https://api.go.cd/current/#pipeline-groups"
+                "href": "https://api.gocd.org/current/#pipeline-groups"
               }
             },
             "name":           "first",
@@ -224,7 +224,7 @@ describe("Dashboard View Model", () => {
           "href": "http://localhost:8153/go/api/pipelines/up42/instance/1"
         },
         "doc":             {
-          "href": "https://api.go.cd/current/#get-pipeline-instance"
+          "href": "https://api.gocd.org/current/#get-pipeline-instance"
         }
       },
       "label":        counter,
@@ -239,7 +239,7 @@ describe("Dashboard View Model", () => {
                 "href": "http://localhost:8153/go/api/stages/up42/1/up42_stage/1"
               },
               "doc":  {
-                "href": "https://api.go.cd/current/#get-stage-instance"
+                "href": "https://api.gocd.org/current/#get-stage-instance"
               }
             },
             "name":         "up42_stage",
@@ -263,7 +263,7 @@ describe("Dashboard View Model", () => {
             "href": "http://localhost:8153/go/api/pipelines/up42/history"
           },
           "doc":                  {
-            "href": "https://api.go.cd/current/#pipelines"
+            "href": "https://api.gocd.org/current/#pipelines"
           }
         },
         "name":                   pipelineName,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.thoughtworks.go.util.command.UrlArgument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TfsCommandFactoryTest {
@@ -44,14 +43,14 @@ public class TfsCommandFactoryTest {
     }
 
     @Test
-    public void shouldReturnSdkCommand() throws Exception {
+    public void shouldReturnSdkCommand() {
         TfsCommand expectedTfsCommand = mock(TfsCommand.class);
         TfsCommandFactory spyCommandFactory = spy(tfsCommandFactory);
         TfsSDKCommandBuilder commandBuilder = mock(TfsSDKCommandBuilder.class);
         doReturn(commandBuilder).when(spyCommandFactory).getSDKBuilder();
         when(commandBuilder.buildTFSSDKCommand("fingerprint", URL, DOMAIN, USERNAME, PASSWORD, computedWorkspaceName, PROJECT_PATH)).thenReturn(expectedTfsCommand);
         TfsCommand actualTfsCommand = spyCommandFactory.create(executionContext, URL, DOMAIN, USERNAME, PASSWORD, "fingerprint", PROJECT_PATH);
-        assertThat(actualTfsCommand, is(expectedTfsCommand));
+        assertThat(actualTfsCommand).isEqualTo(expectedTfsCommand);
         verify(commandBuilder).buildTFSSDKCommand("fingerprint", URL, DOMAIN, USERNAME, PASSWORD, computedWorkspaceName, PROJECT_PATH);
     }
 
@@ -59,7 +58,7 @@ public class TfsCommandFactoryTest {
     public void shouldReturnExecutionContextsProcessNamespace() {
         String fingerprint = "material-fingerprint";
         when(executionContext.getProcessNamespace(fingerprint)).thenReturn("workspace-name");
-        assertThat(executionContext.getProcessNamespace(fingerprint), is("workspace-name"));
+        assertThat(executionContext.getProcessNamespace(fingerprint)).isEqualTo("workspace-name");
         verify(executionContext, times(1)).getProcessNamespace(fingerprint);
     }
 

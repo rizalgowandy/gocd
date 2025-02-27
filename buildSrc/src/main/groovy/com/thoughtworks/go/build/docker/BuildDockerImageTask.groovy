@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,14 @@ import freemarker.template.Configuration
 import freemarker.template.Template
 import freemarker.template.TemplateExceptionHandler
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 enum ImageType {
   server,
@@ -42,10 +46,14 @@ class BuildDockerImageTask extends DefaultTask {
   // Not really a classic output dir from Gradle perspective, as multiple tasks share dir from parent with unique tarballs per distribution.
   // We use a string for Gradle 7 compatibility, and because we don't want Gradle to consider the actual contents.
   @Input String outputDir
+  
   @Internal Closure templateHelper
   @Internal Closure verifyHelper
+  @Internal ExecOperations execOperations
 
-  BuildDockerImageTask() {
+  @Inject
+  BuildDockerImageTask(ExecOperations execOperations) {
+    this.execOperations = execOperations
     outputs.cacheIf { false }
     outputs.upToDateWhen { false }
   }
@@ -65,8 +73,9 @@ class BuildDockerImageTask extends DefaultTask {
     }
 
     project.delete(gitRepoDirectory)
+    project.mkdir(gitRepoDirectory)
     def credentials = "${System.getenv("GIT_USER")}:${System.getenv("GIT_PASSWORD")}"
-    project.exec {
+    execOperations.exec {
       workingDir = project.rootProject.projectDir
       commandLine = ["git", "clone", "--depth=1", "--quiet", "https://${credentials}@github.com/gocd/${gitHubRepoName}", gitRepoDirectory]
     }
@@ -108,14 +117,14 @@ class BuildDockerImageTask extends DefaultTask {
         )
 
         logger.lifecycle("\nVerifying ${imageNameWithTag} image for ${distro.dockerVerifyArchitecture}. (Current build architecture is ${Architecture.current()}).\n")
-        verifyHelper.call(isNativeVerify)
+        verifyHelper.call()
         logger.lifecycle("\nVerification of ${imageNameWithTag} image on ${distro.dockerVerifyArchitecture} successful.")
       }
 
       logger.lifecycle("Cleaning up...")
       // delete the image, to save space
       if (!project.hasProperty('dockerBuildKeepImages')) {
-        project.exec {
+        execOperations.exec {
           workingDir = project.rootProject.projectDir
           commandLine = ["docker", "rmi", imageNameWithTag]
         }
@@ -128,7 +137,7 @@ class BuildDockerImageTask extends DefaultTask {
       logger.lifecycle("Pushing changed Dockerfile for ${imageNameWithTag} to ${gitHubRepoName}...")
       executeInGitRepo("git", "add", ".")
 
-      if (project.exec { workingDir = getGitRepoDirectory(); commandLine = ["git", "diff-index", "--quiet", "HEAD"]; ignoreExitValue = true}.exitValue != 0) {
+      if (execOperations.exec { workingDir = getGitRepoDirectory(); commandLine = ["git", "diff-index", "--quiet", "HEAD"]; ignoreExitValue = true}.exitValue != 0) {
         executeInGitRepo("git", "commit", "-m", "Bump to version ${project.fullVersion}", "--author", "GoCD CI User <godev+gocd-ci-user@thoughtworks.com>")
         executeInGitRepo("git", "tag", "v${project.goVersion}")
         executeInGitRepo("git", "push")
@@ -140,8 +149,40 @@ class BuildDockerImageTask extends DefaultTask {
     }
   }
 
+  def verifyProcessInContainerStarted(String expectedProcess, String expectedOutput = "") {
+    // run a `ps aux`
+    ByteArrayOutputStream psOutput = new ByteArrayOutputStream()
+    execOperations.exec {
+      workingDir = project.rootProject.projectDir
+      commandLine = ["docker", "exec", dockerImageName, "ps", "aux"]
+      standardOutput = psOutput
+      errorOutput = psOutput
+      ignoreExitValue = true
+    }
+
+    ByteArrayOutputStream containerOutput = new ByteArrayOutputStream()
+    execOperations.exec {
+      workingDir = project.rootProject.projectDir
+      commandLine = ["docker", "logs", dockerImageName]
+      standardOutput = containerOutput
+      errorOutput = containerOutput
+      ignoreExitValue = true
+    }
+
+    // assert if process was running
+    def processList = psOutput.toString()
+    def containerLog = containerOutput.toString()
+
+    if (!processList.contains(expectedProcess)) {
+      throw new GradleException("Expected process output to contain [${expectedProcess}], but was: [${processList}]\n\nContainer output:\n${containerOutput.toString()}")
+    }
+    if (expectedOutput != "" && !(containerLog =~ expectedOutput)) {
+      throw new GradleException("Process was up, but expected container output to match /${expectedOutput}/. Was: \n${containerOutput.toString()}")
+    }
+  }
+
   def executeInGitRepo(Object... args) {
-    project.exec {
+    execOperations.exec {
       workingDir = gitRepoDirectory
       commandLine = args
     }
@@ -168,7 +209,7 @@ class BuildDockerImageTask extends DefaultTask {
   }
 
   void writeTemplateToFile(String templateFile, File outputFile) {
-    Configuration configuration = new Configuration(Configuration.VERSION_2_3_32)
+    Configuration configuration = new Configuration(Configuration.VERSION_2_3_34)
     configuration.setDefaultEncoding("utf-8")
     configuration.setLogTemplateExceptions(true)
     configuration.setNumberFormat("computer")
@@ -187,12 +228,11 @@ class BuildDockerImageTask extends DefaultTask {
       gitRevision                    : project.gitRevision,
       additionalFiles                : additionalFiles,
       imageName                      : dockerImageName,
-      copyrightYear                  : project.copyrightYear,
       useFromArtifact                : !project.hasProperty('dockerGitPush'),
       dockerAliasToWrapperArchAsShell: Architecture.dockerAliasToWrapperArchAsShell(),
     ]
 
-    project.mkdir(project.buildDir)
+    project.mkdir(project.layout.buildDirectory)
 
     outputFile.withWriter("utf-8") { writer ->
       template.process(templateVars, writer)
@@ -205,38 +245,20 @@ class BuildDockerImageTask extends DefaultTask {
 
   @Internal
   File getGitRepoDirectory() {
-    project.file("${project.buildDir}/${gitHubRepoName}")
+    project.layout.buildDirectory.dir(gitHubRepoName).get().asFile
   }
 
   @Internal
   String getGitHubRepoName() {
-    if (imageType == ImageType.agent) {
-      if (distro == Distro.docker) {
-        return "docker-gocd-agent-dind"
-      } else {
-        return "docker-gocd-agent-${distro.name()}-${distroVersion.version}"
-      }
-    }
-    if (distro == Distro.alpine) {
-      return "docker-gocd-server"
-    } else {
-      return "docker-gocd-server-${distro.name()}-${distroVersion.version}"
-    }
+    return "docker-${dockerImageName}"
   }
 
   @Internal
   String getDockerImageName() {
     if (imageType == ImageType.agent) {
-      if (distro == Distro.docker) {
-        return "gocd-agent-${distro.name()}-dind"
-      } else {
-        return "gocd-agent-${distro.name()}-${distroVersion.version}"
-      }
-    }
-    if (distro == Distro.alpine) {
-      return "gocd-server"
-    } else {
-      return "gocd-server-${distro.name()}-${distroVersion.version}"
+      return distro.isContinuousRelease() ? "gocd-agent-${distro.name()}" : "gocd-agent-${distro.name()}-${distroVersion.version}"
+    } else if (imageType == ImageType.server) {
+      return distro == Distro.wolfi ? "gocd-server" : "gocd-server-${distro.name()}-${distroVersion.version}"
     }
   }
 

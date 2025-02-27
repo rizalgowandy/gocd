@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,23 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.thoughtworks.go.util.ExceptionUtils.bomb;
 
-public class PluginAwareMessageQueue extends GoMessageQueue {
-    protected final HashMap<String, ArrayList<JMSMessageListenerAdapter>> listeners = new HashMap<>();
-    private final String pluginId;
+public class PluginAwareMessageQueue<T extends PluginAwareMessage> extends GoMessageQueue<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PluginAwareMessageQueue.class.getName());
 
+    protected final Map<String, List<JMSMessageListenerAdapter<T>>> listeners = new HashMap<>();
+    private final String pluginId;
 
-    public PluginAwareMessageQueue(MessagingService messaging, String pluginId, String queueName, Integer numberOfListeners, ListenerFactory listenerFactory) {
+
+    public PluginAwareMessageQueue(MessagingService<GoMessage> messaging, String pluginId, String queueName, Integer numberOfListeners, ListenerFactory<T> listenerFactory) {
         super(messaging, queueName);
         this.pluginId = pluginId;
         for (int i = 0; i < numberOfListeners; i++) {
-            JMSMessageListenerAdapter listenerAdapter = this.addListener(listenerFactory.create());
+            JMSMessageListenerAdapter<T> listenerAdapter = this.addListener(listenerFactory.create());
             if (!listeners.containsKey(pluginId)) {
                 this.listeners.put(pluginId, new ArrayList<>());
             }
@@ -46,8 +49,8 @@ public class PluginAwareMessageQueue extends GoMessageQueue {
     @Override
     public void stop() {
         super.stop();
-        ArrayList<JMSMessageListenerAdapter> listenerAdapters = listeners.get(pluginId);
-        for (JMSMessageListenerAdapter listenerAdapter : listenerAdapters) {
+        List<JMSMessageListenerAdapter<T>> listenerAdapters = listeners.get(pluginId);
+        for (JMSMessageListenerAdapter<T> listenerAdapter : listenerAdapters) {
             try {
                 listenerAdapter.stop();
             } catch (JMSException e) {

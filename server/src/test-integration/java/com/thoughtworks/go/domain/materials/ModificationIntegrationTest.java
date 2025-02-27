@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.springframework.transaction.TransactionStatus;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -64,14 +64,14 @@ public class ModificationIntegrationTest {
     @Test
     public void shouldPersistAdditionalDataIntoModificationsTable() throws Exception {
         String revision = "revision";
-        HashMap<String, String> additionalDataMap = new HashMap<>();
+        Map<String, String> additionalDataMap = new HashMap<>();
         additionalDataMap.put("key", "value");
         String additionalData = JsonHelper.toJsonString(additionalDataMap);
         final Modification modification = new Modification("user", "comment", "foo@bar.fooadsf", new Date(), revision, additionalData);
         final GitMaterial git = new GitMaterial("url", "branch");
         transactionTemplate.executeWithExceptionHandling(new TransactionCallback() {
             @Override
-            public Object doInTransaction(TransactionStatus status) throws Exception {
+            public Object doInTransaction(TransactionStatus status) {
                 MaterialInstance gitInstance = materialRepository.findOrCreateFrom(git);
                 materialRepository.saveModification(gitInstance, modification);
                 return null;
@@ -82,8 +82,8 @@ public class ModificationIntegrationTest {
             Checking if time are the same, because actual has SQLTime whereas we send in java.util.Date. No idea how we were testing this ever
             because Modification#equals fails instance check (ShilpaG & Sachin)
          */
-        assertThat(actual.getModifiedTime().getTime(), is(modification.getModifiedTime().getTime()));
-        assertThat(actual.getAdditionalData(), is(additionalData));
-        assertThat(actual.getAdditionalDataMap(), is(additionalDataMap));
+        assertThat(actual.getModifiedTime().getTime()).isEqualTo(modification.getModifiedTime().getTime());
+        assertThat(actual.getAdditionalData()).isEqualTo(additionalData);
+        assertThat(actual.getAdditionalDataMap()).isEqualTo(additionalDataMap);
     }
 }

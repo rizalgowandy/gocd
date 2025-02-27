@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:map";
 @import "../../global/common";
 @import "../forms/forms";
 @import "../forms/autocomplete";
@@ -37,7 +38,7 @@
   padding: 10px;
   box-shadow: 0 2px 4px $box-shadow-color;
   text-transform: none;
-  z-index: map_get($zindex, tooltip);
+  z-index: map.get($zindex, tooltip);
   width: 250px;
 
   &::before {
@@ -67,14 +68,14 @@
 }
 
 .icon-delete {
-  @include icon-before($type: $fa-var-xmark);
-
   border: none;
   display: inline;
   cursor: pointer;
   width: 22px;
   height: 22px;
   padding: 0;
+
+  @include icon-before($type: $fa-var-xmark);
 
   &::before {
     margin: 0;

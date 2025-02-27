@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.transaction.support.SimpleTransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
@@ -43,9 +42,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.thoughtworks.go.domain.PipelineState.NOT_LOCKED;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
@@ -55,20 +52,18 @@ public class PipelineStateDaoCachingTest {
     private PipelineStateDao pipelineStateDao;
     private TransactionTemplate transactionTemplate;
     private TransactionSynchronizationManager transactionSynchronizationManager;
-    private GoConfigDao configFileDao;
-    private org.hibernate.SessionFactory mockSessionFactory;
     private SqlMapClientTemplate mockTemplate;
     private Session session;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         transactionSynchronizationManager = mock(TransactionSynchronizationManager.class);
         goCache = new StubGoCache(new TestTransactionSynchronizationManager());
         goCache.clear();
         mockTemplate = mock(SqlMapClientTemplate.class);
-        mockSessionFactory = mock(SessionFactory.class);
+        SessionFactory mockSessionFactory = mock(SessionFactory.class);
         transactionTemplate = mock(TransactionTemplate.class);
-        configFileDao = mock(GoConfigDao.class);
+        GoConfigDao configFileDao = mock(GoConfigDao.class);
         pipelineStateDao = new PipelineStateDao(goCache, transactionTemplate, null,
                 transactionSynchronizationManager, null, mock(Database.class), mockSessionFactory);
         pipelineStateDao.setSqlMapClientTemplate(mockTemplate);
@@ -85,33 +80,33 @@ public class PipelineStateDaoCachingTest {
     }
 
     @Test
-    public void lockedPipeline_shouldCacheLockedPipelineStatus() throws Exception {
+    public void lockedPipeline_shouldCacheLockedPipelineStatus() {
         String pipelineName = "mingle";
-        when(transactionTemplate.execute(any(org.springframework.transaction.support.TransactionCallback.class))).thenReturn(new PipelineState(pipelineName, new StageIdentifier(pipelineName, 1, "1", 1L, "s1", "1")));
+        when(transactionTemplate.execute(any())).thenReturn(new PipelineState(pipelineName, new StageIdentifier(pipelineName, 1, "1", 1L, "s1", "1")));
 
         PipelineState pipelineState = pipelineStateDao.pipelineStateFor(pipelineName);
 
-        assertThat(goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipelineName)), is(pipelineState));
+        assertThat((Object) goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipelineName))).isEqualTo(pipelineState);
         PipelineState secondAttempt = pipelineStateDao.pipelineStateFor(pipelineName);
 
         assertSame(pipelineState, secondAttempt);
-        verify(transactionTemplate, times(1)).execute(any(TransactionCallback.class));
+        verify(transactionTemplate, times(1)).execute(any());
     }
 
     @Test
-    public void lockedPipeline_shouldReturnNullIfPipelineIsNotLocked() throws Exception {
+    public void lockedPipeline_shouldReturnNullIfPipelineIsNotLocked() {
         String pipelineName = UUID.randomUUID().toString();
         pipelineStateDao.pipelineStateFor(pipelineName);
         PipelineState actual = pipelineStateDao.pipelineStateFor(pipelineName);
 
         assertNull(actual);
-        assertThat(goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipelineName)), is(NOT_LOCKED));
+        assertThat((Object) goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipelineName))).isEqualTo(NOT_LOCKED);
 
-        verify(transactionTemplate, times(1)).execute(any(org.springframework.transaction.support.TransactionCallback.class));
+        verify(transactionTemplate, times(1)).execute(any());
     }
 
     @Test
-    public void lockPipeline_ShouldSavePipelineStateAndInvalidateCache() throws Exception {
+    public void lockPipeline_ShouldSavePipelineStateAndInvalidateCache() {
         final List<TransactionSynchronizationAdapter> transactionSynchronizationAdapters = new ArrayList<>();
         doAnswer(invocation -> {
             TransactionSynchronizationAdapter adapter= (TransactionSynchronizationAdapter) invocation.getArguments()[0];
@@ -126,17 +121,17 @@ public class PipelineStateDaoCachingTest {
         goCache.put(pipelineStateDao.pipelineLockStateCacheKey(pipeline.getName()), pipelineState);
         pipelineStateDao.lockPipeline(pipeline);
 
-        assertThat(goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipeline.getName())), is(nullValue()));
+        assertThat((Object) goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipeline.getName()))).isNull();
 
         ArgumentCaptor<PipelineState> pipelineStateArgumentCaptor = ArgumentCaptor.forClass(PipelineState.class);
         verify(session).saveOrUpdate(pipelineStateArgumentCaptor.capture());
         PipelineState savedPipelineState = pipelineStateArgumentCaptor.getValue();
-        assertThat(savedPipelineState.isLocked(), is(true));
-        assertThat(savedPipelineState.getLockedByPipelineId(), is(pipeline.getId()));
+        assertThat(savedPipelineState.isLocked()).isTrue();
+        assertThat(savedPipelineState.getLockedByPipelineId()).isEqualTo(pipeline.getId());
     }
 
     @Test
-    public void lockPipeline_shouldHandleSerializationProperly() throws Exception {
+    public void lockPipeline_shouldHandleSerializationProperly() {
         when(mockTemplate.queryForObject(eq("lockedPipeline"), any())).thenReturn(null);
         assertNull(pipelineStateDao.pipelineStateFor("mingle"));
         goCache.put(pipelineStateDao.pipelineLockStateCacheKey("mingle"), NOT_LOCKED);
@@ -144,7 +139,7 @@ public class PipelineStateDaoCachingTest {
     }
 
     @Test
-    public void unlockPipeline_shouldSavePipelineStateAndInvalidateCache() throws Exception {
+    public void unlockPipeline_shouldSavePipelineStateAndInvalidateCache() {
         final List<TransactionSynchronizationAdapter> transactionSynchronizationAdapters = new ArrayList<>();
         doAnswer(invocation -> {
             TransactionSynchronizationAdapter adapter= (TransactionSynchronizationAdapter) invocation.getArguments()[0];
@@ -159,13 +154,13 @@ public class PipelineStateDaoCachingTest {
         when(session.load(PipelineState.class, pipeline.getId())).thenReturn(pipelineState);
         pipelineStateDao.unlockPipeline(pipeline.getName());
 
-        assertThat(goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipeline.getName())), is(nullValue()));
+        assertThat((Object) goCache.get(pipelineStateDao.pipelineLockStateCacheKey(pipeline.getName()))).isNull();
 
         ArgumentCaptor<PipelineState> pipelineStateArgumentCaptor = ArgumentCaptor.forClass(PipelineState.class);
         verify(session).saveOrUpdate(pipelineStateArgumentCaptor.capture());
         PipelineState savedPipelineState = pipelineStateArgumentCaptor.getValue();
-        assertThat(savedPipelineState.isLocked(), is(false));
-        assertThat(savedPipelineState.getLockedBy(), is(nullValue()));
+        assertThat(savedPipelineState.isLocked()).isFalse();
+        assertThat(savedPipelineState.getLockedBy()).isNull();
     }
 
     private void setupTransactionTemplate(List<TransactionSynchronizationAdapter> transactionSynchronizationAdapters) {

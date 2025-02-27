@@ -6,7 +6,7 @@ import org.gradle.internal.os.OperatingSystem
 import java.util.regex.Pattern
 
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,13 @@ Architecture currentArch = Architecture.current()
 // Firefox/gecko: See https://github.com/mozilla/geckodriver/releases and review compatibility at
 //                https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
 final Map<String, String> seleniumDrivers = [
-  chromedriver: '121.0.6167.85',
-  geckodriver : '0.34.0',
+  chromedriver: '133.0.6943.126',
+  geckodriver : '0.36.0',
 ]
 
 def execute = { String path, String... argv ->
-  ByteArrayOutputStream stdout = new ByteArrayOutputStream()
-
   try {
-    project.exec {
+    return providers.exec {
       def pathVariable = 'PATH'
       if (currentOS.isWindows()) {
         // because windows PATH variable is case-insensitive :-/
@@ -57,16 +55,11 @@ def execute = { String path, String... argv ->
         }
       }
 
-      args(argv.tail())
-      standardOutput = stdout
-      errorOutput = stdout
-      ignoreExitValue = true
-    }
+      commandLine(argv.tail())
+    }.standardOutput.asText.getOrElse("could not determine version!").trim()
   } catch (Exception ignored) {
     return "could not determine version!"
   }
-
-  return stdout.toString().trim()
 }
 
 def browser = { ->
@@ -142,7 +135,7 @@ task downloadChromeDriver(type: DownloaderTask) { thisTask ->
       osURIPart = 'linux64'
       break
   }
-  url = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${packageVersion}/${osURIPart}/chromedriver-${osURIPart}.zip"
+  url = "https://storage.googleapis.com/chrome-for-testing-public/${packageVersion}/${osURIPart}/chromedriver-${osURIPart}.zip"
 }
 
 task jasmineKarma(type: YarnRunTask) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 public class FullConfigSaveMergeFlowTest {
@@ -182,16 +181,16 @@ public class FullConfigSaveMergeFlowTest {
         flow.execute(updateConfigCommand, partials, "test_user");
 
         GoConfigRevision goConfigRevision = revisionArgumentCaptor.getValue();
-        assertThat(goConfigRevision.getContent(), is(mergedConfig));
-        assertThat(goConfigRevision.getUsername(), is("test_user"));
-        assertThat(goConfigRevision.getMd5(), is(updateConfigCommand.configForEdit().getMd5()));
-        assertThat(goConfigRevision.getGoVersion(), is(CurrentGoCDVersion.getInstance().formatted()));
+        assertThat(goConfigRevision.getContent()).isEqualTo(mergedConfig);
+        assertThat(goConfigRevision.getUsername()).isEqualTo("test_user");
+        assertThat(goConfigRevision.getMd5()).isEqualTo(updateConfigCommand.configForEdit().getMd5());
+        assertThat(goConfigRevision.getGoVersion()).isEqualTo(CurrentGoCDVersion.getInstance().formatted());
     }
 
     @Test
     public void shouldUpdateCachedGoPartialsWithValidPartials() throws Exception {
         String mergedConfig = "merged_config";
-        ArrayList<PartialConfig> partials = new ArrayList<>();
+        List<PartialConfig> partials = new ArrayList<>();
 
         when(configRepository.getConfigMergedWithLatestRevision(any(GoConfigRevision.class), any(String.class))).thenReturn(mergedConfig);
         when(loader.loadConfigHolder(nullable(String.class), any(MagicalGoConfigXmlLoader.Callback.class)))

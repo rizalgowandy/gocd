@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.thoughtworks.go.plugin.access.secrets.SecretsPluginConstants.*;
-import static java.lang.String.format;
 
 public class SecretsExtensionV1 implements VersionedSecretsExtension {
     public static final String VERSION = "1.0";
@@ -112,9 +111,9 @@ public class SecretsExtensionV1 implements VersionedSecretsExtension {
                 @Override
                 public void onFailure(int responseCode, String responseBody, String resolvedExtensionVersion) {
                     String errorMessage = secretsMessageConverterV1.getErrorMessageFromResponse(responseBody);
-                    throw new SecretResolutionFailureException(
-                        format("Error looking up secrets, plugin returned error code '%s' with response: '%s'", responseCode, errorMessage));
+                    throw SecretResolutionFailureException.withPluginError(secretConfig.getId(), keys, responseCode, errorMessage);
                 }
             });
     }
+
 }

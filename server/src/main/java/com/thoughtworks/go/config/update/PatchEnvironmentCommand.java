@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class PatchEnvironmentCommand extends EnvironmentCommand {
     }
 
     @Override
-    public void update(CruiseConfig configForEdit) throws Exception {
+    public void update(CruiseConfig configForEdit) {
         EnvironmentConfig environmentConfig = configForEdit.getEnvironments().named(this.environmentConfig.name());
 
         for (String pipelineName : pipelinesToAdd) {

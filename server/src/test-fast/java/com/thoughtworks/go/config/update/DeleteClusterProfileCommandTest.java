@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,14 @@ class DeleteClusterProfileCommandTest {
     }
 
     @Test
-    void shouldSetPreprocessedEntityAsPartOfUpdate() throws Exception {
+    void shouldSetPreprocessedEntityAsPartOfUpdate() {
         assertNull(command.getPreprocessedEntityConfig());
         command.update(config);
         assertThat(command.getPreprocessedEntityConfig()).isEqualTo(clusterProfile);
     }
 
     @Test
-    void shouldDeleteClusterProfile() throws Exception {
+    void shouldDeleteClusterProfile() {
         assertThat(config.getElasticConfig().getClusterProfiles()).hasSize(1);
         command.update(config);
 
@@ -74,7 +74,7 @@ class DeleteClusterProfileCommandTest {
     }
 
     @Test
-    void shouldReturnWhetherRemovalOfExistingClusterProfileIsValid() throws Exception {
+    void shouldReturnWhetherRemovalOfExistingClusterProfileIsValid() {
         assertThat(command.isValid(config)).isTrue();
         command.update(config);
         assertThat(command.isValid(config)).isTrue();
@@ -82,14 +82,14 @@ class DeleteClusterProfileCommandTest {
 
     @Test
     void shouldSetMessageOnResultIfClusterProfileIsValid() {
-        assertThat(result.message()).isEqualTo(null);
+        assertThat(result.message()).isNull();
         command.isValid(config);
         assertThat(result.message()).isEqualTo("The Cluster Profile 'cluster-id' was deleted successfully.");
     }
 
     @Test
     void shouldNotAllowDeletionOfClusterProfileWhenReferencedFromElasticAgentProfile() {
-        assertThat(result.message()).isEqualTo(null);
+        assertThat(result.message()).isNull();
 
         ElasticProfile dependentElasticAgentProfile1 = new ElasticProfile("profile1", clusterProfile.getId());
         ElasticProfile dependentElasticAgentProfile2 = new ElasticProfile("profile2", clusterProfile.getId());

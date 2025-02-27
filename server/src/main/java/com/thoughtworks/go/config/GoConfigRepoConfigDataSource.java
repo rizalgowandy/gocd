@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ public class GoConfigRepoConfigDataSource implements ChangedRepoConfigWatchListL
 
         String fingerprint = material.getFingerprint();
         if (this.configWatchList.hasConfigRepoWithFingerprint(fingerprint)) {
-            PartialConfigProvider plugin = null;
+            PartialConfigProvider plugin;
             ConfigRepoConfig repoConfig = configWatchList.getConfigRepoForMaterial(material);
             HealthStateScope scope = HealthStateScope.forPartialConfigRepo(repoConfig);
 

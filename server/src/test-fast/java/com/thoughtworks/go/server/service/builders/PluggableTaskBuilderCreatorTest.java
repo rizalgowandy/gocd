@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PluggableTaskBuilderCreatorTest {
@@ -42,7 +41,7 @@ public class PluggableTaskBuilderCreatorTest {
     private UpstreamPipelineResolver resolver;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         pluggableTask = new PluggableTask(new PluginConfiguration("test-plugin-id", "13.4"), new Configuration());
         pluggableTaskBuilderCreator = new PluggableTaskBuilderCreator();
         execTaskBuilder = new ExecTaskBuilder();
@@ -56,28 +55,28 @@ public class PluggableTaskBuilderCreatorTest {
     }
 
     @Test
-    public void shouldCreatePluggableTaskBuilder() throws Exception {
+    public void shouldCreatePluggableTaskBuilder() {
         when(builderFactory.builderFor(pluggableTask.cancelTask(), pipeline, resolver)).thenReturn(null);
         Builder builder = pluggableTaskBuilderCreator.createBuilder(builderFactory, pluggableTask, new Pipeline(), resolver);
-        assertThat(builder != null, is(true));
-        assertThat(builder instanceof PluggableTaskBuilder, is(true));
+        assertThat(builder != null).isTrue();
+        assertThat(builder instanceof PluggableTaskBuilder).isTrue();
     }
 
     @Test
-    public void shouldReturnBuilderWithCancelBuilderIfOnCancelDefined() throws Exception {
+    public void shouldReturnBuilderWithCancelBuilderIfOnCancelDefined() {
         ExecTask cancelExecTask = new ExecTask();
         Builder builderForCancelTask = execTaskBuilder.createBuilder(builderFactory, cancelExecTask, pipeline, resolver);
         pluggableTask.setCancelTask(cancelExecTask);
         when(builderFactory.builderFor(cancelExecTask, pipeline, resolver)).thenReturn(builderForCancelTask);
         Builder expected = expectedBuilder(pluggableTask, builderForCancelTask);
         Builder actual = pluggableTaskBuilderCreator.createBuilder(builderFactory, pluggableTask, pipeline, resolver);
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldCreateBuilderWithAReasonableDescription() throws Exception {
+    public void shouldCreateBuilderWithAReasonableDescription() {
         Builder builder = pluggableTaskBuilderCreator.createBuilder(builderFactory, pluggableTask, pipeline, resolver);
-        assertThat(builder.getDescription(), is("Plugin with ID: test-plugin-id"));
+        assertThat(builder.getDescription()).isEqualTo("Plugin with ID: test-plugin-id");
     }
 
     private Builder expectedBuilder(PluggableTask pluggableTask, Builder builderForCancelTask) {

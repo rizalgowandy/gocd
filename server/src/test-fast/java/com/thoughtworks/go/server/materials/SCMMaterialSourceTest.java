@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ import org.mockito.ArgumentCaptor;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -52,11 +51,11 @@ public class SCMMaterialSourceTest {
     private SystemEnvironment systemEnvironment;
     private MaterialConfigConverter materialConfigConverter;
     private MaterialUpdateService materialUpdateService;
-    private Material svnMaterial = MaterialsMother.svnMaterial();
-    private Material gitMaterial = MaterialsMother.gitMaterial("http://my.repo");
+    private final Material svnMaterial = MaterialsMother.svnMaterial();
+    private final Material gitMaterial = MaterialsMother.gitMaterial("http://my.repo");
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         goConfigService = mock(GoConfigService.class);
         systemEnvironment = new SystemEnvironment();
         serverHealthService = mock(ServerHealthService.class);
@@ -67,7 +66,7 @@ public class SCMMaterialSourceTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         systemEnvironment.reset(SystemEnvironment.MATERIAL_UPDATE_INACTIVE_TIMEOUT_IN_MINUTES);
     }
 
@@ -80,7 +79,7 @@ public class SCMMaterialSourceTest {
 
         Set<Material> materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(1));
+        assertThat(materials.size()).isEqualTo(1);
         assertTrue(materials.contains(svnMaterial));
     }
 
@@ -101,7 +100,7 @@ public class SCMMaterialSourceTest {
 
         Set<Material> materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(1));
+        assertThat(materials.size()).isEqualTo(1);
         assertTrue(materials.contains(gitMaterial));
     }
 
@@ -118,7 +117,7 @@ public class SCMMaterialSourceTest {
     public void shouldRefreshMaterialCacheOnPipelineConfigChange() {
         GitMaterialConfig gitMaterial = new GitMaterialConfig();
         gitMaterial.setUrl("http://github.com/gocd/gocd");
-        ArgumentCaptor<EntityConfigChangedListener> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<EntityConfigChangedListener<PipelineConfig>> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
 
         doNothing().when(goConfigService).register(captor.capture());
         when(goConfigService.getSchedulableSCMMaterials())
@@ -128,23 +127,23 @@ public class SCMMaterialSourceTest {
         source = new SCMMaterialSource(goConfigService, systemEnvironment, new MaterialConfigConverter(), materialUpdateService);
         source.initialize();
 
-        EntityConfigChangedListener entityConfigChangedListener = captor.getAllValues().get(1);
+        EntityConfigChangedListener<PipelineConfig> entityConfigChangedListener = captor.getAllValues().get(1);
 
         assertTrue(entityConfigChangedListener.shouldCareAbout(new PipelineConfig()));
-        assertThat(source.materialsForUpdate().size(), is(0));
+        assertThat(source.materialsForUpdate().size()).isEqualTo(0);
 
         entityConfigChangedListener.onEntityConfigChange(new PipelineConfig());
 
         Set<Material> materials = source.materialsForUpdate();
-        assertThat(materials.size(), is(1));
-        assertThat(materials.iterator().next().getFingerprint(), is(gitMaterial.getFingerprint()));
+        assertThat(materials.size()).isEqualTo(1);
+        assertThat(materials.iterator().next().getFingerprint()).isEqualTo(gitMaterial.getFingerprint());
     }
 
     @Test
     public void shouldRefreshMaterialCacheOnPackageDefinitionChange() {
         GitMaterialConfig gitMaterial = new GitMaterialConfig();
         gitMaterial.setUrl("http://github.com/gocd/gocd");
-        ArgumentCaptor<EntityConfigChangedListener> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<EntityConfigChangedListener<PackageDefinition>> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
 
         doNothing().when(goConfigService).register(captor.capture());
         when(goConfigService.getSchedulableSCMMaterials())
@@ -155,23 +154,23 @@ public class SCMMaterialSourceTest {
         source = new SCMMaterialSource(goConfigService, systemEnvironment, new MaterialConfigConverter(), materialUpdateService);
         source.initialize();
 
-        EntityConfigChangedListener entityConfigChangedListener = captor.getAllValues().get(1);
+        EntityConfigChangedListener<PackageDefinition> entityConfigChangedListener = captor.getAllValues().get(1);
 
         assertTrue(entityConfigChangedListener.shouldCareAbout(new PackageDefinition()));
-        assertThat(source.materialsForUpdate().size(), is(0));
+        assertThat(source.materialsForUpdate().size()).isEqualTo(0);
 
         entityConfigChangedListener.onEntityConfigChange(new PackageDefinition());
 
         Set<Material> materials = source.materialsForUpdate();
-        assertThat(materials.size(), is(1));
-        assertThat(materials.iterator().next().getFingerprint(), is(gitMaterial.getFingerprint()));
+        assertThat(materials.size()).isEqualTo(1);
+        assertThat(materials.iterator().next().getFingerprint()).isEqualTo(gitMaterial.getFingerprint());
     }
 
     @Test
     public void shouldRefreshMaterialCacheOnPackageRepositoryChange() {
         GitMaterialConfig gitMaterial = new GitMaterialConfig();
         gitMaterial.setUrl("http://github.com/gocd/gocd");
-        ArgumentCaptor<EntityConfigChangedListener> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<EntityConfigChangedListener<PackageRepository>> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
 
         doNothing().when(goConfigService).register(captor.capture());
         when(goConfigService.getSchedulableSCMMaterials())
@@ -181,23 +180,23 @@ public class SCMMaterialSourceTest {
         source = new SCMMaterialSource(goConfigService, systemEnvironment, new MaterialConfigConverter(), materialUpdateService);
         source.initialize();
 
-        EntityConfigChangedListener entityConfigChangedListener = captor.getAllValues().get(1);
+        EntityConfigChangedListener<PackageRepository> entityConfigChangedListener = captor.getAllValues().get(1);
 
         assertTrue(entityConfigChangedListener.shouldCareAbout(new PackageRepository()));
-        assertThat(source.materialsForUpdate().size(), is(0));
+        assertThat(source.materialsForUpdate().size()).isEqualTo(0);
 
         entityConfigChangedListener.onEntityConfigChange(new PackageRepository());
 
         Set<Material> materials = source.materialsForUpdate();
-        assertThat(materials.size(), is(1));
-        assertThat(materials.iterator().next().getFingerprint(), is(gitMaterial.getFingerprint()));
+        assertThat(materials.size()).isEqualTo(1);
+        assertThat(materials.iterator().next().getFingerprint()).isEqualTo(gitMaterial.getFingerprint());
     }
 
     @Test
     public void shouldRefreshMaterialCacheOnSCMChange() {
         GitMaterialConfig gitMaterial = new GitMaterialConfig();
         gitMaterial.setUrl("http://github.com/gocd/gocd");
-        ArgumentCaptor<EntityConfigChangedListener> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<EntityConfigChangedListener<SCM>> captor = ArgumentCaptor.forClass(EntityConfigChangedListener.class);
 
         doNothing().when(goConfigService).register(captor.capture());
         when(goConfigService.getSchedulableSCMMaterials())
@@ -207,16 +206,16 @@ public class SCMMaterialSourceTest {
         source = new SCMMaterialSource(goConfigService, systemEnvironment, new MaterialConfigConverter(), materialUpdateService);
         source.initialize();
 
-        EntityConfigChangedListener entityConfigChangedListener = captor.getAllValues().get(1);
+        EntityConfigChangedListener<SCM> entityConfigChangedListener = captor.getAllValues().get(1);
 
         assertTrue(entityConfigChangedListener.shouldCareAbout(new SCM()));
-        assertThat(source.materialsForUpdate().size(), is(0));
+        assertThat(source.materialsForUpdate().size()).isEqualTo(0);
 
         entityConfigChangedListener.onEntityConfigChange(new SCM());
 
         Set<Material> materials = source.materialsForUpdate();
-        assertThat(materials.size(), is(1));
-        assertThat(materials.iterator().next().getFingerprint(), is(gitMaterial.getFingerprint()));
+        assertThat(materials.size()).isEqualTo(1);
+        assertThat(materials.iterator().next().getFingerprint()).isEqualTo(gitMaterial.getFingerprint());
     }
 
     @Test
@@ -236,19 +235,19 @@ public class SCMMaterialSourceTest {
 
         Set<Material> materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(1));
+        assertThat(materials.size()).isEqualTo(1);
         assertTrue(materials.contains(svnMaterial));
 
 
         schedulableMaterialConfigs = Set.of(svnMaterial.config(), gitMaterial.config());
         when(goConfigService.getSchedulableSCMMaterials()).thenReturn(schedulableMaterialConfigs);
         when(materialConfigConverter.toMaterials(schedulableMaterialConfigs)).thenReturn(Set.of(svnMaterial, gitMaterial));
-        when(serverHealthService.logs()).thenReturn(new ServerHealthStates());
+        when(serverHealthService.logsSorted()).thenReturn(new ServerHealthStates());
 
         source.onConfigChange(mock(CruiseConfig.class));
         materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(2));
+        assertThat(materials.size()).isEqualTo(2);
         assertTrue(materials.contains(svnMaterial));
         assertTrue(materials.contains(gitMaterial));
     }
@@ -258,12 +257,12 @@ public class SCMMaterialSourceTest {
         Set<MaterialConfig> schedulableMaterialConfigs = Set.of(svnMaterial.config(), gitMaterial.config());
         when(goConfigService.getSchedulableSCMMaterials()).thenReturn(schedulableMaterialConfigs);
         when(materialConfigConverter.toMaterials(schedulableMaterialConfigs)).thenReturn(Set.of(svnMaterial, gitMaterial));
-        when(serverHealthService.logs()).thenReturn(new ServerHealthStates());
+        when(serverHealthService.logsSorted()).thenReturn(new ServerHealthStates());
 
         source.onEntityConfigChange(mock(ConfigRepoConfig.class));
         Set<Material> materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(2));
+        assertThat(materials.size()).isEqualTo(2);
         assertTrue(materials.contains(svnMaterial));
         assertTrue(materials.contains(gitMaterial));
     }
@@ -277,7 +276,7 @@ public class SCMMaterialSourceTest {
 
         Set<Material> materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(1));
+        assertThat(materials.size()).isEqualTo(1);
         assertTrue(materials.contains(svnMaterial));
 
 
@@ -285,12 +284,12 @@ public class SCMMaterialSourceTest {
         when(goConfigService.getSchedulableSCMMaterials()).thenReturn(schedulableMaterialConfigs);
         when(goConfigService.getCurrentConfig()).thenReturn(mock(CruiseConfig.class));
         when(materialConfigConverter.toMaterials(schedulableMaterialConfigs)).thenReturn(Set.of(svnMaterial, gitMaterial));
-        when(serverHealthService.logs()).thenReturn(new ServerHealthStates());
+        when(serverHealthService.logsSorted()).thenReturn(new ServerHealthStates());
 
         source.pipelineConfigChangedListener().onEntityConfigChange(mock(PipelineConfig.class));
         materials = source.materialsForUpdate();
 
-        assertThat(materials.size(), is(2));
+        assertThat(materials.size()).isEqualTo(2);
         assertTrue(materials.contains(svnMaterial));
         assertTrue(materials.contains(gitMaterial));
     }

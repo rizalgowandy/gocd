@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonOutputWriter.jsonDate
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class TriggerWithOptionsViewRepresenterTest {
 
@@ -105,7 +105,7 @@ class TriggerWithOptionsViewRepresenterTest {
   }
 
   private def linksJSON = [
-    "doc"     : ["href": "https://api.go.cd/current/#pipeline-trigger-options"],
+    "doc"     : ["href": "https://api.gocd.org/current/#pipeline-trigger-options"],
     "self"    : ["href": "http://test.host/go/api/pipelines/my-pipeline/trigger_options"],
     "schedule": ["href": "http://test.host/go/api/pipelines/my-pipeline/schedule"]
   ]

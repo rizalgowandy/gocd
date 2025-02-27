@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CRPackageMaterialTest extends AbstractCRTest<CRPackageMaterial> {
 
@@ -46,7 +45,7 @@ public class CRPackageMaterialTest extends AbstractCRTest<CRPackageMaterial> {
     public void shouldAppendTypeFieldWhenSerializingMaterials() {
         CRMaterial value = packageMaterial;
         JsonObject jsonObject = (JsonObject) gson.toJsonTree(value);
-        assertThat(jsonObject.get("type").getAsString(), is(CRPackageMaterial.TYPE_NAME));
+        assertThat(jsonObject.get("type").getAsString()).isEqualTo(CRPackageMaterial.TYPE_NAME);
     }
 
     @Test
@@ -55,7 +54,6 @@ public class CRPackageMaterialTest extends AbstractCRTest<CRPackageMaterial> {
         String json = gson.toJson(value);
 
         CRPackageMaterial deserializedValue = (CRPackageMaterial) gson.fromJson(json, CRMaterial.class);
-        assertThat("Deserialized value should equal to value before serialization",
-            deserializedValue, is(value));
+        assertThat(deserializedValue).isEqualTo(value);
     }
 }

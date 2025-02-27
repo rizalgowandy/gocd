@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ public class ConfigElementImplementationRegistry implements ConfigElementRegistr
         this.registry = new ConcurrentHashMap<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> List<Class<? extends T>> implementersOf(Class<T> type) {
         List<Class<? extends T>> toReturn = new ArrayList<>();
         for (Class<?> impl : registry.get(type)) {
-            //noinspection unchecked
             toReturn.add((Class<? extends T>) impl);
         }
         return toReturn;

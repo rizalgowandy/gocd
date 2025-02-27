@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -48,7 +47,7 @@ public class AdminsConfigUpdateCommandTest {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
@@ -63,7 +62,7 @@ public class AdminsConfigUpdateCommandTest {
 
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.server().security().adminsConfig(), is(adminsConfig));
+        assertThat(cruiseConfig.server().security().adminsConfig()).isEqualTo(adminsConfig);
     }
 
     @Test
@@ -75,7 +74,7 @@ public class AdminsConfigUpdateCommandTest {
         AdminsConfigUpdateCommand command = new AdminsConfigUpdateCommand(goConfigService, new AdminsConfig(), currentUser, result, entityHashingService, null);
 
         assertFalse(command.canContinue(cruiseConfig));
-        assertThat(result.httpCode(), is(403));
+        assertThat(result.httpCode()).isEqualTo(403);
     }
 
     @Test
@@ -90,7 +89,7 @@ public class AdminsConfigUpdateCommandTest {
         AdminsConfigUpdateCommand command = new AdminsConfigUpdateCommand(goConfigService, adminsConfig, currentUser, result, entityHashingService, "stale_digest");
 
         assertFalse(command.canContinue(cruiseConfig));
-        assertThat(result.httpCode(), is(412));
+        assertThat(result.httpCode()).isEqualTo(412);
     }
 
     @Test
@@ -128,7 +127,7 @@ public class AdminsConfigUpdateCommandTest {
 
         assertFalse(command.isValid(cruiseConfig));
         assertTrue(adminsConfigRequest.hasErrors());
-        assertThat(adminsConfigRequest.errors().on("users"), is("User cannot be blank."));
+        assertThat(adminsConfigRequest.errors().on("users")).isEqualTo("User cannot be blank.");
     }
 
 }

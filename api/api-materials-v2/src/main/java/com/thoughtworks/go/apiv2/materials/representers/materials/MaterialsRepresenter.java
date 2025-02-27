@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.thoughtworks.go.config.materials.tfs.TfsMaterialConfig;
 import com.thoughtworks.go.domain.materials.MaterialConfig;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
@@ -46,11 +47,12 @@ public class MaterialsRepresenter {
         PLUGIN(PluggableSCMMaterialConfig.class, new PluggableScmMaterialRepresenter());
 
         private final Class<? extends MaterialConfig> type;
-        private final MaterialRepresenter representer;
+        private final MaterialRepresenter<MaterialConfig> representer;
 
-        Materials(Class<? extends MaterialConfig> type, MaterialRepresenter representer) {
+        @SuppressWarnings("unchecked")
+        Materials(Class<? extends MaterialConfig> type, MaterialRepresenter<?> representer) {
             this.type = type;
-            this.representer = representer;
+            this.representer = (MaterialRepresenter<MaterialConfig>) representer;
         }
     }
 
@@ -59,11 +61,11 @@ public class MaterialsRepresenter {
                 materialConfigs.forEach(materialConfig -> outputListWriter.addChild(toJSON(materialConfig)));
     }
 
-    public static Consumer<OutputWriter> toJSON(MaterialConfig materialConfig) {
+    public static <T extends MaterialConfig> Consumer<OutputWriter> toJSON(T materialConfig) {
         return materialWriter -> {
             if (!materialConfig.errors().isEmpty()) {
                 materialWriter.addChild("errors", errorWriter -> {
-                    HashMap<String, String> errorMapping = new HashMap<>();
+                    Map<String, String> errorMapping = new HashMap<>();
                     errorMapping.put("materialName", "name");
                     errorMapping.put("folder", "destination");
                     errorMapping.put("autoUpdate", "auto_update");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.thoughtworks.go.plugin.api.material.packagerepository;
 import com.thoughtworks.go.plugin.api.config.Configuration;
 import com.thoughtworks.go.plugin.api.config.Property;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,8 +27,8 @@ public class PackageConfiguration extends Configuration {
 
     @Override
     public List<? extends Property> list() {
-        List<PackageMaterialProperty> list = (List<PackageMaterialProperty>) super.list();
-        Collections.sort(list);
+        List<? extends Property> list = super.list();
+        list.sort(null);
         return list;
     }
 }

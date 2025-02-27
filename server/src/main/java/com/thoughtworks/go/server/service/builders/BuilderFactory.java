@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.util.Map;
 
 @Component
 public class BuilderFactory {
-    private final Map<Class, TaskBuilder> taskBuilderMap = new HashMap<>();
+    private final Map<Class<?>, TaskBuilder<?>> taskBuilderMap = new HashMap<>();
 
     @Autowired
     public BuilderFactory(AntTaskBuilder antTaskBuilder, ExecTaskBuilder execTaskBuilder, NantTaskBuilder nantTaskBuilder,
@@ -52,7 +52,7 @@ public class BuilderFactory {
     }
 
     public List<Builder> buildersForTasks(Pipeline pipeline, List<Task> tasks, UpstreamPipelineResolver resolver) {
-        ArrayList<Builder> builders = new ArrayList<>();
+        List<Builder> builders = new ArrayList<>();
         for (Task task : tasks) {
             builders.add(builderFor(task, pipeline, resolver));
         }
@@ -63,10 +63,11 @@ public class BuilderFactory {
         return getBuilderImplementation(task).createBuilder(this, task, pipeline, resolver);
     }
 
-    private TaskBuilder getBuilderImplementation(Task task) {
+    @SuppressWarnings("unchecked")
+    private <T extends Task> TaskBuilder<T> getBuilderImplementation(Task task) {
         if (!taskBuilderMap.containsKey(task.getClass()))
             throw new RuntimeException("Unexpected type of task: " + task.getClass());
 
-        return taskBuilderMap.get(task.getClass());
+        return (TaskBuilder<T>) taskBuilderMap.get(task.getClass());
     }
 }

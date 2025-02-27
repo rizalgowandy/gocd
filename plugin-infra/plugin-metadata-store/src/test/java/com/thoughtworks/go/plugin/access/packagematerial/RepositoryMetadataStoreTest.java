@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,26 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class RepositoryMetadataStoreTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         RepositoryMetadataStoreHelper.clear();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RepositoryMetadataStoreHelper.clear();
     }
 
     @Test
-    public void shouldPopulateDataCorrectly() throws Exception {
+    public void shouldPopulateDataCorrectly() {
         PackageConfigurations repositoryConfigurationPut = new PackageConfigurations();
         RepositoryMetadataStore.getInstance().addMetadataFor("plugin-id", repositoryConfigurationPut);
 
-        assertThat(RepositoryMetadataStore.getInstance().getMetadata("plugin-id"), is(repositoryConfigurationPut));
+        assertThat(RepositoryMetadataStore.getInstance().getMetadata("plugin-id")).isEqualTo(repositoryConfigurationPut);
     }
 
     @Test
@@ -53,42 +52,42 @@ public class RepositoryMetadataStoreTest {
     }
 
     @Test
-    public void shouldAnswerIfKeyHasGivenOption() throws Exception {
+    public void shouldAnswerIfKeyHasGivenOption() {
         PackageConfigurations repositoryConfigurationPut = new PackageConfigurations();
         repositoryConfigurationPut.add(new PackageConfiguration("key-one").with(PackageConfiguration.SECURE, true).with(PackageConfiguration.REQUIRED, true));
         repositoryConfigurationPut.add(new PackageConfiguration("key-two"));
         RepositoryMetadataStore metadataStore = RepositoryMetadataStore.getInstance();
         metadataStore.addMetadataFor("plugin-id", repositoryConfigurationPut);
 
-        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.SECURE),is(true));
-        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.REQUIRED),is(true));
-        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.PART_OF_IDENTITY),is(true));
+        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.SECURE)).isEqualTo(true);
+        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.REQUIRED)).isEqualTo(true);
+        assertThat(metadataStore.hasOption("plugin-id", "key-one", PackageConfiguration.PART_OF_IDENTITY)).isEqualTo(true);
 
-        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.SECURE),is(false));
-        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.REQUIRED),is(true));
-        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.PART_OF_IDENTITY),is(true));
+        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.SECURE)).isEqualTo(false);
+        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.REQUIRED)).isEqualTo(true);
+        assertThat(metadataStore.hasOption("plugin-id", "key-two", PackageConfiguration.PART_OF_IDENTITY)).isEqualTo(true);
     }
 
     @Test
-    public void shouldGetAllPluginIds() throws Exception {
+    public void shouldGetAllPluginIds() {
         RepositoryMetadataStore metadataStore = RepositoryMetadataStore.getInstance();
         metadataStore.addMetadataFor("plugin1", new PackageConfigurations());
         metadataStore.addMetadataFor("plugin2", new PackageConfigurations());
         metadataStore.addMetadataFor("plugin3", new PackageConfigurations());
-        assertThat(metadataStore.getPlugins().size(), is(3));
-        assertThat(metadataStore.getPlugins().contains("plugin1"), is(true));
-        assertThat(metadataStore.getPlugins().contains("plugin2"), is(true));
-        assertThat(metadataStore.getPlugins().contains("plugin3"), is(true));
+        assertThat(metadataStore.getPlugins().size()).isEqualTo(3);
+        assertThat(metadataStore.getPlugins().contains("plugin1")).isEqualTo(true);
+        assertThat(metadataStore.getPlugins().contains("plugin2")).isEqualTo(true);
+        assertThat(metadataStore.getPlugins().contains("plugin3")).isEqualTo(true);
     }
 
     @Test
-    public void shouldBeAbleToCheckIfPluginExists() throws Exception {
+    public void shouldBeAbleToCheckIfPluginExists() {
         RepositoryMetadataStore metadataStore = RepositoryMetadataStore.getInstance();
 
         PackageConfigurations repositoryConfigurationPut = new PackageConfigurations();
         metadataStore.addMetadataFor("plugin-id", repositoryConfigurationPut);
 
-        assertThat(metadataStore.hasPlugin("plugin-id"), is(true));
-        assertThat(metadataStore.hasPlugin("some-plugin-which-does-not-exist"), is(false));
+        assertThat(metadataStore.hasPlugin("plugin-id")).isEqualTo(true);
+        assertThat(metadataStore.hasPlugin("some-plugin-which-does-not-exist")).isEqualTo(false);
     }
 }

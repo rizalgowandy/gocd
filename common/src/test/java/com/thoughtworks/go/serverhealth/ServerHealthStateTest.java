@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ServerHealthStateTest {
@@ -36,8 +34,6 @@ public class ServerHealthStateTest {
     static final ServerHealthState ERROR_SERVER_HEALTH_STATE = ServerHealthState.error("error", "royally screwed",
             HEALTH_STATE_TYPE_IDENTIFIER);
     static final ServerHealthState WARNING_SERVER_HEALTH_STATE = ServerHealthState.warning("warning", "warning",
-            HEALTH_STATE_TYPE_IDENTIFIER);
-    static final ServerHealthState ANOTHER_ERROR_SERVER_HEALTH_STATE = ServerHealthState.error("Second", "Hi World",
             HEALTH_STATE_TYPE_IDENTIFIER);
     static final ServerHealthState SUCCESS_SERVER_HEALTH_STATE = ServerHealthState.success(HEALTH_STATE_TYPE_IDENTIFIER);
     static final ServerHealthState ANOTHER_SUCCESS_SERVER_HEALTH_STATE = ServerHealthState.success(
@@ -59,57 +55,57 @@ public class ServerHealthStateTest {
 
     @Test
     public void shouldTrumpSuccessIfCurrentIsWarning() {
-        assertThat(SUCCESS_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE), is(WARNING_SERVER_HEALTH_STATE));
+        assertThat(SUCCESS_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE)).isEqualTo(WARNING_SERVER_HEALTH_STATE);
     }
 
     @Test
     public void shouldTrumpSuccessIfCurrentIsSuccess() {
-        assertThat(SUCCESS_SERVER_HEALTH_STATE.trump(ANOTHER_SUCCESS_SERVER_HEALTH_STATE), is(
-                ANOTHER_SUCCESS_SERVER_HEALTH_STATE));
+        assertThat(SUCCESS_SERVER_HEALTH_STATE.trump(ANOTHER_SUCCESS_SERVER_HEALTH_STATE)).isEqualTo(
+                ANOTHER_SUCCESS_SERVER_HEALTH_STATE);
     }
 
     @Test
     public void shouldTrumpWarningIfCurrentIsWarning() {
-        assertThat(ANOTHER_WARNING_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE), is(
-                WARNING_SERVER_HEALTH_STATE));
+        assertThat(ANOTHER_WARNING_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE)).isEqualTo(
+                WARNING_SERVER_HEALTH_STATE);
     }
 
     @Test
     public void shouldNotTrumpWarningIfCurrentIsSuccess() {
-        assertThat(WARNING_SERVER_HEALTH_STATE.trump(SUCCESS_SERVER_HEALTH_STATE), is(WARNING_SERVER_HEALTH_STATE));
+        assertThat(WARNING_SERVER_HEALTH_STATE.trump(SUCCESS_SERVER_HEALTH_STATE)).isEqualTo(WARNING_SERVER_HEALTH_STATE);
     }
 
     @Test
     public void shouldNotTrumpErrorIfCurrentIsSuccess() {
-        assertThat(ERROR_SERVER_HEALTH_STATE.trump(SUCCESS_SERVER_HEALTH_STATE), is(ERROR_SERVER_HEALTH_STATE));
+        assertThat(ERROR_SERVER_HEALTH_STATE.trump(SUCCESS_SERVER_HEALTH_STATE)).isEqualTo(ERROR_SERVER_HEALTH_STATE);
     }
 
     @Test
     public void shouldtNotTrumpErrorIfCurrentIsWarning() {
-        assertThat(ERROR_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE), is(ERROR_SERVER_HEALTH_STATE));
+        assertThat(ERROR_SERVER_HEALTH_STATE.trump(WARNING_SERVER_HEALTH_STATE)).isEqualTo(ERROR_SERVER_HEALTH_STATE);
     }
 
     @Test
-    public void shouldExpireAfterTheExpiryTime() throws Exception {
+    public void shouldExpireAfterTheExpiryTime() {
         testingClock.setTime(new Date());
         ServerHealthState expireInFiveMins = ServerHealthState.warning("message", "desc", HealthStateType.databaseDiskFull(), Timeout.FIVE_MINUTES);
         ServerHealthState expireNever = ServerHealthState.warning("message", "desc", HealthStateType.databaseDiskFull());
-        assertThat(expireInFiveMins.hasExpired(),is(false));
+        assertThat(expireInFiveMins.hasExpired()).isFalse();
         testingClock.addMillis((int) Timeout.TWO_MINUTES.inMillis());
-        assertThat(expireInFiveMins.hasExpired(),is(false));
+        assertThat(expireInFiveMins.hasExpired()).isFalse();
         testingClock.addMillis((int) Timeout.THREE_MINUTES.inMillis());
-        assertThat(expireInFiveMins.hasExpired(),is(false));
+        assertThat(expireInFiveMins.hasExpired()).isFalse();
         testingClock.addMillis(10);
-        assertThat(expireInFiveMins.hasExpired(),is(true));
+        assertThat(expireInFiveMins.hasExpired()).isTrue();
         testingClock.addMillis(999999999);
-        assertThat(expireNever.hasExpired(),is(false));
+        assertThat(expireNever.hasExpired()).isFalse();
     }
 
     @Test
     public void shouldUnderstandEquality() {
         ServerHealthState fooError = ServerHealthState.error("my message", "my description", HealthStateType.general(HealthStateScope.forPipeline("foo")));
         ServerHealthState fooErrorCopy = ServerHealthState.error("my message", "my description", HealthStateType.general(HealthStateScope.forPipeline("foo")));
-        assertThat(fooError, is(fooErrorCopy));
+        assertThat(fooError).isEqualTo(fooErrorCopy);
     }
 
     @Test
@@ -119,23 +115,23 @@ public class ServerHealthStateTest {
             nullError = ServerHealthState.error(null, "some desc", HealthStateType.general(HealthStateScope.forPipeline("foo")));
             fail("should have bombed as message given is null");
         } catch(Exception e) {
-            assertThat(nullError, is(nullValue()));
-            assertThat(e.getMessage(), is("message cannot be null"));
+            assertThat(nullError).isNull();
+            assertThat(e.getMessage()).isEqualTo("message cannot be null");
         }
     }
 
    @Test
     public void shouldGetMessageWithTimestamp() {
         ServerHealthState errorState = ServerHealthState.error("my message", "my description", HealthStateType.general(HealthStateScope.forPipeline("foo")));
-        assertThat(errorState.getMessageWithTimestamp(), is("my message" + " [" + ServerHealthState.TIMESTAMP_FORMAT.format(errorState.getTimestamp()) + "]"));
+        assertThat(errorState.getMessageWithTimestamp()).isEqualTo("my message" + " [" + ServerHealthState.TIMESTAMP_FORMAT.format(errorState.getTimestamp()) + "]");
     }
 
     @Test
     public void shouldEscapeErrorMessageAndDescriptionByDefault() {
         ServerHealthState errorState = ServerHealthState.error("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")));
 
-        assertThat(errorState.getMessage(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
-        assertThat(errorState.getDescription(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
+        assertThat(errorState.getMessage()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
+        assertThat(errorState.getDescription()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
     }
 
     @Test
@@ -144,14 +140,14 @@ public class ServerHealthStateTest {
         ServerHealthState warningStateWithTimeout = ServerHealthState.warning("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")), Timeout.TEN_SECONDS);
         ServerHealthState warningState = ServerHealthState.warning("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")), 15L);
 
-        assertThat(warningStateWithoutTimeout.getMessage(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
-        assertThat(warningStateWithoutTimeout.getDescription(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
+        assertThat(warningStateWithoutTimeout.getMessage()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
+        assertThat(warningStateWithoutTimeout.getDescription()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
 
-        assertThat(warningStateWithTimeout.getMessage(), is("\"<message1 & message2>\""));
-        assertThat(warningStateWithTimeout.getDescription(), is("\"<message1 & message2>\""));
+        assertThat(warningStateWithTimeout.getMessage()).isEqualTo("\"<message1 & message2>\"");
+        assertThat(warningStateWithTimeout.getDescription()).isEqualTo("\"<message1 & message2>\"");
 
-        assertThat(warningState.getMessage(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
-        assertThat(warningState.getDescription(), is("&quot;&lt;message1 &amp; message2&gt;&quot;"));
+        assertThat(warningState.getMessage()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
+        assertThat(warningState.getDescription()).isEqualTo("&quot;&lt;message1 &amp; message2&gt;&quot;");
     }
 
     @Test
@@ -159,17 +155,17 @@ public class ServerHealthStateTest {
         ServerHealthState warningState = ServerHealthState.warningWithHtml("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")));
         ServerHealthState warningStateWithTime = ServerHealthState.warningWithHtml("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")), 15L);
 
-        assertThat(warningState.getMessage(), is("\"<message1 & message2>\""));
-        assertThat(warningState.getDescription(), is("\"<message1 & message2>\""));
-        assertThat(warningStateWithTime.getMessage(), is("\"<message1 & message2>\""));
-        assertThat(warningStateWithTime.getDescription(), is("\"<message1 & message2>\""));
+        assertThat(warningState.getMessage()).isEqualTo("\"<message1 & message2>\"");
+        assertThat(warningState.getDescription()).isEqualTo("\"<message1 & message2>\"");
+        assertThat(warningStateWithTime.getMessage()).isEqualTo("\"<message1 & message2>\"");
+        assertThat(warningStateWithTime.getDescription()).isEqualTo("\"<message1 & message2>\"");
     }
 
     @Test
     public void shouldPreserveHtmlInErrorMessageAndDescription() {
         ServerHealthState error = ServerHealthState.errorWithHtml("\"<message1 & message2>\"", "\"<message1 & message2>\"", HealthStateType.general(HealthStateScope.forPipeline("foo")));
 
-        assertThat(error.getMessage(), is("\"<message1 & message2>\""));
-        assertThat(error.getDescription(), is("\"<message1 & message2>\""));
+        assertThat(error.getMessage()).isEqualTo("\"<message1 & message2>\"");
+        assertThat(error.getDescription()).isEqualTo("\"<message1 & message2>\"");
     }
 }

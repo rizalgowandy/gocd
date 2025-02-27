@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ class PostBackupScriptTest {
     @Test
     void shouldReturnFalseAndNotBlowUpIfExecutionOfCommandFails() {
         Date time = new Date(1535551235962L);
-        String command = RandomStringUtils.randomAlphabetic(32);
+        String command = RandomStringUtils.insecure().nextAlphabetic(32);
         ServerBackup backup = new ServerBackup("/foo/bar/backupDir/backup_someTimeStamp", time, "bob", "");
         PostBackupScript postBackupScript = new PostBackupScript(command, BackupService.BackupInitiator.USER, "bob", backup, "/foo/bar/backupDir", time);
         assertThat(postBackupScript.execute()).isFalse();

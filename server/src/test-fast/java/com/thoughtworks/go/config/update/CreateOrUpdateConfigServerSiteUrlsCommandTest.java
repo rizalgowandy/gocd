@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class CreateOrUpdateConfigServerSiteUrlsCommandTest {
     private BasicCruiseConfig cruiseConfig = new BasicCruiseConfig();
 
     @Test
-    void shouldAddBackupConfig() throws Exception {
+    void shouldAddBackupConfig() {
         SiteUrls siteUrls = new SiteUrls(new SiteUrl("http://foo"), new SecureSiteUrl("https://bar"));
         CreateOrUpdateConfigServerSiteUrlsCommand command = new CreateOrUpdateConfigServerSiteUrlsCommand(siteUrls);
         command.update(cruiseConfig);

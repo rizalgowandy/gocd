@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class PluginTest {
     private Plugin plugin;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         plugin = new Plugin("plugin-id", new GsonBuilder().create().toJson(Map.of("k1", "v1", "k2", "v2")));
     }
 

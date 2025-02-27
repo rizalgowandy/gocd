@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,6 @@ class PipelinesControllerTest implements ControllerTrait<PipelinesController>, S
 
   @Override
   PipelinesController createControllerInstance() {
-    return new PipelinesController(new SPAAuthenticationHelper(securityService, goConfigService), templateEngine, goCache)
+    return new PipelinesController(new SPAAuthenticationHelper(securityService, goConfigService), templateEngine)
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,30 +63,30 @@ public class CachedGoConfigTest {
 
     @Test
     public void shouldDelegateWriteEntityConfigCallToDataSource() {
-        EntityConfigUpdateCommand saveCommand = mock(EntityConfigUpdateCommand.class);
+        EntityConfigUpdateCommand<?> saveCommand = mock(EntityConfigUpdateCommand.class);
         GoConfigHolder savedConfig = new GoConfigHolder(new BasicCruiseConfig(), new BasicCruiseConfig());
         GoConfigHolder holderBeforeUpdate = cachedGoConfig.loadConfigHolder();
         Username user = new Username(new CaseInsensitiveString("user"));
-        EntityConfigSaveResult entityConfigSaveResult = mock(EntityConfigSaveResult.class);
+        EntityConfigSaveResult<?> entityConfigSaveResult = mock(EntityConfigSaveResult.class);
         when(entityConfigSaveResult.getConfigHolder()).thenReturn(savedConfig);
-        when(entityConfigSaveResult.getEntityConfig()).thenReturn(new PipelineConfig());
-        when(dataSource.writeEntityWithLock(saveCommand, holderBeforeUpdate, user)).thenReturn(entityConfigSaveResult);
+        doReturn(new PipelineConfig()).when(entityConfigSaveResult).getEntityConfig();
+        doReturn(entityConfigSaveResult).when(dataSource).writeEntityWithLock(saveCommand, holderBeforeUpdate, user);
 
         cachedGoConfig.writeEntityWithLock(saveCommand, user);
-        assertThat(cachedGoConfig.loadConfigHolder(), is(savedConfig));
-        assertThat(cachedGoConfig.currentConfig(), is(savedConfig.config));
-        assertThat(cachedGoConfig.loadForEditing(), is(savedConfig.configForEdit));
+        assertThat(cachedGoConfig.loadConfigHolder()).isEqualTo(savedConfig);
+        assertThat(cachedGoConfig.currentConfig()).isEqualTo(savedConfig.config);
+        assertThat(cachedGoConfig.loadForEditing()).isEqualTo(savedConfig.configForEdit);
         verify(dataSource).writeEntityWithLock(saveCommand, holderBeforeUpdate, user);
     }
 
     @Test
-    public void shouldLoadConfigHolderIfNotAvailable() throws Exception {
+    public void shouldLoadConfigHolderIfNotAvailable() {
         cachedGoConfig.forceReload();
-        assertThat(cachedGoConfig.loadConfigHolder(), is(configHolder));
+        assertThat(cachedGoConfig.loadConfigHolder()).isEqualTo(configHolder);
     }
 
     @Test
-    public void shouldNotifyConfigListenersWhenConfigChanges() throws Exception {
+    public void shouldNotifyConfigListenersWhenConfigChanges() {
         when(dataSource.writeWithLock(any(UpdateConfigCommand.class), any(GoConfigHolder.class))).thenReturn(new GoFileConfigDataSource.GoConfigSaveResult(configHolder, ConfigSaveState.UPDATED));
         final ConfigChangedListener listener = mock(ConfigChangedListener.class);
         cachedGoConfig.registerListener(listener);
@@ -99,7 +98,7 @@ public class CachedGoConfigTest {
     }
 
     @Test
-    public void shouldNotNotifyWhenConfigIsNullDuringRegistration() throws Exception {
+    public void shouldNotNotifyWhenConfigIsNullDuringRegistration() {
         final ConfigChangedListener listener = mock(ConfigChangedListener.class);
         cachedGoConfig.registerListener(listener);
         verifyNoMoreInteractions(listener);
@@ -132,19 +131,19 @@ public class CachedGoConfigTest {
         cachedGoConfig.registerListener(agentConfigChangeListener);
         cachedGoConfig.registerListener(cruiseConfigChangeListener);
 
-        EntityConfigUpdateCommand configCommand = mock(EntityConfigUpdateCommand.class);
-        EntityConfigSaveResult entityConfigSaveResult = mock(EntityConfigSaveResult.class);
+        EntityConfigUpdateCommand<?> configCommand = mock(EntityConfigUpdateCommand.class);
+        EntityConfigSaveResult<?> entityConfigSaveResult = mock(EntityConfigSaveResult.class);
         when(entityConfigSaveResult.getConfigHolder()).thenReturn(configHolder);
-        when(entityConfigSaveResult.getEntityConfig()).thenReturn(new PipelineConfig());
+        doReturn(new PipelineConfig()).when(entityConfigSaveResult).getEntityConfig();
         Username user = new Username(new CaseInsensitiveString("user"));
-        when(dataSource.writeEntityWithLock(configCommand, configHolder, user)).thenReturn(entityConfigSaveResult);
+        doReturn(entityConfigSaveResult).when(dataSource).writeEntityWithLock(configCommand, configHolder, user);
 
         cachedGoConfig.loadConfigIfNull();
 
         cachedGoConfig.writeEntityWithLock(configCommand, user);
-        assertThat(pipelineConfigChangeListenerCalled[0], is(true));
-        assertThat(agentConfigChangeListenerCalled[0], is(false));
-        assertThat(cruiseConfigChangeListenerCalled[0], is(false));
+        assertThat(pipelineConfigChangeListenerCalled[0]).isTrue();
+        assertThat(agentConfigChangeListenerCalled[0]).isFalse();
+        assertThat(cruiseConfigChangeListenerCalled[0]).isFalse();
     }
 
     @Test
@@ -173,23 +172,23 @@ public class CachedGoConfigTest {
         cachedGoConfig.forceReload();
         ConfigSaveState saveState = cachedGoConfig.writeFullConfigWithLock(mock(FullConfigUpdateCommand.class));
 
-        assertThat(saveState, is(configSaveState));
-        assertThat(cachedGoConfig.currentConfig(), is(config));
-        assertThat(cachedGoConfig.loadForEditing(), is(configForEdit));
-        assertThat(cachedGoConfig.loadConfigHolder(), is(goConfigHolder));
-        assertThat(cachedGoConfig.loadMergedForEditing(), is(mergedConfigForEdit));
+        assertThat(saveState).isEqualTo(configSaveState);
+        assertThat(cachedGoConfig.currentConfig()).isEqualTo(config);
+        assertThat(cachedGoConfig.loadForEditing()).isEqualTo(configForEdit);
+        assertThat(cachedGoConfig.loadConfigHolder()).isEqualTo(goConfigHolder);
+        assertThat(cachedGoConfig.loadMergedForEditing()).isEqualTo(mergedConfigForEdit);
         verify(serverHealthService, times(2)).update(any(ServerHealthState.class));
     }
 
     @Test
-    public void shouldUpgradeConfigFile() throws Exception {
+    public void shouldUpgradeConfigFile() {
         cachedGoConfig.upgradeConfig();
 
         verify(goConfigMigrator).migrate();
     }
 
     @Test
-    public void shouldUpdateCachesPostConfigUpgade() throws Exception {
+    public void shouldUpdateCachesPostConfigUpgrade() {
         BasicCruiseConfig config = mock(BasicCruiseConfig.class);
         BasicCruiseConfig configForEdit = mock(BasicCruiseConfig.class);
         BasicCruiseConfig mergedConfigForEdit = mock(BasicCruiseConfig.class);
@@ -200,10 +199,10 @@ public class CachedGoConfigTest {
 
         cachedGoConfig.upgradeConfig();
 
-        assertThat(cachedGoConfig.currentConfig(), is(config));
-        assertThat(cachedGoConfig.loadForEditing(), is(configForEdit));
-        assertThat(cachedGoConfig.loadConfigHolder(), is(goConfigHolder));
-        assertThat(cachedGoConfig.loadMergedForEditing(), is(mergedConfigForEdit));
+        assertThat(cachedGoConfig.currentConfig()).isEqualTo(config);
+        assertThat(cachedGoConfig.loadForEditing()).isEqualTo(configForEdit);
+        assertThat(cachedGoConfig.loadConfigHolder()).isEqualTo(goConfigHolder);
+        assertThat(cachedGoConfig.loadMergedForEditing()).isEqualTo(mergedConfigForEdit);
         verify(serverHealthService).update(any(ServerHealthState.class));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ import ch.qos.logback.classic.Level;
 import org.junit.jupiter.api.Test;
 
 import static com.thoughtworks.go.util.LogFixture.logFixtureFor;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PerfTimerTest {
 
@@ -33,7 +31,7 @@ public class PerfTimerTest {
         clock.addSeconds(1);
         timer.stop();
 
-        assertThat(timer.elapsed(), is(1000L));
+        assertThat(timer.elapsed()).isEqualTo(1000L);
     }
 
     @Test
@@ -46,7 +44,7 @@ public class PerfTimerTest {
         clock.addSeconds(1);
         timer.stop();
 
-        assertThat(timer.elapsed(), is(2000L));
+        assertThat(timer.elapsed()).isEqualTo(2000L);
     }
 
     @Test
@@ -59,7 +57,7 @@ public class PerfTimerTest {
 
         try (LogFixture fixture = logFixtureFor(PerfTimer.class, Level.INFO)) {
             timer.stop();
-            assertThat(fixture.getLog(), containsString("Performance: Message took 1000ms"));
+            assertThat(fixture.getLog()).contains("Performance: Message took 1000ms");
         }
     }
 
@@ -71,7 +69,7 @@ public class PerfTimerTest {
 
         clock.addSeconds(1);
 
-        assertThat(timer.elapsed(), is(1000L));
+        assertThat(timer.elapsed()).isEqualTo(1000L);
     }
 
 }

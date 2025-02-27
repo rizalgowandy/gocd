@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ import java.util.stream.Collectors
 
 plugins {
   id 'base'
-  id 'org.owasp.dependencycheck' version '9.0.9'
+  id 'org.owasp.dependencycheck' version '12.1.0'
   id 'com.github.hierynomus.license-base' version '0.16.1'
-  id 'com.github.jk1.dependency-license-report' version '2.5'
+  id 'com.github.jk1.dependency-license-report' version '2.9'
 }
 
 apply from: 'dependencies.gradle'
@@ -56,20 +56,13 @@ def determineReleaseRevision = { ->
 }
 
 def getVersion = { ... args ->
-  ByteArrayOutputStream stdout = new ByteArrayOutputStream()
-
   try {
-    project.exec {
-      commandLine = args
-      standardOutput = stdout
-      errorOutput = stdout
-      ignoreExitValue = true
-    }
-  } catch (Exception ignored) {
-    return "could not determine version!"
+    return providers.exec {
+      commandLine(args)
+    }.standardOutput.asText.getOrElse("could not determine version!").trim()
+  } catch (Exception e) {
+    return "could not determine version! (${e.message})"
   }
-
-  return stdout.toString().trim()
 }
 
 List<String> partitionFiles(Collection originalFiles) {
@@ -92,9 +85,9 @@ List<String> partitionFiles(Collection originalFiles) {
   return (currentPartition ?: []) as List<String>
 }
 
-def GO_VERSION_PREVIOUS = '23.5.0'
-def GO_VERSION_SEGMENTS = [year: 24, releaseInYear: 1, patch: 0]
-def GO_VERSION_NEXT = '24.2.0'
+def GO_VERSION_PREVIOUS = '25.1.0'
+def GO_VERSION_SEGMENTS = [year: 25, releaseInYear: 2, patch: 0]
+def GO_VERSION_NEXT = '25.3.0'
 
 def GO_VERSION = [GO_VERSION_SEGMENTS.year, GO_VERSION_SEGMENTS.releaseInYear, GO_VERSION_SEGMENTS.patch].join('.')
 def DIST_VERSION = determineReleaseRevision()
@@ -109,8 +102,6 @@ if (System.getenv().containsKey("GO_SERVER_URL")) {
   println "OS:              ${System.getProperty('os.name')} ${System.getProperty('os.version')} ${System.getProperty('os.arch')}"
   println separator
   println("")
-
-  def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
 
   println("Tool Versions")
   println(separator)
@@ -132,19 +123,18 @@ ext {
   distVersion = DIST_VERSION
   fullVersion = DIST_VERSION ? "${GO_VERSION}-${DIST_VERSION}" : GO_VERSION
   gitRevision = GIT_REVISION
-  copyrightYear = Calendar.getInstance().get(Calendar.YEAR)
 
   // Default target version. Can be overridden by sub-projects.
   targetJavaVersion = 17
 
   // Version of JVM to compile and test using.
-  buildJavaVersion = 17
+  buildJavaVersion = 21
 
   // Version to package with installers and container images by default
   packagedJavaVersion = new AdoptiumVersion(
-    feature: 17,
+    feature: 21,
     interim: 0,    // set to `null` for the first release of a new featureVersion
-    update : 10,   // set to `null` for the first release of a new featureVersion
+    update : 6,    // set to `null` for the first release of a new featureVersion
     patch  : null, // set to `null` for most releases. Patch releases are "exceptional".
     build  : 7
   )
@@ -154,25 +144,13 @@ allprojects {
   apply plugin: 'idea'
   group = 'com.thoughtworks.go'
   version = project.fullVersion
-  buildDir = "${projectDir}/target"
+  layout.buildDirectory = "${projectDir}/target"
 
   repositories {
     mavenCentral()
-    maven { url 'https://repo.terracotta.org/maven2/' } // Needed for later ehcache repos
-  }
-
-  if (project.name == 'build-platform') {
-    return
-  }
-
-  configurations {
-    // Ensure that we use the jar artifacts from even `java-library` modules; by default they
-    // resolve to the classes directory instead
-    compileClasspath {
-      attributes {
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.class, LibraryElements.JAR))
-      }
-    }
+    mavenLocal()
+    maven { url = 'https://repo.terracotta.org/maven2/' } // Needed for later ehcache repos
+    maven { url = 'https://jitpack.io' } // Needed for spring-test-junit5 and jruby-rack
   }
 }
 
@@ -193,7 +171,6 @@ subprojects {
   license {
     skipExistingHeaders = false
     strictCheck = true
-    ext.year = project.copyrightYear
     exclude '**/*.erb'
     exclude '**/*.ejs'
     exclude '**/*.keep'
@@ -235,7 +212,7 @@ subprojects {
 
     // used by intellij for type hints when editing ftl files, intellij gets confused if it sees a license header in this file
     exclude '**/freemarker_implicit.ftl'
-    header rootProject.file('buildSrc/Apache-2.0.txt')
+    header = rootProject.file('build-platform/Apache-2.0.txt')
     headerDefinitions {
       intellijStyleXML {
         firstLine = "<!--"
@@ -292,7 +269,7 @@ subprojects {
       renderers = [new JsonReportRenderer("index.json", false)]
       excludeGroups = ["com.thoughtworks.go"]
       filters = [new LicenseBundleNormalizer()]
-      outputDir = file("${project.buildDir}/reports/dependency-license")
+      outputDir = project.layout.buildDirectory.dir("reports/dependency-license").get().asFile
       configurations = ['runtimeClasspath', 'packagingInLibDir']
     }
 
@@ -308,15 +285,15 @@ subprojects {
 
   if (hasJavaSources) {
     apply plugin: 'java-library'
-    apply plugin: 'pmd'
 
-    buildDir = "${projectDir}/target"
+    layout.buildDirectory = "${projectDir}/target"
 
     configurations {
       packagingOnly
       extractedAtTopLevel { transitive = false }
       fatJarConfig
 
+      testJavaAgents { transitive = false }
       testOutput {
         extendsFrom testRuntimeClasspath
         transitive = true
@@ -328,16 +305,10 @@ subprojects {
       from sourceSets.test.output
     }
 
-    pmd {
-      ignoreFailures = true
-      ruleSetFiles = files(rootProject.file('buildSrc/pmd.xml'))
-      ruleSets = []
-      incrementalAnalysis = true
-    }
-
     dependencies {
       // Force all sub-projects to have managed dependency versions for certain transitive dependencies
       implementation platform(project(':build-platform'))
+      testJavaAgents("${project.deps.mockitoCore}:${project.versions.mockitoBom}")
 
       modules {
         module("dom4j:dom4j") {
@@ -360,7 +331,16 @@ subprojects {
           details.allVariants {
             withDependencies {
               removeAll {
-                it.name in [ "jsr305", "checker-qual", "error_prone_annotations", "listenablefuture" ]
+                it.name in [ "jsr305", "checker-qual", "error_prone_annotations", "listenablefuture", "j2objc-annotations" ]
+              }
+            }
+          }
+        })
+        withModule('com.google.code.gson:gson', { details ->
+          details.allVariants {
+            withDependencies {
+              removeAll {
+                it.name in [ "error_prone_annotations" ]
               }
             }
           }
@@ -412,19 +392,19 @@ subprojects {
       )
     }
 
-    includeEmptyDirs false
-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    includeEmptyDirs = false
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
 
-    if (jarTask.name == 'testJar') {
-      project.artifacts.add 'testOutput', jarTask
-    } else {
-      project.artifacts.add 'archives', jarTask
+  artifacts { artifacts ->
+    tasks.withType(Jar).each { jarTask ->
+      artifacts.add(jarTask.name == 'testJar' ? 'testOutput' : 'archives', jarTask)
     }
   }
 
   tasks.withType(AbstractArchiveTask) {
-    includeEmptyDirs false
-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    includeEmptyDirs = false
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     preserveFileTimestamps = false
     reproducibleFileOrder = true
@@ -445,8 +425,9 @@ subprojects {
   }
 
   tasks.withType(JavaCompile) {
-    options.warnings = false
     options.encoding = "UTF-8"
+    options.compilerArgs += '-Werror'
+    options.compilerArgs += '-Xlint:unchecked'
     options.compilerArgs += '-Xlint:-deprecation'
     options.release.set(project.targetJavaVersion as Integer)
 
@@ -492,6 +473,7 @@ subprojects {
     systemProperty 'java.io.tmpdir', tmpDir
     systemProperty 'jdk.attach.allowAttachSelf', 'true'
     jvmArgs += testTask.project.name.startsWith("agent") ? InstallerType.agent.jvmModuleOpensArgs : InstallerType.server.jvmModuleOpensArgs
+    jvmArgs += testTask.project.configurations.hasProperty('testJavaAgents') ? "-javaagent:${testTask.project.configurations.testJavaAgents.asPath}" : []
 
     doFirst {
       // workaround for https://github.com/unbroken-dome/gradle-testsets-plugin/issues/40
@@ -558,7 +540,7 @@ subprojects {
     testLogging {
       showStandardStreams = project.path != ':server'
 
-      exceptionFormat 'full'
+      exceptionFormat = 'full'
 
       beforeSuite { suite ->
         if (suite.parent) {
@@ -607,17 +589,17 @@ private allCompileTasks(Closure<Boolean> include = { t -> true }) {
 
 
 task compileAll { compileAllTask ->
-  group LifecycleBasePlugin.BUILD_GROUP
+  group = LifecycleBasePlugin.BUILD_GROUP
   allCompileTasks()
 }
 
 task prepare {
-  group LifecycleBasePlugin.BUILD_GROUP
+  group = LifecycleBasePlugin.BUILD_GROUP
   allCompileTasks { Task task -> !task.name.toLowerCase().contains('test') && !task.project.path.toLowerCase().contains('test') }
 }
 
 task sparkTest { thisTask ->
-  group LifecycleBasePlugin.VERIFICATION_GROUP
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
   description = "Run all api tests"
   (project(':api').subprojects + project(':spark').subprojects).each { Project subPrj ->
     thisTask.dependsOn subPrj.tasks.withType(Test)
@@ -630,7 +612,7 @@ task sparkTestJunitHtmlReport(type: TestReport) {
 
   testResults.from(project(':api').subprojects*.test.binaryResultsDirectory.locationOnly)
   testResults.from(project(':spark').subprojects*.test.binaryResultsDirectory.locationOnly)
-  destinationDirectory = file("${project.buildDir}/reports/tests/sparkTest")
+  destinationDirectory = layout.buildDirectory.dir("reports/tests/sparkTest")
 }
 
 private void forAllTask(Closure<Task> closure) {
@@ -648,7 +630,7 @@ private void forAllTask(Closure<Task> closure) {
 }
 
 task allTests { thisTask ->
-  group LifecycleBasePlugin.VERIFICATION_GROUP
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
   description = "Run all tests"
 
   forAllTask { Test eachTestTask ->
@@ -659,14 +641,14 @@ task allTests { thisTask ->
 }
 
 task allTestsJunitHtmlReport(type: TestReport) { TestReport thisTask ->
-  group LifecycleBasePlugin.VERIFICATION_GROUP
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
   description = "Run all api tests"
 
   forAllTask { Test eachTestTask ->
     testResults.from(eachTestTask.binaryResultsDirectory.locationOnly)
     eachTestTask.finalizedBy(thisTask)
   }
-  destinationDirectory = file("${project.buildDir}/reports/tests/allTests")
+  destinationDirectory = layout.buildDirectory.dir("reports/tests/allTests")
 }
 
 static def toCamelCase(String input) {
@@ -683,61 +665,75 @@ static List<String> getTestClassesForTask(List<String> testsToRun) {
 
 dependencyCheck {
   failBuildOnCVSS = 1
-  skipConfigurations = ['pmd']
-  suppressionFile = rootProject.file('buildSrc/dependency-check-suppress.xml').toPath().toString()
+  failBuildOnUnusedSuppressionRule = true
+  suppressionFile = rootProject.file('build-platform/dependency-check-suppress.xml').toPath().toString()
+  skipTestGroups = true
+  skipProjects = [':test:http-mocks', ':test:test-agent', ':test:test-utils']
 
-  nvd {
-    apiKey = System.getenv("NVD_API_KEY") ?: ""
-  }
+  nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
 
-  analyzers {
-    bundleAuditEnabled = false // Currently there is a separate bundle audit security check job independent of Gradle
-    nodeAudit.yarnEnabled = false // Doesn't work correctly with Yarn 3+ https://github.com/jeremylong/DependencyCheck/issues/4894
-    assemblyEnabled = false
-    retirejs.filterNonVulnerable = true // Reduces effort/memory processing retirejs results
+  analyzers.nodeAudit.yarnEnabled = false // Doesn't work correctly with Yarn 3+ https://github.com/jeremylong/DependencyCheck/issues/4894
+  analyzers.assemblyEnabled = false // Avoid dotnet false positives
+  analyzers.retirejs.filterNonVulnerable = true // Reduces effort/memory processing retirejs results
+}
+
+dependencyCheckAggregate {
+  def injected = project.objects.newInstance(InjectedExecOps)
+  doFirst {
+    injected.execOps.exec {
+      commandLine = [ "gem", "install", "bundler-audit", "--no-document" ]
+      standardOutput = System.out
+      errorOutput = System.err
+    }
+    injected.execOps.exec {
+      commandLine = [ "bundle", "audit", "update" ]
+      standardOutput = System.out
+      errorOutput = System.err
+    }
   }
 }
 
 if (System.getenv().containsKey("GO_SERVER_URL")) {
   dependencyCheck {
-    data {
-      directory = "${layout.buildDirectory.get()}/dependency-check-data"
+    data.directory = layout.buildDirectory.dir("dependency-check-data").get()
+  }
+
+  if (!project.hasProperty('bootstrapDependencyCheckCache')) {
+    tasks.register('downloadDependencyCheckCache', Download) {
+      src 'https://nexus.gocd.io/repository/cache/dependency-check-data.zip'
+      dest layout.buildDirectory.file('dependency-check-data.zip')
+      onlyIfModified true
     }
-  }
 
-  tasks.register('downloadDependencyCheckCache', Download) {
-    src 'https://nexus.gocd.io/repository/cache/dependency-check-data.zip'
-    dest layout.buildDirectory.file('dependency-check-data.zip')
-    onlyIfModified true
-  }
-
-  tasks.register('unzipDependencyCheckCache', Copy) {
-    dependsOn downloadDependencyCheckCache
-    from zipTree(downloadDependencyCheckCache.dest)
-    into layout.buildDirectory.dir("dependency-check-data")
-    def copyDetails = []
-    eachFile { copyDetails << it }
-    doLast {
-      copyDetails.each { FileCopyDetails details ->
-        def target = new File(destinationDir, details.path)
-        if (target.exists()) { target.setLastModified(details.lastModified) }
+    tasks.register('unzipDependencyCheckCache', Copy) {
+      dependsOn downloadDependencyCheckCache
+      from zipTree(downloadDependencyCheckCache.dest)
+      into layout.buildDirectory.dir("dependency-check-data")
+      def copyDetails = []
+      eachFile { copyDetails << it }
+      doLast {
+        copyDetails.each { FileCopyDetails details ->
+          def target = new File(destinationDir, details.path)
+          if (target.exists()) {
+            target.setLastModified(details.lastModified)
+          }
+        }
       }
     }
+
+    dependencyCheckUpdate.dependsOn unzipDependencyCheckCache
+    dependencyCheckAnalyze.dependsOn unzipDependencyCheckCache
+    dependencyCheckAggregate.dependsOn unzipDependencyCheckCache
   }
 
-  dependencyCheckUpdate.dependsOn unzipDependencyCheckCache
-  dependencyCheckAnalyze.dependsOn unzipDependencyCheckCache
-  dependencyCheckAggregate.dependsOn unzipDependencyCheckCache
-
   tasks.register('uploadDependencyCheckCache', Zip) {
-    mustRunAfter dependencyCheckUpdate, dependencyCheckAnalyze, dependencyCheckAggregate
-
     from layout.buildDirectory.file("dependency-check-data")
     archiveFileName = "dependency-check-data-updated.zip"
     destinationDirectory = layout.buildDirectory
 
+    def injected = project.objects.newInstance(InjectedExecOps)
     doLast {
-      project.exec {
+      injected.execOps.exec {
         workingDir = projectDir
         commandLine = [
           "curl",
@@ -751,6 +747,10 @@ if (System.getenv().containsKey("GO_SERVER_URL")) {
       }
     }
   }
+
+  dependencyCheckUpdate.finalizedBy uploadDependencyCheckCache
+  dependencyCheckAnalyze.finalizedBy uploadDependencyCheckCache
+  dependencyCheckAggregate.finalizedBy uploadDependencyCheckCache
 }
 
 task newSPA {
@@ -770,7 +770,7 @@ task newSPA {
 
     String licenseHeader =
       """
-      * Copyright ${project.copyrightYear} Thoughtworks, Inc.
+      * Copyright Thoughtworks, Inc.
       *
       * Licensed under the Apache License, Version 2.0 (the "License");
       * you may not use this file except in compliance with the License.
@@ -785,8 +785,7 @@ task newSPA {
       * limitations under the License.
       """.stripIndent().trim()
 
-    String javaOrJavaScriptLicencseHeader = "/*\n${licenseHeader.split('\n').collect { eachLine -> " ${eachLine}" }.join("\n")}\n */\n\n"
-
+    String javaOrJavaScriptLicenseHeader = "/*\n${licenseHeader.split('\n').collect { eachLine -> " ${eachLine}" }.join("\n")}\n */\n\n"
 
     file("${mountPoint}/${spaName}.tsx").withWriter { out ->
       def contents =
@@ -803,7 +802,7 @@ task newSPA {
           //tslint:disable-next-line
           new ${entityName}SPA();
         """
-      out.println(javaOrJavaScriptLicencseHeader + contents.stripIndent().trim() + "\n")
+      out.println(javaOrJavaScriptLicenseHeader + contents.stripIndent().trim() + "\n")
     }
 
     file("${pagesBase}/${spaName}.tsx").withWriter { out ->
@@ -833,7 +832,7 @@ task newSPA {
             }
           }
         """
-      out.println(javaOrJavaScriptLicencseHeader + contents.stripIndent().trim() + "\n")
+      out.println(javaOrJavaScriptLicenseHeader + contents.stripIndent().trim() + "\n")
     }
 
     file("${widgetBase}/${spaName}_widget.tsx").withWriter { out ->
@@ -853,7 +852,7 @@ task newSPA {
             }
           }
         """
-      out.println(javaOrJavaScriptLicencseHeader + contents.stripIndent().trim() + "\n")
+      out.println(javaOrJavaScriptLicenseHeader + contents.stripIndent().trim() + "\n")
     }
 
     file("${modelsBase}/${spaName}.ts").withWriter { out ->
@@ -875,7 +874,7 @@ task newSPA {
             }
           }
         """
-      out.println(javaOrJavaScriptLicencseHeader + contents.stripIndent().trim() + "\n")
+      out.println(javaOrJavaScriptLicenseHeader + contents.stripIndent().trim() + "\n")
     }
 
     file("spark/spark-spa/src/main/java/com/thoughtworks/go/spark/spa/${entityName}Controller.java").withWriter { out ->
@@ -922,7 +921,7 @@ task newSPA {
             }
           }
         """
-      out.println(javaOrJavaScriptLicencseHeader + contents.stripIndent().trim() + "\n")
+      out.println(javaOrJavaScriptLicenseHeader + contents.stripIndent().trim() + "\n")
     }
 
     addUrlRewriteRule("${spaName} UI")
@@ -941,6 +940,7 @@ task newSPA {
 
 task removeApi {
   description = "Helper to create a delete an api module. Pass `-PapiName=roles-config -PapiVersion=v1`"
+  def injected = project.objects.newInstance(InjectedExecOps)
 
   doFirst {
     String apiName = project.apiName
@@ -980,11 +980,11 @@ task removeApi {
       out.println(newContents)
     }
 
-    project.exec {
+    injected.execOps.exec {
       commandLine = ['git', 'add', '-u']
     }
 
-    project.exec {
+    injected.execOps.exec {
       commandLine = ['git', 'commit', '-m', "Removed ${apiName} version ${project.apiVersion}"]
     }
   }
@@ -1019,7 +1019,7 @@ task newApi {
       def contents =
         """
           /*
-           * Copyright ${project.copyrightYear} Thoughtworks, Inc.
+           * Copyright Thoughtworks, Inc.
            *
            * Licensed under the Apache License, Version 2.0 (the "License");
            * you may not use this file except in compliance with the License.
@@ -1045,6 +1045,7 @@ task newApi {
 
             testImplementation project.deps.junit5Api
             testRuntimeOnly project.deps.junit5Engine
+            testRuntimeOnly project.deps.junit5PlatformLauncher
           }
         """
       out.println(contents.stripIndent().trim() + "\n")
@@ -1054,7 +1055,7 @@ task newApi {
       def contents =
         """
           /*
-           * Copyright ${project.copyrightYear} Thoughtworks, Inc.
+           * Copyright Thoughtworks, Inc.
            *
            * Licensed under the Apache License, Version 2.0 (the "License");
            * you may not use this file except in compliance with the License.
@@ -1165,7 +1166,7 @@ task newApi {
       def contents =
         """
           /*
-           * Copyright ${project.copyrightYear} Thoughtworks, Inc.
+           * Copyright Thoughtworks, Inc.
            *
            * Licensed under the Apache License, Version 2.0 (the "License");
            * you may not use this file except in compliance with the License.
@@ -1263,7 +1264,7 @@ task upgradeApi {
 
     String oldControllerClassSuffix = "ControllerV${currentMaxApiVersion}"
     String newControllerClassSuffix = "ControllerV${apiVersion}"
-    String newPackage = newPackagePrefix;
+    String newPackage = newPackagePrefix
 
     project.delete(moduleDir)
 
@@ -1351,7 +1352,7 @@ private Object addProjectToSettingsGradle(String newProjectName, it) {
     def contents =
       """
           /*
-           * Copyright ${project.copyrightYear} Thoughtworks, Inc.
+           * Copyright Thoughtworks, Inc.
            *
            * Licensed under the Apache License, Version 2.0 (the "License");
            * you may not use this file except in compliance with the License.

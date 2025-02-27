@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import java.io.IOException;
 import static com.thoughtworks.go.helper.ConfigFileFixture.DEFAULT_XML_WITH_2_AGENTS;
 import static com.thoughtworks.go.helper.MaterialConfigsMother.git;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -94,26 +93,26 @@ public class GoConfigRepoConfigDataSourceIntegrationTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         cachedGoPartials.clear();
     }
 
     @Test
-    public void shouldLoadACRPipelineWithParams() throws Exception {
+    public void shouldLoadACRPipelineWithParams() {
         ParamsConfig paramConfigs = new ParamsConfig(new ParamConfig("foo", "foo"));
         CruiseConfig cruiseConfig = goConfigService.getCurrentConfig();
 
-        assertThat(cruiseConfig.hasPipelineNamed(new CaseInsensitiveString("pipe-with-params")), is(true));
-        assertThat(cruiseConfig.getPipelineConfigByName(new CaseInsensitiveString("pipe-with-params")).getParams(), is(paramConfigs));
+        assertThat(cruiseConfig.hasPipelineNamed(new CaseInsensitiveString("pipe-with-params"))).isTrue();
+        assertThat(cruiseConfig.getPipelineConfigByName(new CaseInsensitiveString("pipe-with-params")).getParams()).isEqualTo(paramConfigs);
     }
 
     @Test
-    public void shouldLoadACRPipelineReferencingATemplateWithParams() throws Exception {
+    public void shouldLoadACRPipelineReferencingATemplateWithParams() {
         ParamsConfig paramConfigs = new ParamsConfig(new ParamConfig("param1", "foo"));
         CruiseConfig cruiseConfig = goConfigService.currentCruiseConfig();
 
-        assertThat(cruiseConfig.hasPipelineNamed(new CaseInsensitiveString("pipe-with-template")), is(true));
-        assertThat(cruiseConfig.getPipelineConfigByName(new CaseInsensitiveString("pipe-with-template")).getParams(), is(paramConfigs));
+        assertThat(cruiseConfig.hasPipelineNamed(new CaseInsensitiveString("pipe-with-template"))).isTrue();
+        assertThat(cruiseConfig.getPipelineConfigByName(new CaseInsensitiveString("pipe-with-template")).getParams()).isEqualTo(paramConfigs);
     }
 
     private String setupExternalConfigRepo(File configRepo, String configRepoTestResource) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,7 @@ import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ConsoleLogSenderTest {
@@ -52,7 +50,7 @@ public class ConsoleLogSenderTest {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         consoleService = mock(ConsoleService.class);
         jobInstanceDao = mock(JobInstanceDao.class);
         socket = mock(SocketEndpoint.class);
@@ -163,24 +161,24 @@ public class ConsoleLogSenderTest {
     }
 
     @Test
-    public void shouldNotGzipContentsLessThan512Bytes() throws Exception {
-        byte[] bytes = RandomStringUtils.randomAlphanumeric(511).getBytes(UTF_8);
+    public void shouldNotGzipContentsLessThan512Bytes() {
+        byte[] bytes = RandomStringUtils.insecure().nextAlphanumeric(511).getBytes(UTF_8);
         byte[] gzipped = consoleLogSender.maybeGzipIfLargeEnough(bytes);
-        assertThat(bytes, equalTo(gzipped));
+        assertThat(bytes).isEqualTo(gzipped);
     }
 
     @Test
     public void shouldGzipContentsGreaterThan512Bytes() throws Exception {
-        byte[] bytes = RandomStringUtils.randomAlphanumeric(512).getBytes(UTF_8);
+        byte[] bytes = RandomStringUtils.insecure().nextAlphanumeric(512).getBytes(UTF_8);
 
         byte[] gzipped = consoleLogSender.maybeGzipIfLargeEnough(bytes);
-        assertThat(gzipped.length, lessThanOrEqualTo(bytes.length));
+        assertThat(gzipped.length).isLessThanOrEqualTo(bytes.length);
 
         GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(gzipped));
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(gzipped.length);
         IOUtils.copy(gzipInputStream, byteArrayOutputStream);
-        assertThat(bytes, equalTo(byteArrayOutputStream.toByteArray()));
+        assertThat(bytes).isEqualTo(byteArrayOutputStream.toByteArray());
     }
 
     private File makeConsoleFile(String message) throws IOException, IllegalArtifactLocationException {
@@ -205,7 +203,7 @@ public class ConsoleLogSenderTest {
         }
 
         @Override
-        public long stream(Consumer<String> action) throws IOException {
+        public long stream(Consumer<String> action) {
             // this is necessary for showing no logs has been missed out even after job completion
             if(mockedLines.length <= count) {
                 return mockedLines.length;
@@ -220,7 +218,7 @@ public class ConsoleLogSenderTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
         }
     }
 }

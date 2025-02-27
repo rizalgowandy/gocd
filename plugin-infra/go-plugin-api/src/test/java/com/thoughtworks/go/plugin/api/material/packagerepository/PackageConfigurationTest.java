@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ package com.thoughtworks.go.plugin.api.material.packagerepository;
 import com.thoughtworks.go.plugin.api.config.Property;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PackageConfigurationTest {
     @Test
-    public void shouldGetAllPackageConfigurationsSortedByDisplayOrder() throws Exception {
+    public void shouldGetAllPackageConfigurationsSortedByDisplayOrder() {
         Property c1 = new PackageMaterialProperty("k1").with(Property.DISPLAY_ORDER, 2);
         Property c2 = new PackageMaterialProperty("k2").with(Property.DISPLAY_ORDER, 0);
         Property c3 = new PackageMaterialProperty("k3").with(Property.DISPLAY_ORDER, 1);
@@ -31,8 +30,8 @@ public class PackageConfigurationTest {
         packageConfiguration.add(c1);
         packageConfiguration.add(c2);
         packageConfiguration.add(c3);
-        assertThat(packageConfiguration.list().get(0), is(c2));
-        assertThat(packageConfiguration.list().get(1), is(c3));
-        assertThat(packageConfiguration.list().get(2), is(c1));
+        assertThat(packageConfiguration.list().get(0)).isEqualTo(c2);
+        assertThat(packageConfiguration.list().get(1)).isEqualTo(c3);
+        assertThat(packageConfiguration.list().get(2)).isEqualTo(c1);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -121,7 +120,7 @@ class GoPluginBundleDescriptorBuilderTest {
     }
 
     private void copyPluginToThePluginDirectory(File pluginDir,
-                                                String destinationFilenameOfPlugin) throws IOException, URISyntaxException {
+                                                String destinationFilenameOfPlugin) throws IOException {
         URL resource = getClass().getClassLoader().getResource("defaultFiles/" + destinationFilenameOfPlugin);
         FileUtils.copyURLToFile(resource, new File(pluginDir, destinationFilenameOfPlugin));
     }

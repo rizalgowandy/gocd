@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObject
 import static com.thoughtworks.go.helpers.PipelineModelMother.pipeline_model
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -60,7 +60,7 @@ class PipelineRepresenterTest {
     assertThatJson(json).isEqualTo([
       _links                : [
         self: [href: 'http://test.host/go/api/pipelines/pipeline_name/history'],
-        doc : [href: 'https://api.go.cd/current/#pipelines']
+        doc : [href: 'https://api.gocd.org/current/#pipelines']
       ],
       _embedded             : [
         instances: [

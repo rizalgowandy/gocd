@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.thoughtworks.go.helper.MaterialConfigsMother
 import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 
 class PackageMaterialRepresenterTest {
 
@@ -42,7 +42,7 @@ class PackageMaterialRepresenterTest {
   @Test
   void "should render errors"() {
     def package_config = new PackageMaterialConfig(new CaseInsensitiveString(''), '', PackageDefinitionMother.create("pkg-def", PackageRepositoryMother.create("pkg-repo")))
-    def material_configs = new MaterialConfigs(package_config);
+    def material_configs = new MaterialConfigs(package_config)
     material_configs.validateTree(PipelineConfigSaveValidationContext.forChain(true, "group", new BasicCruiseConfig(), new PipelineConfig()))
 
     def actualJson = toObjectString({ MaterialRepresenter.toJSON(it, material_configs.first()) })

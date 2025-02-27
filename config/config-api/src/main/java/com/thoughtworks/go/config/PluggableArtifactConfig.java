@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -165,7 +166,7 @@ public class PluggableArtifactConfig implements ArtifactTypeConfig {
     }
 
     public String toJSON() {
-        final HashMap<String, Object> artifactStoreAsHashMap = new HashMap<>();
+        final Map<String, Object> artifactStoreAsHashMap = new HashMap<>();
         artifactStoreAsHashMap.put("id", getId());
         artifactStoreAsHashMap.put("storeId", getStoreId());
         artifactStoreAsHashMap.put("configuration", this.getConfiguration().getConfigurationAsMap(true));

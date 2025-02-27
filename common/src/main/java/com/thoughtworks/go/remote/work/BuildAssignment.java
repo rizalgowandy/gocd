@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 public class BuildAssignment implements Serializable, SecretParamAware {
@@ -58,7 +57,7 @@ public class BuildAssignment implements Serializable, SecretParamAware {
         this.artifactPlans = artifactPlans;
         this.artifactStores = artifactStores;
         for (MaterialRevision materialRevision : buildCause.getMaterialRevisions()) {
-            ArrayList<Modification> modifications = new ArrayList<>();
+            List<Modification> modifications = new ArrayList<>();
             for (Modification modification : materialRevision.getModifications()) {
                 modifications.add(new Modification(modification, false));
             }
@@ -188,7 +187,7 @@ public class BuildAssignment implements Serializable, SecretParamAware {
 
     private SecretParams secretParamsInMaterials() {
         final List<Material> materials = stream(this.materialRevisions().spliterator(), true)
-                .map(MaterialRevision::getMaterial).collect(toList());
+                .map(MaterialRevision::getMaterial).toList();
 
         return materials.stream()
                 .filter(material -> material instanceof SecretParamAware && !(material instanceof PluggableSCMMaterial || material instanceof PackageMaterial))

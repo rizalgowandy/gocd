@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ import javax.jms.MessageConsumer;
 
 import static com.thoughtworks.go.serverhealth.HealthStateLevel.ERROR;
 import static com.thoughtworks.go.util.LogFixture.logFixtureFor;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -58,11 +56,11 @@ public class JMSMessageListenerAdapterTest {
     @Mock(stubOnly = true)
     private DaemonThreadStatsCollector daemonThreadStatsCollector;
 
-    private GoMessageListener mockListener;
+    private GoMessageListener<GoMessage> mockListener;
 
     @BeforeEach
     public void setUp() throws Exception {
-        mockListener = new GoMessageListener() {
+        mockListener = new GoMessageListener<>() {
             @Override
             public void onMessage(GoMessage message) {
                 throw new UnsupportedOperationException("not implemented yet");
@@ -76,7 +74,7 @@ public class JMSMessageListenerAdapterTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // We must reset the consumer to ensure it returns null and the threads exit or they will go-on forever
         // creating a memory leak on the mock invocations
         reset(consumer);
@@ -87,7 +85,7 @@ public class JMSMessageListenerAdapterTest {
         when(consumer.receive()).thenThrow(new RuntimeException("should swallow me"));
 
         daemonThreadStatsCollector = mock(DaemonThreadStatsCollector.class);
-        JMSMessageListenerAdapter listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
+        JMSMessageListenerAdapter<GoMessage> listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
         listenerAdapter.runImpl();
 
         verify(consumer, atLeastOnce()).receive();
@@ -99,15 +97,15 @@ public class JMSMessageListenerAdapterTest {
         when(systemEnvironment.get(SystemEnvironment.JMS_LISTENER_BACKOFF_TIME_IN_MILLIS)).thenReturn(3000L);
 
         try (LogFixture logFixture = logFixtureFor(JMSMessageListenerAdapter.class, Level.DEBUG)) {
-            JMSMessageListenerAdapter listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
+            JMSMessageListenerAdapter<GoMessage>  listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
 
             final long startTime = System.nanoTime();
             listenerAdapter.runImpl();
             final long endTime = System.nanoTime();
 
             assertTrue(logFixture.contains(Level.WARN, "Backing off for a few seconds"));
-            assertThat(endTime - startTime, greaterThan(2000 * 1000 * 1000L));
-            assertThat(endTime - startTime, lessThan(4000 * 1000 * 1000L));
+            assertThat(endTime - startTime).isGreaterThan(2000 * 1000 * 1000L);
+            assertThat(endTime - startTime).isLessThan(4000 * 1000 * 1000L);
 
             verify(serverHealthService, atLeastOnce()).update(matchesServerHealthMessage(ERROR, "Message queue closed"));
         }
@@ -118,14 +116,14 @@ public class JMSMessageListenerAdapterTest {
         when(consumer.receive()).thenThrow(new RuntimeException("should NOT back off after this"));
 
         try (LogFixture logFixture = logFixtureFor(JMSMessageListenerAdapter.class, Level.DEBUG)) {
-            JMSMessageListenerAdapter listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
+            JMSMessageListenerAdapter<GoMessage>  listenerAdapter = JMSMessageListenerAdapter.startListening(consumer, mockListener, daemonThreadStatsCollector, systemEnvironment, serverHealthService);
 
             final long startTime = System.nanoTime();
             listenerAdapter.runImpl();
             final long endTime = System.nanoTime();
 
             assertFalse(logFixture.contains(Level.WARN, "Backing off for a few seconds"));
-            assertThat(endTime - startTime, lessThan(1000 * 1000 * 1000L));
+            assertThat(endTime - startTime).isLessThan(1000 * 1000 * 1000L);
 
             verify(serverHealthService, never()).update(any(ServerHealthState.class));
             verify(systemEnvironment, never()).get(SystemEnvironment.JMS_LISTENER_BACKOFF_TIME_IN_MILLIS);

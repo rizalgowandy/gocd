@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class PackageDefinitionServiceTest {
     }
 
     @Test
-    void shouldPerformPluginValidationsUsingMetaDataBeforeSavingPackageRepository() throws Exception {
+    void shouldPerformPluginValidationsUsingMetaDataBeforeSavingPackageRepository() {
         Configuration configuration = new Configuration();
         configuration.add(ConfigurationPropertyMother.create("required", false, ""));
         configuration.add(ConfigurationPropertyMother.create("required_secure", true, ""));
@@ -99,7 +99,7 @@ public class PackageDefinitionServiceTest {
     }
 
     @Test
-    void shouldPerformPluginValidationsBeforeValidationsByGoAndGoDoesNotAddErrorIfAlreadyPresent() throws Exception {
+    void shouldPerformPluginValidationsBeforeValidationsByGoAndGoDoesNotAddErrorIfAlreadyPresent() {
         Configuration configuration = new Configuration();
         configuration.add(ConfigurationPropertyMother.create("required-field", false, ""));
         PackageDefinition packageDefinition = PackageDefinitionMother.create("1", "name", configuration, packageRepository);
@@ -117,7 +117,7 @@ public class PackageDefinitionServiceTest {
     }
 
     @Test
-    void shouldPerformCheckConnectionOnPackage() throws Exception {
+    void shouldPerformCheckConnectionOnPackage() {
         Configuration configuration = new Configuration();
         configuration.add(ConfigurationPropertyMother.create("required", false, ""));
         configuration.add(ConfigurationPropertyMother.create("required_secure", true, ""));
@@ -148,7 +148,7 @@ public class PackageDefinitionServiceTest {
     }
 
     @Test
-    void shouldPerformCheckConnectionForPackageAndReportFailure() throws Exception {
+    void shouldPerformCheckConnectionForPackageAndReportFailure() {
         Configuration configuration = new Configuration();
         configuration.add(ConfigurationPropertyMother.create("required", false, ""));
         configuration.add(ConfigurationPropertyMother.create("required_secure", true, ""));
@@ -178,7 +178,7 @@ public class PackageDefinitionServiceTest {
     }
 
     @Test
-    void shouldPerformCheckConnectionForPackageAndCatchException() throws Exception {
+    void shouldPerformCheckConnectionForPackageAndCatchException() {
         Configuration configuration = new Configuration();
         configuration.add(ConfigurationPropertyMother.create("required", false, ""));
         configuration.add(ConfigurationPropertyMother.create("required_secure", true, ""));

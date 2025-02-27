@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class Plugin extends PersistentObject {
 
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
-        this.configurationDataMap = JsonHelper.safeFromJson(this.configuration, HashMap.class);
+        this.configurationDataMap = JsonHelper.<Map<String, String>>safeFromJson(this.configuration, HashMap.class);
     }
 
     public Set<String> getAllConfigurationKeys() {

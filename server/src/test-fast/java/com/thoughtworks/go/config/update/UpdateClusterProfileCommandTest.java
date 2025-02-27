@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,14 +65,14 @@ class UpdateClusterProfileCommandTest {
     }
 
     @Test
-    void shouldUpdateClusterProfile() throws Exception {
+    void shouldUpdateClusterProfile() {
         assertThat(config.getElasticConfig().getClusterProfiles().get(0)).isEqualTo(clusterProfile);
         command.update(config);
         assertThat(config.getElasticConfig().getClusterProfiles().get(0)).isEqualTo(clusterProfile);
     }
 
     @Test
-    void shouldReturnWhetherRemovalOfExistingClusterProfileIsValid() throws Exception {
+    void shouldReturnWhetherRemovalOfExistingClusterProfileIsValid() {
         assertThat(command.isValid(config)).isTrue();
         command.update(config);
         assertThat(command.isValid(config)).isTrue();
@@ -96,7 +97,7 @@ class UpdateClusterProfileCommandTest {
     @Test
     void shouldMakeACallToExtensionToValidateClusterProfile() {
         String pluginId = "plugin-id";
-        HashMap<String, String> configuration = new HashMap<>();
+        Map<String, String> configuration = new HashMap<>();
         command.validateUsingExtension(pluginId, configuration);
 
         verify(extension, times(1)).validateClusterProfile(pluginId, configuration);

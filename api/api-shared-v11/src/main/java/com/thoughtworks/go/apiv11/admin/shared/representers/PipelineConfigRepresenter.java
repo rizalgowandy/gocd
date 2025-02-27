@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.thoughtworks.go.config.remote.RepoConfigOrigin;
 import com.thoughtworks.go.spark.Routes;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class PipelineConfigRepresenter {
 
@@ -46,7 +47,7 @@ public class PipelineConfigRepresenter {
         pipelineConfig.errors().addAll(pipelineConfig.materialConfigs().errors());
         if (!pipelineConfig.errors().isEmpty()) {
             jsonWriter.addChild("errors", errorWriter -> {
-                HashMap<String, String> errorMapping = new HashMap<>();
+                Map<String, String> errorMapping = new HashMap<>();
                 errorMapping.put("labelTemplate", "label_template");
                 errorMapping.put("params", "parameters");
                 errorMapping.put("variables", "environment_variables");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import spark.servlet.SparkApplication;
 import spark.servlet.SparkFilter;
 
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 
 public class TestSparkPreFilter extends SparkFilter {
 
@@ -30,7 +29,7 @@ public class TestSparkPreFilter extends SparkFilter {
     }
 
     @Override
-    protected SparkApplication[] getApplications(FilterConfig filterConfig) throws ServletException {
+    protected SparkApplication[] getApplications(FilterConfig filterConfig) {
         return new SparkApplication[]{application};
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -508,7 +508,7 @@ public class ScheduleService {
 
             transactionTemplate.executeWithExceptionHandling(new com.thoughtworks.go.server.transaction.TransactionCallbackWithoutResult() {
                 @Override
-                public void doInTransactionWithoutResult(TransactionStatus status) throws Exception {
+                public void doInTransactionWithoutResult(TransactionStatus status) {
                     automaticallyTriggerRelevantStagesFollowingCompletionOf(stage);
                 }
             });
@@ -611,7 +611,7 @@ public class ScheduleService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error occured during reschedule hung builds: ", e);
+            LOGGER.error("Error occurred during reschedule hung builds: ", e);
         }
     }
 

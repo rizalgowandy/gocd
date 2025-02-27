@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.thoughtworks.go.plugin.activation.test;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
-import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -32,7 +31,7 @@ public class DummyClassProvidingAnonymousClass {
                 }
 
                 @Override
-                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+                public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
                     return null;
                 }
 
@@ -51,7 +50,7 @@ public class DummyClassProvidingAnonymousClass {
             }
 
             @Override
-            public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
+            public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) {
                 return null;
             }
 

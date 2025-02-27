@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
  * If you add imports here they will end up creation a lot of duplicated CSS, especially from
  * fontawesome due to size and the number of places this is imported.
  */
+@use "sass:map";
 
 <%
   variables = {}
@@ -40,8 +41,8 @@ $fa-font-icons: (
 }
 
 @mixin icon-glyph($icon) {
-  @if map-has-key($fa-font-icons, $icon) {
-    content: unicode(map-get($fa-font-icons, $icon));
+  @if map.has-key($fa-font-icons, $icon) {
+    content: unicode(map.get($fa-font-icons, $icon));
   } @else {
     @error "Could not find icon #{$icon}";
   }

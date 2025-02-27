@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,19 @@ public class StubGoCache extends GoCache {
         map = new HashMap<>();
     }
 
-    @Override public void put(String key, Object value) {
+    @Override
+    public void put(String key, Object value) {
         map.put(key, value);
     }
 
-    @Override public Object get(String key) {
-        return map.get(key);
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T get(String key) {
+        return (T) map.get(key);
     }
 
-    @Override public boolean remove(String key) {
+    @Override
+    public boolean remove(String key) {
         map.remove(key);
         return true;
     }

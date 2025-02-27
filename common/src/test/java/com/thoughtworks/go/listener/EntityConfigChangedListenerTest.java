@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,29 @@ package com.thoughtworks.go.listener;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EntityConfigChangedListenerTest {
     @Test
     public void shouldCareAboutEntityOfSameTypeAsTheOneTheListenerIsParameterizedWith() {
-        EntityConfigChangedListener entityConfigChangedListenerForA = new EntityConfigChangedListener<A>() {
+        EntityConfigChangedListener<A> entityConfigChangedListenerForA = new EntityConfigChangedListener<>() {
             @Override
             public void onEntityConfigChange(A entity) {
 
             }
         };
-        assertThat(entityConfigChangedListenerForA.shouldCareAbout(new A()), is(true));
+        assertThat(entityConfigChangedListenerForA.shouldCareAbout(new A())).isTrue();
     }
 
     @Test
     public void shouldNotCareAboutEntityOfADifferentTypeFromTheOneTheListenerIsParameterizedWith() {
-        EntityConfigChangedListener entityConfigChangedListenerForA = new EntityConfigChangedListener<A>() {
+        EntityConfigChangedListener<A> entityConfigChangedListenerForA = new EntityConfigChangedListener<>() {
             @Override
             public void onEntityConfigChange(A entity) {
 
             }
         };
-        assertThat(entityConfigChangedListenerForA.shouldCareAbout(new B()), is(false));
+        assertThat(entityConfigChangedListenerForA.shouldCareAbout(new B())).isFalse();
     }
 
     private class A {

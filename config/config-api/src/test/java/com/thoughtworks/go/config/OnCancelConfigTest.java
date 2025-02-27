@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,53 +31,53 @@ public class OnCancelConfigTest {
     private TaskFactory taskFactory;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         taskFactory = mock(TaskFactory.class);
     }
 
     @Test
     public void shouldReturnTheOnCancelOptionBasedOnWhatTheOnCancelTaskIs() {
-        assertThat(new OnCancelConfig().onCancelOption(), is(""));
-        assertThat(new OnCancelConfig(new ExecTask()).onCancelOption(), is("Custom Command"));
-        assertThat(new OnCancelConfig(new AntTask()).onCancelOption(), is("Ant"));
-        assertThat(new OnCancelConfig(new RakeTask()).onCancelOption(), is("Rake"));
+        assertThat(new OnCancelConfig().onCancelOption()).isEqualTo("");
+        assertThat(new OnCancelConfig(new ExecTask()).onCancelOption()).isEqualTo("Custom Command");
+        assertThat(new OnCancelConfig(new AntTask()).onCancelOption()).isEqualTo("Ant");
+        assertThat(new OnCancelConfig(new RakeTask()).onCancelOption()).isEqualTo("Rake");
     }
 
     @Test
     public void shouldAddErrorOnErrorCollection() {
         OnCancelConfig onCancelConfig = new OnCancelConfig();
         onCancelConfig.addError("key", "some error");
-        assertThat(onCancelConfig.errors().on("key"), is("some error"));
+        assertThat(onCancelConfig.errors().on("key")).isEqualTo("some error");
     }
 
     @Test
     public void shouldSetPrimitiveAttributesForExecTask() {
-        Map hashMap = new HashMap();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put(OnCancelConfig.ON_CANCEL_OPTIONS, "exec");
-        Map valueMap = new HashMap();
+        Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(ExecTask.COMMAND, "ls");
         valueMap.put(ExecTask.ARGS, "blah");
         valueMap.put(ExecTask.WORKING_DIR, "pwd");
         hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, valueMap);
-        hashMap.put(OnCancelConfig.ANT_ON_CANCEL, new HashMap());
+        hashMap.put(OnCancelConfig.ANT_ON_CANCEL, new HashMap<>());
 
         ExecTask execTask = new ExecTask();
         when(taskFactory.taskInstanceFor(execTask.getTaskType())).thenReturn(execTask);
         OnCancelConfig cancelConfig = OnCancelConfig.create(hashMap, taskFactory);
 
-        assertThat(cancelConfig.getTask(), is(new ExecTask("ls", "blah", "pwd")));
+        assertThat(cancelConfig.getTask()).isEqualTo(new ExecTask("ls", "blah", "pwd"));
     }
 
     @Test
     public void shouldSetPrimitiveAttributesForAntTask() {
-        Map hashMap = new HashMap();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put(OnCancelConfig.ON_CANCEL_OPTIONS, "ant");
-        Map valueMap = new HashMap();
+        Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(BuildTask.BUILD_FILE, "build.xml");
         valueMap.put(BuildTask.TARGET, "blah");
         valueMap.put(BuildTask.WORKING_DIRECTORY, "pwd");
         hashMap.put(OnCancelConfig.ANT_ON_CANCEL, valueMap);
-        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap());
+        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap<>());
 
 
         when(taskFactory.taskInstanceFor(new AntTask().getTaskType())).thenReturn(new AntTask());
@@ -88,22 +87,22 @@ public class OnCancelConfigTest {
         expectedAntTask.setBuildFile("build.xml");
         expectedAntTask.setTarget("blah");
         expectedAntTask.setWorkingDirectory("pwd");
-        assertThat(cancelConfig.getTask(), is(expectedAntTask));
+        assertThat(cancelConfig.getTask()).isEqualTo(expectedAntTask);
     }
 
     @Test
     public void shouldSetPrimitiveAttributesForNantTask() {
-        Map hashMap = new HashMap();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put(OnCancelConfig.ON_CANCEL_OPTIONS, "nant");
-        Map valueMap = new HashMap();
+        Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(BuildTask.BUILD_FILE, "default.build");
         valueMap.put(BuildTask.TARGET, "compile");
         valueMap.put(BuildTask.WORKING_DIRECTORY, "pwd");
         valueMap.put(NantTask.NANT_PATH, "/usr/bin/nant");
         hashMap.put(OnCancelConfig.NANT_ON_CANCEL, valueMap);
-        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap());
-        hashMap.put(OnCancelConfig.ANT_ON_CANCEL, new HashMap());
-        hashMap.put(OnCancelConfig.RAKE_ON_CANCEL, new HashMap());
+        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap<>());
+        hashMap.put(OnCancelConfig.ANT_ON_CANCEL, new HashMap<>());
+        hashMap.put(OnCancelConfig.RAKE_ON_CANCEL, new HashMap<>());
 
         when(taskFactory.taskInstanceFor(new NantTask().getTaskType())).thenReturn(new NantTask());
         OnCancelConfig cancelConfig = OnCancelConfig.create(hashMap, taskFactory);
@@ -113,19 +112,19 @@ public class OnCancelConfigTest {
         expectedNantTask.setTarget("compile");
         expectedNantTask.setWorkingDirectory("pwd");
         expectedNantTask.setNantPath("/usr/bin/nant");
-        assertThat(cancelConfig.getTask(), is(expectedNantTask));
+        assertThat(cancelConfig.getTask()).isEqualTo(expectedNantTask);
     }
 
     @Test
     public void shouldSetPrimitiveAttributesForRakeTask() {
-        Map hashMap = new HashMap();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put(OnCancelConfig.ON_CANCEL_OPTIONS, "rake");
-        Map valueMap = new HashMap();
+        Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(BuildTask.BUILD_FILE, "rakefile");
         valueMap.put(BuildTask.TARGET, "build");
         valueMap.put(BuildTask.WORKING_DIRECTORY, "pwd");
         hashMap.put(OnCancelConfig.RAKE_ON_CANCEL, valueMap);
-        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap());
+        hashMap.put(OnCancelConfig.EXEC_ON_CANCEL, new HashMap<>());
 
         when(taskFactory.taskInstanceFor(new RakeTask().getTaskType())).thenReturn(new RakeTask());
         OnCancelConfig cancelConfig = OnCancelConfig.create(hashMap, taskFactory);
@@ -134,6 +133,6 @@ public class OnCancelConfigTest {
         expectedRakeTask.setBuildFile("rakefile");
         expectedRakeTask.setTarget("build");
         expectedRakeTask.setWorkingDirectory("pwd");
-        assertThat(cancelConfig.getTask(), is(expectedRakeTask));
+        assertThat(cancelConfig.getTask()).isEqualTo(expectedRakeTask);
     }
 }

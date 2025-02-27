@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateUtilsConcurrencyTest {
     @Test
@@ -67,7 +66,7 @@ public class DateUtilsConcurrencyTest {
         for (Thread thread : threads) {
             thread.join();
         }
-        assertThat(iHateMyLife.toString(), iHateMyLife.size(), is(0));
+        assertThat(iHateMyLife).describedAs(iHateMyLife.toString()).isEmpty();
     }
 
     private interface DoAction {

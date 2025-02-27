@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.server.materials;
 
+import com.thoughtworks.go.server.messaging.GoMessage;
 import com.thoughtworks.go.server.messaging.GoMessageTopic;
 import com.thoughtworks.go.server.messaging.MessagingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class MaterialUpdateCompletedTopic extends GoMessageTopic<MaterialUpdateCompletedMessage> {
 
     @Autowired
-    public MaterialUpdateCompletedTopic(MessagingService messaging) {
+    public MaterialUpdateCompletedTopic(MessagingService<GoMessage> messaging) {
         super(messaging, "material-update-completed");
     }
 }

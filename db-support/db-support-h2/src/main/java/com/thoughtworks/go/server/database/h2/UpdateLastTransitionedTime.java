@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class UpdateLastTransitionedTime implements Trigger {
     private static final int STAGE_ID = 4;
 
     @Override
-    public void init(Connection connection, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
+    public void init(Connection connection, String schemaName, String triggerName, String tableName, boolean before, int type) {
 
     }
 

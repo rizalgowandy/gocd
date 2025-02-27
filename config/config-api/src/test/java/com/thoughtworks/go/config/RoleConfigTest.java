@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class RoleConfigTest {
     }
 
     @Test
-    public void validate_uniquenessOfRoleName() throws Exception {
+    public void validate_uniquenessOfRoleName() {
         validateUniquenessOfRoleName(Role::validate);
     }
 
@@ -52,7 +52,7 @@ public class RoleConfigTest {
     }
 
     @Test
-    public void validateTree_uniquenessOfRoleName() throws Exception {
+    public void validateTree_uniquenessOfRoleName() {
         validateUniquenessOfRoleName((roleConfig, context) -> assertThat(roleConfig.validateTree(context)).isFalse());
     }
 
@@ -92,7 +92,7 @@ public class RoleConfigTest {
                 " contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.");
     }
 
-    public void validateUniquenessOfRoleName(Validator v) throws Exception {
+    public void validateUniquenessOfRoleName(Validator v) {
         RoleConfig role = new RoleConfig(new CaseInsensitiveString("admin"));
         SecurityConfig securityConfig = new SecurityConfig();
         ValidationContext validationContext = ValidationContextMother.validationContext(securityConfig);

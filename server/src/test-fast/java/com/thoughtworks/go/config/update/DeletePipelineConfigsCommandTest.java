@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -53,29 +52,29 @@ public class DeletePipelineConfigsCommandTest {
     }
 
     @Test
-    public void commandShouldDeletePipelineGroupWhenEmpty() throws Exception {
+    public void commandShouldDeletePipelineGroupWhenEmpty() {
         DeletePipelineConfigsCommand command = new DeletePipelineConfigsCommand(pipelineConfigs, new HttpLocalizedOperationResult(), user, securityService);
         command.update(cruiseConfig);
 
-        assertThat(cruiseConfig.hasPipelineGroup(pipelineConfigs.getGroup()), is(false));
+        assertThat(cruiseConfig.hasPipelineGroup(pipelineConfigs.getGroup())).isFalse();
     }
 
     @Test
-    public void commandShouldNotContinue_whenDeletingNonEmptyPipelineGroup() throws Exception {
+    public void commandShouldNotContinue_whenDeletingNonEmptyPipelineGroup() {
         pipelineConfigs.add(new PipelineConfig());
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         DeletePipelineConfigsCommand command = new DeletePipelineConfigsCommand(pipelineConfigs, result, user, securityService);
 
         command.canContinue(cruiseConfig);
 
-        assertThat(result.httpCode(), is(HttpStatus.SC_UNPROCESSABLE_ENTITY));
-        assertThat(result.message(), is("Failed to delete group group because it was not empty."));
+        assertThat(result.httpCode()).isEqualTo(HttpStatus.SC_UNPROCESSABLE_ENTITY);
+        assertThat(result.message()).isEqualTo("Failed to delete group group because it was not empty.");
     }
 
     @Test
     public void commandShouldBeValid() {
         DeletePipelineConfigsCommand command = new DeletePipelineConfigsCommand(pipelineConfigs, new HttpLocalizedOperationResult(), user, securityService);
-        assertThat(command.isValid(cruiseConfig), is(true));
+        assertThat(command.isValid(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -96,6 +95,6 @@ public class DeletePipelineConfigsCommandTest {
         DeletePipelineConfigsCommand command = new DeletePipelineConfigsCommand(pipelineConfigs, result, user, securityService);
 
         assertFalse(command.canContinue(cruiseConfig));
-        assertThat(result.httpCode(), is(HttpStatus.SC_FORBIDDEN));
+        assertThat(result.httpCode()).isEqualTo(HttpStatus.SC_FORBIDDEN);
     }
 }

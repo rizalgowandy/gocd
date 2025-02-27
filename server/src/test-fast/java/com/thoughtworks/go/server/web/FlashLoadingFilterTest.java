@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
@@ -60,11 +59,11 @@ public class FlashLoadingFilterTest {
                 flash = service.get(messageKey);
             }
         };
-        assertThat(messageKey, is(nullValue()));
+        assertThat(messageKey).isNull();
         filter.doFilter(req, res, filterChain);
-        assertThat(messageKey, not(nullValue()));
-        assertThat(flash.toString(), is("my message"));
-        assertThat(flash.getFlashClass(), is("error"));
+        assertThat(messageKey).isNotNull();
+        assertThat(flash.toString()).isEqualTo("my message");
+        assertThat(flash.getFlashClass()).isEqualTo("error");
     }
 
     @Test
@@ -88,8 +87,8 @@ public class FlashLoadingFilterTest {
         };
 
         filter.doFilter(req, res, filterChain);
-        assertThat(flash.toString(), is("my other message"));
-        assertThat(flash.getFlashClass(), is("warning"));
+        assertThat(flash.toString()).isEqualTo("my other message");
+        assertThat(flash.getFlashClass()).isEqualTo("warning");
     }
 
     @Test
@@ -105,17 +104,17 @@ public class FlashLoadingFilterTest {
             }
         };
         filter.doFilter(req, res, filterChain);
-        assertThat(flash.toString(), is("my message"));
+        assertThat(flash.toString()).isEqualTo("my message");
         try {
             service.get(messageKey);
             fail("attempt to load flash message should fail, as no thread local is cleared out");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("No flash context found, this call should only be made within a request."));
+            assertThat(e.getMessage()).isEqualTo("No flash context found, this call should only be made within a request.");
         }
     }
 
     @Test
-    public void shouldClearThreadContextInCaseOfExceptionAsWell() throws IOException, ServletException {
+    public void shouldClearThreadContextInCaseOfExceptionAsWell() {
         MockHttpServletRequest req = new MockHttpServletRequest();
         MockHttpServletResponse res = new MockHttpServletResponse();
 
@@ -131,25 +130,25 @@ public class FlashLoadingFilterTest {
             filter.doFilter(req, res, filterChain);
             fail("exception gobbled");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("exception here"));
+            assertThat(e.getMessage()).isEqualTo("exception here");
         }
-        assertThat(flash.toString(), is("my message"));
+        assertThat(flash.toString()).isEqualTo("my message");
 
         try {
             service.get(messageKey);
             fail("attempt to load flash message should fail, as no thread local is cleared out");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("No flash context found, this call should only be made within a request."));
+            assertThat(e.getMessage()).isEqualTo("No flash context found, this call should only be made within a request.");
         }
     }
 
     @Test
-    public void shouldFailForNonHttpReqeusts() throws IOException, ServletException {
+    public void shouldFailForNonHttpReqeusts() {
         try {
             filter.doFilter(mock(ServletRequest.class), mock(ServletResponse.class), new MockFilterChain());
             fail("should not process non HTTP requests");
         } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("OncePerRequestFilter just supports HTTP requests"));
+            assertThat(e.getMessage()).contains("OncePerRequestFilter just supports HTTP requests");
         }
     }
 }

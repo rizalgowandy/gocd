@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SCMConfigurationsTest {
     @Test
-    public void shouldGetAllSCMsSortedByDisplayOrder() throws Exception {
+    public void shouldGetAllSCMsSortedByDisplayOrder() {
         SCMConfiguration c1 = new SCMConfiguration("k1").with(SCMConfiguration.DISPLAY_ORDER, 2);
         SCMConfiguration c2 = new SCMConfiguration("k2").with(SCMConfiguration.DISPLAY_ORDER, 0);
         SCMConfiguration c3 = new SCMConfiguration("k3").with(SCMConfiguration.DISPLAY_ORDER, 1);
@@ -36,26 +35,26 @@ public class SCMConfigurationsTest {
 
         List<SCMConfiguration> scmConfigurationList = scmConfigurations.list();
 
-        assertThat(scmConfigurationList.get(0), is(c2));
-        assertThat(scmConfigurationList.get(1), is(c3));
-        assertThat(scmConfigurationList.get(2), is(c1));
+        assertThat(scmConfigurationList.get(0)).isEqualTo(c2);
+        assertThat(scmConfigurationList.get(1)).isEqualTo(c3);
+        assertThat(scmConfigurationList.get(2)).isEqualTo(c1);
     }
 
     @Test
-    public void shouldConstructSCMConfiguration() throws Exception {
+    public void shouldConstructSCMConfiguration() {
         SCMPropertyConfiguration scmPropertyConfiguration = new SCMPropertyConfiguration();
         scmPropertyConfiguration.add(new SCMProperty("k1", "v1").with(Property.SECURE, Boolean.TRUE));
 
         SCMConfigurations scmConfigurations = new SCMConfigurations(scmPropertyConfiguration);
 
-        assertThat(scmConfigurations.list().size(), is(1));
+        assertThat(scmConfigurations.list().size()).isEqualTo(1);
         SCMConfiguration scmConfiguration = scmConfigurations.list().get(0);
-        assertThat(scmConfiguration.getKey(), is("k1"));
-        assertThat(scmConfiguration.getValue(), is("v1"));
-        assertThat(scmConfiguration.getOption(SCMConfiguration.REQUIRED), is(true));
-        assertThat(scmConfiguration.getOption(SCMConfiguration.PART_OF_IDENTITY), is(true));
-        assertThat(scmConfiguration.getOption(SCMConfiguration.SECURE), is(true));
-        assertThat(scmConfiguration.getOption(SCMConfiguration.DISPLAY_NAME), is(""));
-        assertThat(scmConfiguration.getOption(SCMConfiguration.DISPLAY_ORDER), is(0));
+        assertThat(scmConfiguration.getKey()).isEqualTo("k1");
+        assertThat(scmConfiguration.getValue()).isEqualTo("v1");
+        assertThat(scmConfiguration.getOption(SCMConfiguration.REQUIRED)).isEqualTo(true);
+        assertThat(scmConfiguration.getOption(SCMConfiguration.PART_OF_IDENTITY)).isEqualTo(true);
+        assertThat(scmConfiguration.getOption(SCMConfiguration.SECURE)).isEqualTo(true);
+        assertThat(scmConfiguration.getOption(SCMConfiguration.DISPLAY_NAME)).isEqualTo("");
+        assertThat(scmConfiguration.getOption(SCMConfiguration.DISPLAY_ORDER)).isEqualTo(0);
     }
 }

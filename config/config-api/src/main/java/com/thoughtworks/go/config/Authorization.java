@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -256,9 +256,10 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
         configErrors.add(fieldName, message);
     }
 
+    @SuppressWarnings({"unchecked"})
     @Override
     public void setConfigAttributes(Object attributes) {
-        List<Map<String, Object>> attributeMap = (List) attributes;
+        List<Map<String, Object>> attributeMap = (List<Map<String, Object>>) attributes;
         for (Map<String, Object> userMap : attributeMap) {
             String name = (String) userMap.get(NAME);
             if (StringUtils.isBlank(name)) {
@@ -266,7 +267,7 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
             }
             UserType type = UserType.valueOf((String) userMap.get(TYPE));
             Admin admin = type.makeUser(name);
-            for (Map.Entry<String, String> privilegeEntry : ((Map<String, String>) ((List) userMap.get(PRIVILEGES)).get(0)).entrySet()) {
+            for (Map.Entry<String, String> privilegeEntry : ((List<Map<String, String>>) userMap.get(PRIVILEGES)).get(0).entrySet()) {
                 PrivilegeType privilegeType = PrivilegeType.valueOf(privilegeEntry.getKey().toUpperCase());
                 AdminsConfig privilegeGroup = privilegeType.group(this);
                 PrivilegeState state = PrivilegeState.valueOf(privilegeEntry.getValue());
@@ -398,7 +399,7 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
     }
 
     public List<PresentationElement> getUserAuthorizations() {
-        ArrayList<PresentationElement> list = new ArrayList<>();
+        List<PresentationElement> list = new ArrayList<>();
         Class<AdminUser> allowOnly = AdminUser.class;
         addPrivilegesForView(list, operationConfig, PrivilegeType.OPERATE, allowOnly, UserType.USER);
         addPrivilegesForView(list, viewConfig, PrivilegeType.VIEW, allowOnly, UserType.USER);
@@ -408,7 +409,7 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
     }
 
     public List<PresentationElement> getRoleAuthorizations() {
-        ArrayList<PresentationElement> list = new ArrayList<>();
+        List<PresentationElement> list = new ArrayList<>();
         Class<AdminRole> onlyOfType = AdminRole.class;
         addPrivilegesForView(list, operationConfig, PrivilegeType.OPERATE, onlyOfType, UserType.ROLE);
         addPrivilegesForView(list, viewConfig, PrivilegeType.VIEW, onlyOfType, UserType.ROLE);
@@ -422,8 +423,7 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
         return String.format("Authorization [view: %s] [operate: %s] [admins: %s] [allowGroupAdmins: %s]", viewConfig, operationConfig, adminsConfig, allowGroupAdmins);
     }
 
-    private void addPrivilegesForView(ArrayList<PresentationElement> list, final AdminsConfig privilegesCollection, final PrivilegeType privilegeType, final Class<? extends Admin> allowOnly,
-                                      final UserType type) {
+    private void addPrivilegesForView(List<PresentationElement> list, final AdminsConfig privilegesCollection, final PrivilegeType privilegeType, final Class<? extends Admin> allowOnly, final UserType type) {
         for (Admin admin : privilegesCollection) {
             if (allowOnly.isAssignableFrom(admin.getClass())) {
                 addPresentationPrivilege(admin, list, privilegeType, type);
@@ -431,7 +431,7 @@ public class Authorization implements Validatable, ParamsAttributeAware, ConfigO
         }
     }
 
-    private void addPresentationPrivilege(Admin admin, ArrayList<PresentationElement> list, PrivilegeType privilegeType, final UserType type) {
+    private void addPresentationPrivilege(Admin admin, List<PresentationElement> list, PrivilegeType privilegeType, final UserType type) {
         PresentationElement el = null;
         for (PresentationElement presentationElement : list) {
             if (presentationElement.getName().equals(CaseInsensitiveString.str(admin.getName()))) {

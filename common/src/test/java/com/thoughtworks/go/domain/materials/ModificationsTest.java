@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,45 +24,39 @@ import com.thoughtworks.go.domain.materials.scm.PluggableSCMMaterialRevision;
 import com.thoughtworks.go.helper.MaterialConfigsMother;
 import com.thoughtworks.go.helper.MaterialsMother;
 import com.thoughtworks.go.util.json.JsonHelper;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.thoughtworks.go.helper.ModificationsMother.aCheckIn;
 import static com.thoughtworks.go.helper.ModificationsMother.multipleCheckin;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModificationsTest {
 
     @Test
     public void shouldReturnUnknownForEmptyList() {
-        assertThat(new Modifications().getUsername(), is("Unknown"));
+        assertThat(new Modifications().getUsername()).isEqualTo("Unknown");
     }
 
     @Test
     public void shouldReturnFirstUsername() {
         Modification modification1 = new Modification("username1", "", null, new Date(), "1");
         Modification modification2 = new Modification("username2", "", null, new Date(), "2");
-        assertThat(new Modifications(modification1, modification2).getUsername(), is("username1"));
+        assertThat(new Modifications(modification1, modification2).getUsername()).isEqualTo("username1");
     }
 
     @Test
     public void shouldReturnUnknownRevisionForEmptyList() {
-        assertThat(new Modifications().getRevision(), is("Unknown"));
+        assertThat(new Modifications().getRevision()).isEqualTo("Unknown");
     }
 
     @Test
     public void shouldReturnFirstRevision() {
         Modification modification1 = new Modification(new Date(), "cruise/1.0/dev/1", "MOCK_LABEL-12", null);
         Modification modification2 = new Modification(new Date(), "cruise/1.0/dev/2", "MOCK_LABEL-12", null);
-        assertThat(new Modifications(modification1, modification2).getRevision(), is("cruise/1.0/dev/1"));
+        assertThat(new Modifications(modification1, modification2).getRevision()).isEqualTo("cruise/1.0/dev/1");
     }
 
     @Test
@@ -75,35 +69,35 @@ public class ModificationsTest {
         modifications.add(modification2);
 
         List<Modification> filtered = Modifications.filterOutRevision(modifications, new StringRevision("1"));
-        assertThat(filtered.size(), is(1));
-        assertThat(filtered.get(0), is(modification2));
+        assertThat(filtered.size()).isEqualTo(1);
+        assertThat(filtered.get(0)).isEqualTo(modification2);
     }
 
     @Test
     public void hasModificationShouldReturnCorrectResults() {
         Modifications modifications = modificationWithIds();
-        assertThat(modifications.hasModification(3), is(true));
-        assertThat(modifications.hasModification(2), is(true));
-        assertThat(modifications.hasModification(5), is(false));
-        assertThat(modifications.hasModification(0), is(false));
+        assertThat(modifications.hasModification(3)).isTrue();
+        assertThat(modifications.hasModification(2)).isTrue();
+        assertThat(modifications.hasModification(5)).isFalse();
+        assertThat(modifications.hasModification(0)).isFalse();
     }
 
     @Test
     public void hasModifcationResults() {
         Modifications modifications = modificationWithIds();
-        assertThat(modifications.since(3), is(new Modifications(modifcation(4))));
-        assertThat(modifications.since(2), is(new Modifications(modifcation(4), modifcation(3))));
+        assertThat(modifications.since(3)).isEqualTo(new Modifications(modifcation(4)));
+        assertThat(modifications.since(2)).isEqualTo(new Modifications(modifcation(4), modifcation(3)));
         try {
             modifications.since(10);
             fail("should throw exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Could not find modification 10 in " + modifications));
+            assertThat(e.getMessage()).isEqualTo("Could not find modification 10 in " + modifications);
         }
         try {
             modifications.since(6);
             fail("should throw exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Could not find modification 6 in " + modifications));
+            assertThat(e.getMessage()).isEqualTo("Could not find modification 6 in " + modifications);
         }
 
     }
@@ -118,17 +112,17 @@ public class ModificationsTest {
         final Modification modificationWithDifferentMaterial = modificationWith(MaterialsMother.hgMaterial("http://foo.com").createMaterialInstance(), "1");
 
         Modifications modifications = new Modifications(modification);
-        assertThat(modifications.containsRevisionFor(modification), is(true));
-        assertThat(modifications.containsRevisionFor(sameModification), is(true));
-        assertThat(modifications.containsRevisionFor(modificationWithDifferentRev), is(false));
-        assertThat(modifications.containsRevisionFor(modificationWithDifferentMaterial), is(true)); //note that its checking for revision and not material instance
+        assertThat(modifications.containsRevisionFor(modification)).isTrue();
+        assertThat(modifications.containsRevisionFor(sameModification)).isTrue();
+        assertThat(modifications.containsRevisionFor(modificationWithDifferentRev)).isFalse();
+        assertThat(modifications.containsRevisionFor(modificationWithDifferentMaterial)).isTrue(); //note that its checking for revision and not material instance
     }
 
     @Test
     public void shouldGetLatestModificationsForPackageMaterial() {
         Date timestamp = new Date();
         String revisionString = "123";
-        HashMap<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put("1", "one");
         data.put("2", "two");
         Modification modification = new Modification(null, null, null, timestamp, revisionString, JsonHelper.toJsonString(data));
@@ -136,20 +130,20 @@ public class ModificationsTest {
 
         Revision revision = modifications.latestRevision(new PackageMaterial());
 
-        assertThat(revision instanceof PackageMaterialRevision, is(true));
+        assertThat(revision instanceof PackageMaterialRevision).isTrue();
         PackageMaterialRevision packageMaterialRevision = (PackageMaterialRevision) revision;
-        assertThat(packageMaterialRevision.getRevision(), is(revisionString));
-        assertThat(packageMaterialRevision.getTimestamp(), is(timestamp));
-        assertThat(packageMaterialRevision.getData().size(), is(data.size()));
-        assertThat(packageMaterialRevision.getData().get("1"), is(data.get("1")));
-        assertThat(packageMaterialRevision.getData().get("2"), is(data.get("2")));
+        assertThat(packageMaterialRevision.getRevision()).isEqualTo(revisionString);
+        assertThat(packageMaterialRevision.getTimestamp()).isEqualTo(timestamp);
+        assertThat(packageMaterialRevision.getData().size()).isEqualTo(data.size());
+        assertThat(packageMaterialRevision.getData().get("1")).isEqualTo(data.get("1"));
+        assertThat(packageMaterialRevision.getData().get("2")).isEqualTo(data.get("2"));
     }
 
     @Test
     public void shouldGetLatestModificationsForPluggableSCMMaterial() {
         String revisionString = "123";
         Date timestamp = new Date();
-        HashMap<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put("1", "one");
         data.put("2", "two");
         Modification modification = new Modification(null, null, null, timestamp, revisionString, JsonHelper.toJsonString(data));
@@ -157,21 +151,21 @@ public class ModificationsTest {
 
         Revision revision = modifications.latestRevision(new PluggableSCMMaterial());
 
-        assertThat(revision instanceof PluggableSCMMaterialRevision, is(true));
+        assertThat(revision instanceof PluggableSCMMaterialRevision).isTrue();
         PluggableSCMMaterialRevision pluggableSCMMaterialRevision = (PluggableSCMMaterialRevision) revision;
-        assertThat(pluggableSCMMaterialRevision.getRevision(), is(revisionString));
-        assertThat(pluggableSCMMaterialRevision.getTimestamp(), is(timestamp));
-        assertThat(pluggableSCMMaterialRevision.getData().size(), is(data.size()));
-        assertThat(pluggableSCMMaterialRevision.getData().get("1"), is(data.get("1")));
-        assertThat(pluggableSCMMaterialRevision.getData().get("2"), is(data.get("2")));
+        assertThat(pluggableSCMMaterialRevision.getRevision()).isEqualTo(revisionString);
+        assertThat(pluggableSCMMaterialRevision.getTimestamp()).isEqualTo(timestamp);
+        assertThat(pluggableSCMMaterialRevision.getData().size()).isEqualTo(data.size());
+        assertThat(pluggableSCMMaterialRevision.getData().get("1")).isEqualTo(data.get("1"));
+        assertThat(pluggableSCMMaterialRevision.getData().get("2")).isEqualTo(data.get("2"));
     }
 
     @Test
     public void shouldNeverIgnorePackageMaterialModifications() {
         PackageMaterialConfig packageMaterialConfig = new PackageMaterialConfig();
         Filter filter = packageMaterialConfig.filter();
-        MatcherAssert.assertThat(filter, is(notNullValue()));
-        MatcherAssert.assertThat(new Modifications().shouldBeIgnoredByFilterIn(packageMaterialConfig), is(false));
+        assertThat(filter).isNotNull();
+        assertThat(new Modifications().shouldBeIgnoredByFilterIn(packageMaterialConfig)).isFalse();
     }
 
     @Test
@@ -181,7 +175,7 @@ public class ModificationsTest {
         materialConfig.setFilter(filter);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(false));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isFalse();
     }
 
     @Test
@@ -191,7 +185,7 @@ public class ModificationsTest {
         materialConfig.setFilter(filter);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf"), aCheckIn("100", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(false));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isFalse();
     }
 
     @Test
@@ -200,9 +194,9 @@ public class ModificationsTest {
         Filter filter = new Filter(List.of(new IgnoredFiles("*.doc"), new IgnoredFiles("*.pdf")));
         materialConfig.setFilter(filter);
 
-        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf"))).shouldBeIgnoredByFilterIn(materialConfig), is(true));
-        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.doc"))).shouldBeIgnoredByFilterIn(materialConfig), is(true));
-        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.pdf", "b.pdf"), aCheckIn("100", "a.doc", "b.doc"))).shouldBeIgnoredByFilterIn(materialConfig), is(true));
+        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf"))).shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
+        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.doc"))).shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
+        assertThat(new Modifications(multipleCheckin(aCheckIn("100", "a.pdf", "b.pdf"), aCheckIn("100", "a.doc", "b.doc"))).shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
     }
 
     @Test
@@ -213,7 +207,7 @@ public class ModificationsTest {
         materialConfig.setInvertFilter(true);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(true));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
     }
 
     @Test
@@ -223,7 +217,7 @@ public class ModificationsTest {
         materialConfig.setFilter(filter);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(true));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
     }
 
     @Test
@@ -234,7 +228,7 @@ public class ModificationsTest {
         materialConfig.setInvertFilter(true);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(false));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isFalse();
     }
 
     @Test
@@ -245,7 +239,7 @@ public class ModificationsTest {
         materialConfig.setInvertFilter(true);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.doc", "a.pdf", "a.java")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(true));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
     }
 
     @Test
@@ -256,7 +250,7 @@ public class ModificationsTest {
         materialConfig.setInvertFilter(true);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("100", "a.java", "foo", "bar.baz", "foo/bar.qux")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(true));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isTrue();
     }
 
     @Test
@@ -267,7 +261,7 @@ public class ModificationsTest {
         materialConfig.setInvertFilter(true);
 
         Modifications modifications = new Modifications(multipleCheckin(aCheckIn("101", "foo/bar.baz")));
-        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig), is(false));
+        assertThat(modifications.shouldBeIgnoredByFilterIn(materialConfig)).isFalse();
     }
 
     private Modifications modificationWithIds() {

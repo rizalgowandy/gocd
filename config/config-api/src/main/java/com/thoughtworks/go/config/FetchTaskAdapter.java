@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ public class FetchTaskAdapter implements Task {
         oneOf(fetchPluggableArtifactTask::validateAttributes, fetchTask::validateAttributes, validationContext);
     }
 
-    protected void setFetchTaskAttributes(Map attributeMap) {
+    protected void setFetchTaskAttributes(Map<String, ?> attributeMap) {
         oneOf(fetchPluggableArtifactTask::setFetchTaskAttributes, fetchTask::setFetchTaskAttributes, attributeMap);
     }
 

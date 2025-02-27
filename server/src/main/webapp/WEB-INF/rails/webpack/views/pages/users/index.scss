@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:color";
+@use "sass:map";
 @import "../../global/common";
 
 $spinner-wrapper-height: 100px;
@@ -31,9 +33,9 @@ $selected-table-row: #e2f7fa;
 }
 
 .gocd-role {
-  @include icon-before($type: $fa-var-circle, $color: $go-primary);
-
   display: inline-block;
+
+  @include icon-before($type: $fa-var-circle, $color: $go-primary);
 }
 
 .user-management-header {
@@ -46,7 +48,7 @@ $selected-table-row: #e2f7fa;
   background: $body-bg;
   top: 90px;
   padding: 15px 0;
-  z-index: map-get($zindex, user-management-header);
+  z-index: map.get($zindex, user-management-header);
 }
 
 .user-actions-and-counts {
@@ -79,7 +81,7 @@ $selected-table-row: #e2f7fa;
 .filter-dropdown-content {
   @include dropdown-content;
 
-  z-index: map_get($zindex, "users-management-filter");
+  z-index: map.get($zindex, "users-management-filter");
   top: 36px;
   right: 0;
   width: 570px;
@@ -139,15 +141,15 @@ $selected-table-row: #e2f7fa;
 }
 
 .role-gocd {
-  @include icon-before($type: $fa-var-circle, $color: $go-primary);
-
   font-size: 12px;
+
+  @include icon-before($type: $fa-var-circle, $color: $go-primary);
 }
 
 .role-plugin {
-  @include icon-before($type: $fa-var-circle, $color: $warning-txt);
-
   font-size: 12px;
+
+  @include icon-before($type: $fa-var-circle, $color: $warning-txt);
 }
 
 .search-user {
@@ -194,7 +196,7 @@ $selected-table-row: #e2f7fa;
   box-sizing: border-box;
   font-weight: 600;
   top: 155px;
-  z-index: map-get($zindex, user-management-table-header);
+  z-index: map.get($zindex, user-management-table-header);
 
   .has-message & {
     margin-top: 44px;
@@ -313,8 +315,8 @@ $selected-table-row: #e2f7fa;
   border: 1px solid transparent;
   position: relative;
   background-color: $alert;
-  color: darken($alert, 50%);
-  border-color: darken($alert, 10%);
+  color: color.adjust($alert, $lightness: -50%);
+  border-color: color.adjust($alert, $lightness: -10%);
 
   p {
     margin: 0;

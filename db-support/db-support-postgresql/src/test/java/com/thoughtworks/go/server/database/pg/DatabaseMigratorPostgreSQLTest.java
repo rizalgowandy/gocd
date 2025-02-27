@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @EnabledOnOs({OS.LINUX, OS.MAC})
 class DatabaseMigratorPostgreSQLTest extends AbstractMigratorIntegrationTest {
     @Container
-    private final JdbcDatabaseContainer postgresqlContainer = new PostgreSQLContainer("postgres:16");
+    private final JdbcDatabaseContainer<?> postgresqlContainer = new PostgreSQLContainer<>("postgres:17");
 
     @Test
     void shouldMigrate() throws Exception {

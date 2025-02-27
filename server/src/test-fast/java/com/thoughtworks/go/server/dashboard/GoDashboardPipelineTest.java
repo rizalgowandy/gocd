@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static com.thoughtworks.go.domain.PipelinePauseInfo.notPaused;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 public class GoDashboardPipelineTest {
     @Test
-    public void shouldKnowWhetherAUserCanViewIt() throws Exception {
+    public void shouldKnowWhetherAUserCanViewIt() {
         Permissions permissions = new Permissions(
                 new AllowedUsers(Set.of("viewer1", "viewer2"), Collections.emptySet()),
                 Everyone.INSTANCE,
@@ -49,15 +48,15 @@ public class GoDashboardPipelineTest {
 
         GoDashboardPipeline pipeline = new GoDashboardPipeline(new PipelineModel("pipeline1", false, false, notPaused()), permissions, "group1", mock(TimeStampBasedCounter.class), PipelineConfigMother.pipelineConfig("pipeline1"));
 
-        assertThat(pipeline.canBeViewedBy("viewer1"), is(true));
-        assertThat(pipeline.canBeViewedBy("viewer2"), is(true));
+        assertThat(pipeline.canBeViewedBy("viewer1")).isTrue();
+        assertThat(pipeline.canBeViewedBy("viewer2")).isTrue();
 
-        assertThat(pipeline.canBeViewedBy("some-other-user-not-in-viewers-list"), is(false));
-        assertThat(pipeline.canBeViewedBy("admin"), is(false));
+        assertThat(pipeline.canBeViewedBy("some-other-user-not-in-viewers-list")).isFalse();
+        assertThat(pipeline.canBeViewedBy("admin")).isFalse();
     }
 
     @Test
-    public void shouldKnowWhetherAUserCanOperateIt() throws Exception {
+    public void shouldKnowWhetherAUserCanOperateIt() {
         Permissions permissions = new Permissions(
                 NoOne.INSTANCE,
                 new AllowedUsers(Set.of("operator1"), Collections.emptySet()),
@@ -72,7 +71,7 @@ public class GoDashboardPipelineTest {
     }
 
     @Test
-    public void shouldKnowWhetherAUserCanAdministerIt() throws Exception {
+    public void shouldKnowWhetherAUserCanAdministerIt() {
         Permissions permissions = new Permissions(
                 NoOne.INSTANCE,
                 NoOne.INSTANCE,
@@ -87,7 +86,7 @@ public class GoDashboardPipelineTest {
     }
 
     @Test
-    public void shouldKnowWhetherAUserIsPipelineLevelOperator() throws Exception {
+    public void shouldKnowWhetherAUserIsPipelineLevelOperator() {
         PipelineConfig pipelineConfig = PipelineConfigMother.pipelineConfig("pipeline1");
         Permissions permissions = new Permissions(
                 NoOne.INSTANCE,
@@ -103,11 +102,11 @@ public class GoDashboardPipelineTest {
     }
 
     @Test
-    public void shouldSetTheLastUpdateTime() throws Exception {
+    public void shouldSetTheLastUpdateTime() {
         TimeStampBasedCounter provider = mock(TimeStampBasedCounter.class);
         when(provider.getNext()).thenReturn(1000L);
         GoDashboardPipeline pipeline = new GoDashboardPipeline(new PipelineModel("pipeline1", false, false, notPaused()), null, "group1", provider, PipelineConfigMother.pipelineConfig("pipeline1"));
 
-        assertThat(pipeline.getLastUpdatedTimeStamp(), is(1000L));
+        assertThat(pipeline.getLastUpdatedTimeStamp()).isEqualTo(1000L);
     }
 }

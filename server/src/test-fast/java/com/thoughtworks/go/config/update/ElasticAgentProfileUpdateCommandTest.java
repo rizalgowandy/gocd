@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,8 @@ import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 public class ElasticAgentProfileUpdateCommandTest {
@@ -37,28 +36,28 @@ public class ElasticAgentProfileUpdateCommandTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         currentUser = new Username("bob");
         goConfigService = mock(GoConfigService.class);
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
     }
 
     @Test
-    public void shouldRaiseErrorWhenUpdatingNonExistentProfile() throws Exception {
+    public void shouldRaiseErrorWhenUpdatingNonExistentProfile() {
         cruiseConfig.getElasticConfig().getProfiles().clear();
-        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(null, new ElasticProfile("foo", "prod-cluster"), null, null, new HttpLocalizedOperationResult(), null, null);
+        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(new ElasticProfile("foo", "prod-cluster"), null, new HttpLocalizedOperationResult(), null, null);
         assertThatThrownBy(() -> command.update(cruiseConfig)).isInstanceOf(RecordNotFoundException.class);
     }
 
     @Test
-    public void shouldUpdateExistingProfile() throws Exception {
+    public void shouldUpdateExistingProfile() {
         ElasticProfile oldProfile = new ElasticProfile("foo", "prod-cluster");
         ElasticProfile newProfile = new ElasticProfile("foo", "prod-cluster");
 
         cruiseConfig.getElasticConfig().getProfiles().add(oldProfile);
-        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(null, newProfile, null, null, null, null, null);
+        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(newProfile, null, null, null, null);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.getElasticConfig().getProfiles().find("foo"), is(equalTo(newProfile)));
+        assertThat(cruiseConfig.getElasticConfig().getProfiles().find("foo")).isEqualTo(newProfile);
     }
 
     @Test
@@ -75,16 +74,16 @@ public class ElasticAgentProfileUpdateCommandTest {
         when(entityHashingService.hashForEntity(oldProfile)).thenReturn("digest");
 
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(goConfigService, newProfile, null, currentUser, result, entityHashingService, "bad-digest");
+        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(newProfile, null, result, entityHashingService, "bad-digest");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result.toString(), containsString("Someone has modified the configuration for"));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result.toString()).contains("Someone has modified the configuration for");
     }
 
     @Test
     public void shouldEncryptSecurePluginProperties() {
         ElasticProfile elasticProfile = mock(ElasticProfile.class);
-        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(null, elasticProfile, null, null, null, null, null);
+        ElasticAgentProfileUpdateCommand command = new ElasticAgentProfileUpdateCommand(elasticProfile, null, null, null, null);
 
         BasicCruiseConfig preProcessedConfig = new BasicCruiseConfig();
         command.encrypt(preProcessedConfig);

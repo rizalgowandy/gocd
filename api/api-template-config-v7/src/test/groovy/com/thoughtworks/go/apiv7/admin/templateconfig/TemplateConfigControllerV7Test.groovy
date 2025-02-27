@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -264,7 +264,7 @@ class TemplateConfigControllerV7Test implements SecurityServiceTrait, Controller
     @Nested
     class AsAdmin {
 
-      private HttpLocalizedOperationResult result;
+      private HttpLocalizedOperationResult result
 
       @BeforeEach
       void setUp() {
@@ -324,7 +324,7 @@ class TemplateConfigControllerV7Test implements SecurityServiceTrait, Controller
     @Nested
     class AsAdmin {
 
-      private HttpLocalizedOperationResult result;
+      private HttpLocalizedOperationResult result
 
       @BeforeEach
       void setUp() {

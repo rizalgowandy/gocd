@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.thoughtworks.go.server.messaging.notifications;
 import com.thoughtworks.go.plugin.access.notification.NotificationExtension;
 import com.thoughtworks.go.plugin.infra.PluginManager;
 import com.thoughtworks.go.plugin.infra.plugininfo.GoPluginDescriptor;
+import com.thoughtworks.go.server.messaging.GoMessage;
 import com.thoughtworks.go.server.messaging.MessagingService;
 import com.thoughtworks.go.server.messaging.PluginAwareMessageQueue;
 import com.thoughtworks.go.server.messaging.activemq.JMSMessageListenerAdapter;
@@ -30,18 +31,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PluginNotificationsQueueHandlerTest {
     @Mock
-    private MessagingService messagingService;
+    private MessagingService<GoMessage> messagingService;
     @Mock
     private NotificationExtension notificationExtension;
     @Mock
@@ -53,7 +53,7 @@ public class PluginNotificationsQueueHandlerTest {
     private PluginNotificationsQueueHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         handler = new PluginNotificationsQueueHandler(messagingService, notificationExtension, pluginManager, systemEnvironment, serverHealthService);
     }
 
@@ -70,14 +70,14 @@ public class PluginNotificationsQueueHandlerTest {
         handler.pluginLoaded(getPluginDescriptor(pluginId1));
         handler.pluginLoaded(getPluginDescriptor(pluginId2));
         handler.pluginLoaded(getPluginDescriptor(pluginId3));
-        assertThat(handler.getQueues().size(), is(2));
-        PluginAwareMessageQueue queueForPlugin1 = handler.getQueues().get(pluginId1);
-        HashMap<String, ArrayList<JMSMessageListenerAdapter>> listenersForPlugin1 = ReflectionUtil.getField(queueForPlugin1, "listeners");
-        assertThat(listenersForPlugin1.get(pluginId1).size(), is(10));
+        assertThat(handler.getQueues().size()).isEqualTo(2);
+        PluginAwareMessageQueue<PluginNotificationMessage<?>> queueForPlugin1 = handler.getQueues().get(pluginId1);
+        Map<String, List<JMSMessageListenerAdapter<?>>> listenersForPlugin1 = ReflectionUtil.getField(queueForPlugin1, "listeners");
+        assertThat(listenersForPlugin1.get(pluginId1).size()).isEqualTo(10);
         assertFalse(handler.getQueues().containsKey(pluginId2));
-        PluginAwareMessageQueue queueForPlugin3 = handler.getQueues().get(pluginId3);
-        HashMap<String, ArrayList<JMSMessageListenerAdapter>> listenersForPlugin3 = ReflectionUtil.getField(queueForPlugin3, "listeners");
-        assertThat(listenersForPlugin3.get(pluginId3).size(), is(2));
+        PluginAwareMessageQueue<PluginNotificationMessage<?>> queueForPlugin3 = handler.getQueues().get(pluginId3);
+        Map<String, List<JMSMessageListenerAdapter<?>>> listenersForPlugin3 = ReflectionUtil.getField(queueForPlugin3, "listeners");
+        assertThat(listenersForPlugin3.get(pluginId3).size()).isEqualTo(2);
     }
 
     private GoPluginDescriptor getPluginDescriptor(String pluginId) {

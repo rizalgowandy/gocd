@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class DependencyMaterialUpdater implements MaterialUpdater {
 
     private void insertRevisionsForParentStagesAfter(DependencyMaterial dependencyMaterial, Modifications list) {
         Pagination pagination = Pagination.pageStartingAt(0, null, MaterialDatabaseUpdater.STAGES_PER_PAGE);
-        List<Modification> modifications = null;
+        List<Modification> modifications;
         do {
             modifications = dependencyMaterialSourceDao.getPassedStagesAfter(list.last().getRevision(), dependencyMaterial, pagination);
             for (Modification modification : modifications) {

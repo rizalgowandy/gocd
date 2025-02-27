@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ import static com.thoughtworks.go.helper.MaterialConfigsMother.packageMaterialCo
 import static com.thoughtworks.go.helper.PipelineConfigMother.createGroup;
 import static com.thoughtworks.go.helper.PipelineConfigMother.pipelineConfig;
 import static com.thoughtworks.go.serverhealth.HealthStateType.forbidden;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.lenient;
@@ -70,7 +69,7 @@ public class UpdatePackageRepositoryCommandTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = GoConfigMother.defaultCruiseConfig();
         repoId = "npmOrg";
@@ -81,35 +80,35 @@ public class UpdatePackageRepositoryCommandTest {
     }
 
     @Test
-    public void shouldUpdatePackageRepository() throws Exception {
+    public void shouldUpdatePackageRepository() {
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
-        assertThat(cruiseConfig.getPackageRepositories().size(), is(1));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(oldPackageRepo));
+        assertThat(cruiseConfig.getPackageRepositories().size()).isEqualTo(1);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(oldPackageRepo);
 
         command.update(cruiseConfig);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
-        assertThat(result, is(expectedResult));
-        assertThat(cruiseConfig.getPackageRepositories().size(), is(1));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(newPackageRepo));
+        assertThat(result).isEqualTo(expectedResult);
+        assertThat(cruiseConfig.getPackageRepositories().size()).isEqualTo(1);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(newPackageRepo);
     }
 
     @Test
-    public void shouldCopyPackagesFromOldRepositoryToTheUpdatedRepository() throws Exception {
+    public void shouldCopyPackagesFromOldRepositoryToTheUpdatedRepository() {
         PackageDefinition nodePackage = new PackageDefinition("foo", "bar", new Configuration());
         oldPackageRepo.setPackages(new Packages(nodePackage));
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(oldPackageRepo));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().size(), is(1));
-        assertThat(newPackageRepo.getPackages().size(), is(0));
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(oldPackageRepo);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().size()).isEqualTo(1);
+        assertThat(newPackageRepo.getPackages().size()).isEqualTo(0);
 
         command.update(cruiseConfig);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
-        assertThat(result, is(expectedResult));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId), is(newPackageRepo));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().size(), is(1));
-        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().first(), is(nodePackage));
+        assertThat(result).isEqualTo(expectedResult);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId)).isEqualTo(newPackageRepo);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().size()).isEqualTo(1);
+        assertThat(cruiseConfig.getPackageRepositories().find(repoId).getPackages().first()).isEqualTo(nodePackage);
     }
 
     @Test
@@ -138,15 +137,15 @@ public class UpdatePackageRepositoryCommandTest {
         PackageMaterialConfig materialConfig1 = cruiseConfig
                 .getPipelineConfigByName(new CaseInsensitiveString("p1")).packageMaterialConfigs().get(0);
 
-        assertThat(materialConfig1.getPackageDefinition().getRepository(), is(updatePackageRepo));
+        assertThat(materialConfig1.getPackageDefinition().getRepository()).isEqualTo(updatePackageRepo);
 
         PackageMaterialConfig materialConfig2 = cruiseConfig
                 .getPipelineConfigByName(new CaseInsensitiveString("p3")).packageMaterialConfigs().get(0);
 
-        assertThat(materialConfig2.getPackageDefinition().getRepository(), is(updatePackageRepo));
+        assertThat(materialConfig2.getPackageDefinition().getRepository()).isEqualTo(updatePackageRepo);
     }
     @Test
-    public void shouldNotUpdatePackageRepositoryIfTheSpecifiedPluginTypeIsInvalid() throws Exception {
+    public void shouldNotUpdatePackageRepositoryIfTheSpecifiedPluginTypeIsInvalid() {
         when(packageRepositoryService.validatePluginId(newPackageRepo)).thenReturn(false);
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
         command.update(cruiseConfig);
@@ -154,16 +153,16 @@ public class UpdatePackageRepositoryCommandTest {
     }
 
     @Test
-    public void shouldNotUpdatePackageRepositoryWhenRepositoryWithSpecifiedNameAlreadyExists() throws Exception {
+    public void shouldNotUpdatePackageRepositoryWhenRepositoryWithSpecifiedNameAlreadyExists() {
         cruiseConfig.getPackageRepositories().add(newPackageRepo);
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(newPackageRepo.errors().firstError(), is("You have defined multiple repositories called 'npmOrg'. Repository names are case-insensitive and must be unique."));
+        assertThat(newPackageRepo.errors().firstError()).isEqualTo("You have defined multiple repositories called 'npmOrg'. Repository names are case-insensitive and must be unique.");
     }
 
     @Test
-    public void shouldNotUpdatePackageRepositoryWhenRepositoryHasDuplicateConfigurationProperties() throws Exception {
+    public void shouldNotUpdatePackageRepositoryWhenRepositoryHasDuplicateConfigurationProperties() {
         ConfigurationProperty property = new ConfigurationProperty(new ConfigurationKey("foo"), new ConfigurationValue("bar"));
         Configuration configuration = new Configuration(property, property);
         newPackageRepo.setConfiguration(configuration);
@@ -172,33 +171,33 @@ public class UpdatePackageRepositoryCommandTest {
         command.update(cruiseConfig);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(property.errors().firstError(), is("Duplicate key 'foo' found for Repository 'npmOrg'"));
+        assertThat(property.errors().firstError()).isEqualTo("Duplicate key 'foo' found for Repository 'npmOrg'");
     }
 
     @Test
-    public void shouldNotUpdatePackageRepositoryWhenRepositoryHasInvalidName() throws Exception {
+    public void shouldNotUpdatePackageRepositoryWhenRepositoryHasInvalidName() {
         newPackageRepo.setName("~!@#$%^&*(");
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
         command.update(cruiseConfig);
 
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(newPackageRepo.errors().firstError(), is("Invalid PackageRepository name '~!@#$%^&*('. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters."));
+        assertThat(newPackageRepo.errors().firstError()).isEqualTo("Invalid PackageRepository name '~!@#$%^&*('. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.");
     }
 
     @Test
-    public void shouldNotContinueIfTheUserDontHavePermissionsToOperateOnPackageRepositories() throws Exception {
+    public void shouldNotContinueIfTheUserDontHavePermissionsToOperateOnPackageRepositories() {
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(false);
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.forbidden(EntityType.PackageRepository.forbiddenToEdit(newPackageRepo.getId(), currentUser.getUsername()), forbidden());
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    public void shouldNotContinueIfTheUserSubmittedStaleEtag() throws Exception {
+    public void shouldNotContinueIfTheUserSubmittedStaleEtag() {
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
         when(goConfigService.getPackageRepository(repoId)).thenReturn(oldPackageRepo);
         when(entityHashingService.hashForEntity(oldPackageRepo)).thenReturn("foobar");
@@ -207,8 +206,8 @@ public class UpdatePackageRepositoryCommandTest {
 
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectResult);
     }
 
     @Test
@@ -219,8 +218,8 @@ public class UpdatePackageRepositoryCommandTest {
 
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, "old-repo-id");
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectResult);
     }
 
     @Test
@@ -231,7 +230,7 @@ public class UpdatePackageRepositoryCommandTest {
 
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -242,6 +241,6 @@ public class UpdatePackageRepositoryCommandTest {
 
         UpdatePackageRepositoryCommand command = new UpdatePackageRepositoryCommand(goConfigService, packageRepositoryService, newPackageRepo, currentUser, "digest", entityHashingService, result, repoId);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 }

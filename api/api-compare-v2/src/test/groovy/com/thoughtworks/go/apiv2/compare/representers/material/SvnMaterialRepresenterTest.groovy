@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class SvnMaterialRepresenterTest implements MaterialRepresenterTrait {
 
   def existingMaterialWithErrors() {
     def svnConfig = svn(new UrlArgument(''), '', '', true, new GoCipher(), true, null, false, '', new CaseInsensitiveString('!nV@l!d'))
-    def materialConfigs = new MaterialConfigs(svnConfig);
+    def materialConfigs = new MaterialConfigs(svnConfig)
     materialConfigs.validateTree(PipelineConfigSaveValidationContext.forChain(true, "group", new BasicCruiseConfig(), new PipelineConfig()))
     return materialConfigs.get(0)
   }

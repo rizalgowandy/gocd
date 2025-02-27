@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,7 @@ import static com.thoughtworks.go.helper.MaterialConfigsMother.packageMaterialCo
 import static com.thoughtworks.go.helper.PipelineConfigMother.createGroup;
 import static com.thoughtworks.go.helper.PipelineConfigMother.pipelineConfig;
 import static com.thoughtworks.go.serverhealth.HealthStateType.forbidden;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
@@ -76,7 +74,7 @@ public class UpdatePackageConfigCommandTest {
     private GoConfigService goConfigService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         currentUser = new Username(new CaseInsensitiveString("user"));
         cruiseConfig = new GoConfigMother().defaultCruiseConfig();
 
@@ -98,11 +96,11 @@ public class UpdatePackageConfigCommandTest {
     }
 
     @Test
-    public void shouldUpdateTheSpecifiedPackage() throws Exception {
+    public void shouldUpdateTheSpecifiedPackage() {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
-        assertThat(cruiseConfig.getPackageRepositories().findPackageDefinitionWith(packageUuid), is(oldPackageDefinition));
+        assertThat(cruiseConfig.getPackageRepositories().findPackageDefinitionWith(packageUuid)).isEqualTo(oldPackageDefinition);
         command.update(cruiseConfig);
-        assertThat(cruiseConfig.getPackageRepositories().findPackageDefinitionWith(packageUuid), is(newPackageDefinition));
+        assertThat(cruiseConfig.getPackageRepositories().findPackageDefinitionWith(packageUuid)).isEqualTo(newPackageDefinition);
     }
 
     @Test
@@ -130,27 +128,27 @@ public class UpdatePackageConfigCommandTest {
         PackageMaterialConfig materialConfig1 = cruiseConfig
                 .getPipelineConfigByName(new CaseInsensitiveString("p1")).packageMaterialConfigs().get(0);
 
-        assertThat(materialConfig1.getPackageDefinition(), is(newPackageDefinition));
+        assertThat(materialConfig1.getPackageDefinition()).isEqualTo(newPackageDefinition);
 
         PackageMaterialConfig materialConfig2 = cruiseConfig
                 .getPipelineConfigByName(new CaseInsensitiveString("p3")).packageMaterialConfigs().get(0);
 
-        assertThat(materialConfig2.getPackageDefinition(), is(newPackageDefinition));
+        assertThat(materialConfig2.getPackageDefinition()).isEqualTo(newPackageDefinition);
     }
 
     @Test
-    public void shouldNotContinueIfTheUserDontHavePermissionsToOperateOnPackages() throws Exception {
+    public void shouldNotContinueIfTheUserDontHavePermissionsToOperateOnPackages() {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(false);
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.forbidden(EntityType.PackageDefinition.forbiddenToEdit(newPackageDefinition.getId(), currentUser.getUsername()), forbidden());
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    public void shouldNotContinueIfTheUserSubmitsStaleEtag() throws Exception {
+    public void shouldNotContinueIfTheUserSubmitsStaleEtag() {
         newPackageDefinition.setRepository(new PackageRepository(oldPackageDefinition.getRepository().getId(), "name", null, null));
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "stale-etag", this.entityHashingService, result, packageDefinitionService);
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
@@ -159,12 +157,12 @@ public class UpdatePackageConfigCommandTest {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.stale(EntityType.PackageDefinition.staleConfig(oldPackageDefinition.getId()));
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    public void shouldValidateIfPackageNameIsNull() throws Exception {
+    public void shouldValidateIfPackageNameIsNull() {
         PackageRepository repository = cruiseConfig.getPackageRepositories().find("repoId");
         PackageDefinition pkg = new PackageDefinition("Id", null, new Configuration());
         pkg.setRepository(repository);
@@ -173,12 +171,12 @@ public class UpdatePackageConfigCommandTest {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, pkg, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(pkg.errors().size(), is(1));
-        assertThat(pkg.errors().firstError(), is("Package name is mandatory"));
+        assertThat(pkg.errors().size()).isEqualTo(1);
+        assertThat(pkg.errors().firstError()).isEqualTo("Package name is mandatory");
     }
 
     @Test
-    public void shouldValidateIfPackageNameIsInvalid() throws Exception {
+    public void shouldValidateIfPackageNameIsInvalid() {
         PackageRepository repository = cruiseConfig.getPackageRepositories().find("repoId");
         PackageDefinition pkg = new PackageDefinition("Id", "!$#", new Configuration());
         pkg.setRepository(repository);
@@ -187,12 +185,12 @@ public class UpdatePackageConfigCommandTest {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, pkg, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(pkg.errors().size(), is(1));
-        assertThat(pkg.errors().firstError(), is("Invalid Package name '!$#'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters."));
+        assertThat(pkg.errors().size()).isEqualTo(1);
+        assertThat(pkg.errors().firstError()).isEqualTo("Invalid Package name '!$#'. This must be alphanumeric and can contain underscores, hyphens and periods (however, it cannot start with a period). The maximum allowed length is 255 characters.");
     }
 
     @Test
-    public void shouldValidateDuplicatePropertiesInConfiguration() throws Exception {
+    public void shouldValidateDuplicatePropertiesInConfiguration() {
         PackageRepository repository = cruiseConfig.getPackageRepositories().find("repoId");
         ConfigurationProperty property = new ConfigurationProperty(new ConfigurationKey("key"), new ConfigurationValue("value"));
         Configuration configuration = new Configuration();
@@ -205,11 +203,11 @@ public class UpdatePackageConfigCommandTest {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, pkg, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(pkg.getAllErrors().toString(), containsString("Duplicate key 'key' found for Package 'prettyjson'"));
+        assertThat(pkg.getAllErrors().toString()).contains("Duplicate key 'key' found for Package 'prettyjson'");
     }
 
     @Test
-    public void shouldValidateDuplicatePackageName() throws Exception {
+    public void shouldValidateDuplicatePackageName() {
         PackageRepository repository = cruiseConfig.getPackageRepositories().find("repoId");
         PackageDefinition pkg = new PackageDefinition("Id", newPackageName, new Configuration());
         pkg.setRepository(repository);
@@ -218,12 +216,12 @@ public class UpdatePackageConfigCommandTest {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(newPackageDefinition.errors().size(), is(1));
-        assertThat(newPackageDefinition.errors().firstError(), is("You have defined multiple packages called 'prettyjson'. Package names are case-insensitive and must be unique within a repository."));
+        assertThat(newPackageDefinition.errors().size()).isEqualTo(1);
+        assertThat(newPackageDefinition.errors().firstError()).isEqualTo("You have defined multiple packages called 'prettyjson'. Package names are case-insensitive and must be unique within a repository.");
     }
 
     @Test
-    public void shouldValidateDuplicateIdentity() throws Exception {
+    public void shouldValidateDuplicateIdentity() {
         PackageRepository repository = cruiseConfig.getPackageRepositories().find("repoId");
         PackageDefinition pkg = new PackageDefinition("Id", "name", configuration);
         pkg.setRepository(repository);
@@ -232,8 +230,8 @@ public class UpdatePackageConfigCommandTest {
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
         command.update(cruiseConfig);
         assertFalse(command.isValid(cruiseConfig));
-        assertThat(newPackageDefinition.errors().size(), is(1));
-        assertThat(newPackageDefinition.errors().firstError(), is("Cannot save package or repo, found duplicate packages. [Repo Name: 'repoName', Package Name: 'name'], [Repo Name: 'repoName', Package Name: 'prettyjson']"));
+        assertThat(newPackageDefinition.errors().size()).isEqualTo(1);
+        assertThat(newPackageDefinition.errors().firstError()).isEqualTo("Cannot save package or repo, found duplicate packages. [Repo Name: 'repoName', Package Name: 'name'], [Repo Name: 'repoName', Package Name: 'prettyjson']");
     }
 
     @Test
@@ -246,7 +244,7 @@ public class UpdatePackageConfigCommandTest {
         newPackageDefinition.setRepository(new PackageRepository(oldPackageDefinition.getRepository().getId(), "name", null, null));
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -259,7 +257,7 @@ public class UpdatePackageConfigCommandTest {
         newPackageDefinition.setRepository(new PackageRepository(oldPackageDefinition.getRepository().getId(), "name", null, null));
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, packageUuid, newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
 
-        assertThat(command.canContinue(cruiseConfig), is(true));
+        assertThat(command.canContinue(cruiseConfig)).isTrue();
     }
 
     @Test
@@ -271,12 +269,12 @@ public class UpdatePackageConfigCommandTest {
         newPackageDefinition.setRepository(new PackageRepository(oldPackageDefinition.getRepository().getId(), "name", null, null));
         UpdatePackageConfigCommand command = new UpdatePackageConfigCommand(goConfigService, "old-package-id", newPackageDefinition, currentUser, "digest", this.entityHashingService, result, packageDefinitionService);
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectResult);
     }
 
     @Test
-    public void shouldNotContinueIfTheRepositoryToWhichThePackageBelongsDoesNotExist() throws Exception {
+    public void shouldNotContinueIfTheRepositoryToWhichThePackageBelongsDoesNotExist() {
         when(goConfigService.isUserAdmin(currentUser)).thenReturn(true);
         cruiseConfig.setPackageRepositories(new PackageRepositories());
         newPackageDefinition.setRepository(new PackageRepository("id", "name", null, null));
@@ -284,8 +282,8 @@ public class UpdatePackageConfigCommandTest {
         HttpLocalizedOperationResult expectedResult = new HttpLocalizedOperationResult();
         expectedResult.unprocessableEntity(EntityType.PackageRepository.notFoundMessage("id"));
 
-        assertThat(command.canContinue(cruiseConfig), is(false));
-        assertThat(result, is(expectedResult));
+        assertThat(command.canContinue(cruiseConfig)).isFalse();
+        assertThat(result).isEqualTo(expectedResult);
         newPackageDefinition.setRepository(null);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,14 +76,14 @@ public abstract class BuildTask extends AbstractTask implements CommandTask {
     }
 
     @Override
-    protected final void setTaskConfigAttributes(Map attributeMap) {
+    protected final void setTaskConfigAttributes(Map<String, ?> attributeMap) {
         buildFile = inferValueFromMap(attributeMap, BUILD_FILE);
         target = inferValueFromMap(attributeMap, TARGET);
         workingDirectory = inferValueFromMap(attributeMap, WORKING_DIRECTORY);
         setBuildTaskConfigAttributes(attributeMap);
     }
 
-    protected String inferValueFromMap(Map attributeMap, String key) {
+    protected String inferValueFromMap(Map<String, ?> attributeMap, String key) {
         String value = null;
         if (attributeMap.containsKey(key) && !StringUtils.isBlank((String) attributeMap.get(key))) {
             value = (String) attributeMap.get(key);
@@ -91,7 +91,7 @@ public abstract class BuildTask extends AbstractTask implements CommandTask {
         return value;
     }
 
-    protected void setBuildTaskConfigAttributes(Map attributeMap) {
+    protected void setBuildTaskConfigAttributes(Map<String, ?> attributeMap) {
     }
 
     @Override
@@ -148,7 +148,7 @@ public abstract class BuildTask extends AbstractTask implements CommandTask {
 
     @Override
     public List<TaskProperty> getPropertiesForDisplay() {
-        ArrayList<TaskProperty> taskProperties = new ArrayList<>();
+        List<TaskProperty> taskProperties = new ArrayList<>();
         if (!StringUtils.isBlank(buildFile)) {
             taskProperties.add(new TaskProperty("Build File", buildFile));
         }

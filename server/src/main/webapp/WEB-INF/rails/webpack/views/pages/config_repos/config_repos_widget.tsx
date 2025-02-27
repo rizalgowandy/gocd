@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,7 +310,7 @@ export class ConfigReposWidget extends MithrilViewComponent<CollectionAttrs> {
       <li>GoCD can utilize the pipeline definitions stored in an external source code repository (either in your application’s repository, or in a
         separate repository).
       </li>
-      <li>You can read more about config repositories from <Link target="_blank" href={docsUrl('advanced_usage/pipelines_as_code.html')}>here</Link>.
+      <li>You can read more about config repositories from <Link href={docsUrl('advanced_usage/pipelines_as_code.html')} target="_blank" externalLinkIcon={true}>here</Link>.
       </li>
     </ul>;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.thoughtworks.go.helper.AccessTokenMother.randomAccessToken;
 import static com.thoughtworks.go.helper.AccessTokenMother.randomAccessTokenForUser;
@@ -199,7 +200,7 @@ public class AccessTokenSqlMapDaoIntegrationTest {
 
     @Test
     public void adminsShouldBeAbleToLoadTokensRevokedByAnyone() {
-        String user = RandomStringUtils.random(32);
+        String user = RandomStringUtils.insecure().next(32);
 
         AccessToken token = randomAccessTokenForUser(user);
 
@@ -211,7 +212,7 @@ public class AccessTokenSqlMapDaoIntegrationTest {
 
     @Test
     public void adminsShouldBeAbleToLoadTokensRevokedBecauseOfUserDeletionButUsersCannot() {
-        String user = RandomStringUtils.random(32);
+        String user = RandomStringUtils.insecure().next(32);
 
         AccessToken token = randomAccessTokenForUser(user);
 
@@ -236,7 +237,7 @@ public class AccessTokenSqlMapDaoIntegrationTest {
         now.plusHours(2);
         final Timestamp lastUsedTimeForToken2 = new Timestamp(now.getMillis());
 
-        final HashMap<Long, Timestamp> accessTokenIdToLastUsedTimestamp = new HashMap<>();
+        final Map<Long, Timestamp> accessTokenIdToLastUsedTimestamp = new HashMap<>();
         accessTokenIdToLastUsedTimestamp.put(token1.getId(), lastUsedTimeForToken1);
         accessTokenIdToLastUsedTimestamp.put(token2.getId(), lastUsedTimeForToken2);
 

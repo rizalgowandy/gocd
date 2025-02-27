@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +111,8 @@ class ElasticAgentPluginServiceTest {
     private JobInstanceSqlMapDao jobInstanceSqlMapDao;
 
     @BeforeEach
-    void setUp() throws Exception {
-        ArrayList<PluginDescriptor> plugins = new ArrayList<>();
+    void setUp() {
+        List<PluginDescriptor> plugins = new ArrayList<>();
         plugins.add(GoPluginDescriptor.builder().id("p1").isBundledPlugin(true).build());
         plugins.add(GoPluginDescriptor.builder().id("p2").isBundledPlugin(true).build());
         plugins.add(GoPluginDescriptor.builder().id("docker").isBundledPlugin(true).build());
@@ -207,7 +206,7 @@ class ElasticAgentPluginServiceTest {
     }
 
     @Test
-    void shouldPostCreateAgentMessageWithTimeToLiveLesserThanJobStarvationThreshold() throws Exception {
+    void shouldPostCreateAgentMessageWithTimeToLiveLesserThanJobStarvationThreshold() {
         JobPlan plan1 = plan(1, "docker");
         JobPlan plan2 = plan(2, "docker");
         when(goConfigService.elasticJobStarvationThreshold()).thenReturn(20000L);
@@ -529,7 +528,7 @@ class ElasticAgentPluginServiceTest {
     class RescheduleTheJobs {
         // See the issue #6328 for more details
         @Test
-        void shouldRescheduleTheJobNotHavingClusterProfile() throws IOException, IllegalArtifactLocationException {
+        void shouldRescheduleTheJobNotHavingClusterProfile() throws IllegalArtifactLocationException {
             JobPlan jobPlan = planWithoutClusterProfile(1);
             jobPlan.setClusterProfile(null);
 
@@ -639,7 +638,7 @@ class ElasticAgentPluginServiceTest {
         }
 
         @Test
-        void shouldFailIfSecretResolutionFails_createAgentsFor() throws IOException, IllegalArtifactLocationException {
+        void shouldFailIfSecretResolutionFails_createAgentsFor() throws IllegalArtifactLocationException {
             ConfigurationProperty k1 = ConfigurationPropertyMother.create("k1", "{{SECRET:[config_id][key]}}");
             JobPlan plan1 = plan(1, "docker");
             JobPlan plan2 = plan(2, "docker");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ public class ClusterProfilesControllerV1 extends ApiController implements SparkS
         return writerForTopLevelObject(request, response, jsonWriter(clusterProfile));
     }
 
-    public String create(Request request, Response response) throws IOException {
+    public String create(Request request, Response response) {
         ClusterProfile clusterProfile = buildEntityFromRequestBody(request);
         haltIfEntityWithSameIdExists(clusterProfile);
 
@@ -141,7 +141,7 @@ public class ClusterProfilesControllerV1 extends ApiController implements SparkS
         return handleSimpleMessageResponse(res, result);
     }
 
-    public String update(Request request, Response response) throws IOException {
+    public String update(Request request, Response response) {
         final String profileId = request.params("cluster_id");
         final ClusterProfile existingClusterProfile = fetchEntityFromConfig(profileId);
         final ClusterProfile newClusterProfile = buildEntityFromRequestBody(request);

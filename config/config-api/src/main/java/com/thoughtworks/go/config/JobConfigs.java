@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,10 +107,11 @@ public class JobConfigs extends BaseCollection<JobConfig> implements Validatable
     public void setConfigAttributes(Object attributes) {
         setConfigAttributes(attributes, null);
     }
+
     public void setConfigAttributes(Object attributes, TaskFactory taskFactory) {
         this.clear();
         if (attributes != null) {
-            for (Object attribute : (List) attributes) {
+            for (Object attribute : (List<?>) attributes) {
                 JobConfig job = new JobConfig();
                 job.setConfigAttributes(attribute, taskFactory);
                 this.addJobWithoutValidityAssertion(job);

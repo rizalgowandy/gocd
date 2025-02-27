@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class Configuration extends BaseCollection<ConfigurationProperty> impleme
     }
 
     public String forDisplay(List<ConfigurationProperty> propertiesToDisplay) {
-        ArrayList<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         for (ConfigurationProperty property : propertiesToDisplay) {
             if (!property.isSecure()) {
                 list.add(format("%s=%s", property.getConfigurationKey().getName().toLowerCase(), property.getConfigurationValue().getValue()));
@@ -60,17 +60,16 @@ public class Configuration extends BaseCollection<ConfigurationProperty> impleme
 
     public void setConfigAttributes(Object attributes, SecureKeyInfoProvider secureKeyInfoProvider) {
         this.clear();
-        Map attributesMap = (Map) attributes;
-        for (Object o : attributesMap.values()) {
-            Map configurationAttributeMap = (Map) o;
+        @SuppressWarnings("unchecked") Map<String, ?> attributesMap = (Map<String, ?>) attributes;
+        for (Object configurationAttributes : attributesMap.values()) {
             ConfigurationProperty configurationProperty = new ConfigurationProperty();
-            configurationProperty.setConfigAttributes(configurationAttributeMap, secureKeyInfoProvider);
+            configurationProperty.setConfigAttributes(configurationAttributes, secureKeyInfoProvider);
             this.add(configurationProperty);
         }
     }
 
     public List<String> listOfConfigKeys() {
-        ArrayList<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         for (ConfigurationProperty configurationProperty : this) {
             list.add(configurationProperty.getConfigurationKey().getName());
         }
@@ -120,7 +119,7 @@ public class Configuration extends BaseCollection<ConfigurationProperty> impleme
     }
 
     public void validateUniqueness(String entity) {
-        HashMap<String, ConfigurationProperty> map = new HashMap<>();
+        Map<String, ConfigurationProperty> map = new HashMap<>();
         for (ConfigurationProperty property : this) {
             property.validateKeyUniqueness(map, entity);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import com.thoughtworks.go.server.scheduling.ScheduleOptions;
 import com.thoughtworks.go.server.service.result.ServerHealthStateOperationResult;
 import com.thoughtworks.go.server.transaction.TransactionTemplate;
 import com.thoughtworks.go.util.GoConfigFileHelper;
-import com.thoughtworks.go.util.ReflectionUtil;
 import com.thoughtworks.go.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -61,8 +60,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.thoughtworks.go.helper.MaterialConfigsMother.svn;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -125,13 +123,13 @@ public class BuildCauseProducerServiceWithFlipModificationTest {
     }
 
     @Test
-    public void shouldHaveModificationChangedAsFalseWhenForceBuildWithoutModification() throws Exception {
+    public void shouldHaveModificationChangedAsFalseWhenForceBuildWithoutModification() {
         mingleConfig = configHelper.addPipeline(PIPELINE_NAME, STAGE_NAME, svnMaterialConfig, "unit",
                 "functional");
         consume(buildCause());
 
-        final HashMap<String, String> revisions = new HashMap<>();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         buildCauseProducer.manualProduceBuildCauseAndSave(PIPELINE_NAME, new Username(new CaseInsensitiveString("pavan")), new ScheduleOptions(revisions, environmentVariables, new HashMap<>()), new ServerHealthStateOperationResult());
 
         verifyBuildCauseHasModificationsWith(pipelineScheduleQueue.toBeScheduled(), false);
@@ -143,8 +141,8 @@ public class BuildCauseProducerServiceWithFlipModificationTest {
         consume(buildCause());
 
         svnRepository.checkInOneFile("abc");
-        final HashMap<String, String> revisions = new HashMap<>();
-        final HashMap<String, String> environmentVariables = new HashMap<>();
+        final Map<String, String> revisions = new HashMap<>();
+        final Map<String, String> environmentVariables = new HashMap<>();
         buildCauseProducer.manualProduceBuildCauseAndSave(PIPELINE_NAME, new Username(new CaseInsensitiveString("pavan")), new ScheduleOptions(revisions, environmentVariables, new HashMap<>()), new ServerHealthStateOperationResult());
         verifyBuildCauseHasModificationsWith(pipelineScheduleQueue.toBeScheduled(), true);
     }
@@ -197,7 +195,7 @@ public class BuildCauseProducerServiceWithFlipModificationTest {
 
     private BuildCause buildCauseForPipeline() {
         BuildCause buildCause = pipelineScheduleQueue.toBeScheduled().get(new CaseInsensitiveString(PIPELINE_NAME));
-        assertThat("Should be scheduled", buildCause, is(not(nullValue())));
+        assertThat(buildCause).isNotNull();
         return buildCause;
     }
 
@@ -228,18 +226,16 @@ public class BuildCauseProducerServiceWithFlipModificationTest {
         for (BuildCause buildCause : load.values()) {
             for (MaterialRevision revision : buildCause.getMaterialRevisions()) {
                 if (revision.getMaterial() instanceof HgMaterial) {
-                    assertThat(revision.isChanged(), is(false));
+                    assertThat(revision.isChanged()).isFalse();
                 } else {
-                    assertThat(revision.isChanged(), is(true));
+                    assertThat(revision.isChanged()).isTrue();
                 }
             }
         }
     }
 
-    private void preparePipelineWithMaterial() throws Exception {
+    private void preparePipelineWithMaterial() {
         SvnMaterial svnMaterial = new SvnMaterial(repository);
-        ReflectionUtil.setField(svnMaterial, ScmMaterialConfig.FOLDER, "asc");
-        ReflectionUtil.invoke(svnMaterial, "resetCachedIdentityAttributes");
 
         MaterialConfigs materialConfigs = new MaterialConfigs();
         materialConfigs.add(svnMaterial.config());
@@ -252,7 +248,7 @@ public class BuildCauseProducerServiceWithFlipModificationTest {
 
     private void assertBuildCauseWithModificationHasChangedStatus(boolean changed, BuildCause buildCause) {
         for (MaterialRevision revision : buildCause.getMaterialRevisions()) {
-            assertThat(revision.isChanged(), is(changed));
+            assertThat(revision.isChanged()).isEqualTo(changed);
         }
     }
 }

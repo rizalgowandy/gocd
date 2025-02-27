@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class ParamsConfig extends BaseCollection<ParamConfig> implements Validat
     }
     @Override
     public void validate(ValidationContext validationContext) {
-        HashMap<String, ParamConfig> paramConfigMap = new HashMap<>();
+        Map<String, ParamConfig> paramConfigMap = new HashMap<>();
         for (ParamConfig paramConfig : this) {
             paramConfig.validateName(paramConfigMap, validationContext);
         }
@@ -108,12 +108,13 @@ public class ParamsConfig extends BaseCollection<ParamConfig> implements Validat
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public void setConfigAttributes(Object attributes) {
         if (attributes != null) {
             this.clear();
-            for (Map attributeMap : (List<Map>) attributes) {
-                String name = (String) attributeMap.get(ParamConfig.NAME);
-                String value = (String) attributeMap.get(ParamConfig.VALUE);
+            for (Map<String, String> attributeMap : (List<Map<String, String>>) attributes) {
+                String name = attributeMap.get(ParamConfig.NAME);
+                String value = attributeMap.get(ParamConfig.VALUE);
                 if (StringUtils.isBlank(name) && StringUtils.isBlank(value)) {
                     continue;
                 }

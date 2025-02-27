@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public class GoFileConfigDataSource {
         void performingReload(ReloadTestResult reloadTestResult);
     }
 
-    static class GoConfigSaveResult {
+    public static class GoConfigSaveResult {
         private final GoConfigHolder configHolder;
         private final ConfigSaveState configSaveState;
 
@@ -328,9 +328,7 @@ public class GoFileConfigDataSource {
         }
     }
 
-    //  This method should be removed once we have API's for all entities which should use writeEntityWithLock and full config save should use writeFullConfigWithLock
-    @TestOnly
-    public synchronized GoConfigSaveResult writeWithLock(UpdateConfigCommand updatingCommand, GoConfigHolder configHolder) {
+    synchronized GoConfigSaveResult writeWithLock(UpdateConfigCommand updatingCommand, GoConfigHolder configHolder) {
         try {
 
             // Need to convert to xml before we try to write it to the config file.

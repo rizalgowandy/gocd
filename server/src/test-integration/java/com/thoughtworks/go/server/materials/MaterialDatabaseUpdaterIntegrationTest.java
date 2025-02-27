@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -95,8 +94,8 @@ public class MaterialDatabaseUpdaterIntegrationTest {
     @Test
     public void shouldNotThrowUpWhenSameMaterialIsBeingUpdatedByMultipleThreads() throws Exception {
         final ScmMaterial material = new GitMaterial(testRepo.projectRepositoryUrl());
-        final List<Exception> threadOneExceptions = new ArrayList();
-        final List<Exception> threadTwoExceptions = new ArrayList();
+        final List<Exception> threadOneExceptions = new ArrayList<>();
+        final List<Exception> threadTwoExceptions = new ArrayList<>();
 
         Thread updateThread1 = new Thread(() -> {
             try {
@@ -127,7 +126,7 @@ public class MaterialDatabaseUpdaterIntegrationTest {
         if (!threadTwoExceptions.isEmpty()) {
             throw threadTwoExceptions.get(0);
         }
-        assertThat("transaction template executeWithExceptionHandling should be invoked only once",transactionTemplateWithInvocationCount.invocationCount, is(1));
+        assertThat(transactionTemplateWithInvocationCount.invocationCount).isEqualTo(1);
     }
 
     private class MaterialServiceWhichSlowsDownFirstTimeModificationCheck extends MaterialService {

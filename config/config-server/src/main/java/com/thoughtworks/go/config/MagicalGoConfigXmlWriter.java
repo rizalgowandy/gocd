@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import static com.thoughtworks.go.config.ConfigCache.annotationFor;
 import static com.thoughtworks.go.config.ConfigCache.isAnnotationPresent;
 import static com.thoughtworks.go.util.ExceptionUtils.bomb;
 import static com.thoughtworks.go.util.ExceptionUtils.bombIf;
-import static com.thoughtworks.go.util.XmlUtils.buildXmlDocument;
 import static java.text.MessageFormat.format;
 
 public class MagicalGoConfigXmlWriter {
@@ -98,7 +97,7 @@ public class MagicalGoConfigXmlWriter {
     public void verifyXsdValid(Document document) throws Exception {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream(32 * 1024)) {
             XmlUtils.writeXml(document, buffer);
-            buildXmlDocument(buffer.toInputStream(), GoConfigSchema.getCurrentSchema());
+            XmlUtils.buildValidatedXmlDocument(buffer.toInputStream(), GoConfigSchema.getCurrentSchema());
         }
     }
 
@@ -120,6 +119,8 @@ public class MagicalGoConfigXmlWriter {
 
         try (ByteArrayOutputStream output = new ByteArrayOutputStream(32 * 1024)) {
             XmlUtils.writeXml(element, output);
+            // FIXME the lack of charset here looks rather suspicious. But unclear how to fix without possible regressions.
+            // Related to similar issue in GoConfigMigration?
             return output.toString();
         } catch (IOException e) {
             throw bomb("Unable to write xml to String");
@@ -345,11 +346,10 @@ public class MagicalGoConfigXmlWriter {
         }
 
         protected Collection<?> generateDefaultCollection() {
-            Class<? extends Collection> clazz = value.getClass();
             try {
-                return clazz.getDeclaredConstructor().newInstance();
+                return value.getClass().getDeclaredConstructor().newInstance();
             } catch (Exception e) {
-                throw bomb("Error creating default instance of " + clazz.getName(), e);
+                throw bomb("Error creating default instance of " + value.getClass().getName(), e);
             }
         }
     }

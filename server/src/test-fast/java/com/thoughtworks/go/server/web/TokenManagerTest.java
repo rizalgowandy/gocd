@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TokenManagerTest {
@@ -35,20 +34,20 @@ public class TokenManagerTest {
     private HttpServletRequest request;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         manager = new TokenManager();
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(session);
         verifyNoMoreInteractions(request);
     }
 
     @Test
-    public void shouldCreateAPostTokenIntheSessionIfNotAvailable() throws Exception {
+    public void shouldCreateAPostTokenIntheSessionIfNotAvailable() {
         when(session.getAttribute(TOKEN)).thenReturn(null);
 
         manager.create(session);
@@ -58,7 +57,7 @@ public class TokenManagerTest {
     }
 
     @Test
-    public void shouldNotCreateAPostTokenIfItsAvailable() throws Exception {
+    public void shouldNotCreateAPostTokenIfItsAvailable() {
         when(session.getAttribute(TOKEN)).thenReturn("token");
 
         manager.create(session);
@@ -67,12 +66,12 @@ public class TokenManagerTest {
     }
 
     @Test
-    public void shouldVerifyIfRequestTokenIsAvailable() throws Exception {
+    public void shouldVerifyIfRequestTokenIsAvailable() {
         when(request.getParameter(TOKEN)).thenReturn(null);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn(null);
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -80,12 +79,12 @@ public class TokenManagerTest {
     }
 
     @Test
-    public void shouldVerifyIfSessionTokenIsAvailable() throws Exception {
+    public void shouldVerifyIfSessionTokenIsAvailable() {
         when(request.getParameter(TOKEN)).thenReturn("token");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn(null);
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -93,12 +92,12 @@ public class TokenManagerTest {
     }
 
     @Test
-    public void shouldVerifyIfSessionTokenAndPostTokenAreDifferent() throws Exception {
+    public void shouldVerifyIfSessionTokenAndPostTokenAreDifferent() {
         when(request.getParameter(TOKEN)).thenReturn("random.token");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn("token");
 
-        assertThat(manager.verify(request), is(false));
+        assertThat(manager.verify(request)).isFalse();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();
@@ -106,12 +105,12 @@ public class TokenManagerTest {
     }
 
     @Test
-    public void shouldVerifyIfSessionTokenAndPostTokenAreSame() throws Exception {
+    public void shouldVerifyIfSessionTokenAndPostTokenAreSame() {
         when(request.getParameter(TOKEN)).thenReturn("token");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(TOKEN)).thenReturn("token");
 
-        assertThat(manager.verify(request), is(true));
+        assertThat(manager.verify(request)).isTrue();
 
         verify(request).getParameter(TOKEN);
         verify(request).getSession();

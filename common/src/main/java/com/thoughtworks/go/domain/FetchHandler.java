@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 public interface FetchHandler extends Serializable {
-    String url(String remoteHost, String workingUrl) throws IOException;
+    String url(String remoteHost, String workingUrl);
 
     void handle(InputStream stream) throws IOException;
 

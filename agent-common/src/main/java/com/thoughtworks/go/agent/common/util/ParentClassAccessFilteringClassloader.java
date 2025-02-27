@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,19 @@ import org.slf4j.LoggerFactory;
 public final class ParentClassAccessFilteringClassloader extends ClassLoader {
     private static final Logger LOG = LoggerFactory.getLogger(ParentClassAccessFilteringClassloader.class);
 
-    private final Class[] permittedParentDefns;
+    private final Class<?>[] permittedParentDefinitions;
 
-    public ParentClassAccessFilteringClassloader(ClassLoader parent, Class... permittedParentDefns) {
+    public ParentClassAccessFilteringClassloader(ClassLoader parent, Class<?>... permittedParentDefinitions) {
         super(parent);
-        this.permittedParentDefns = permittedParentDefns;
+        this.permittedParentDefinitions = permittedParentDefinitions;
     }
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        if (permittedParentDefns.length == 0) {
+        if (permittedParentDefinitions.length == 0) {
             return super.loadClass(name, false);
         }
-        for (Class permittedParentDefn : permittedParentDefns) {
+        for (Class<?> permittedParentDefn : permittedParentDefinitions) {
             if (permittedParentDefn.getCanonicalName().equals(name)) {
                 ClassLoader parent = getParent();
                 LOG.info("Loading {} using {}", name, parent == null ? "null classloader" : parent.getClass().getCanonicalName());

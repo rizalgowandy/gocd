@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ import com.thoughtworks.go.config.CaseInsensitiveString;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GoDashboardPipelines {
-    private HashMap<CaseInsensitiveString, GoDashboardPipeline> pipelines;
-    private long lastUpdatedTimeStamp;
+    private final Map<CaseInsensitiveString, GoDashboardPipeline> pipelines;
+    private final long lastUpdatedTimeStamp;
 
     public GoDashboardPipelines(HashMap<CaseInsensitiveString, GoDashboardPipeline> pipelines, TimeStampBasedCounter timeStampBasedCounter) {
         this.pipelines = pipelines;

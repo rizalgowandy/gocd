@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -52,10 +51,6 @@ public class ZipUtil {
 
     public ZipBuilder zipContentsOfMultipleFolders(File destZipFile, boolean excludeRootDir) throws IOException {
         return new ZipBuilder(this, 0, new FileOutputStream(destZipFile), excludeRootDir);
-    }
-
-    public void zipFolderContents(File destDir, File destZipFile) throws IOException {
-        zipFolderContents(destDir, destZipFile, Deflater.BEST_SPEED);
     }
 
     public void zip(File file, OutputStream output, int level) throws IOException {
@@ -188,7 +183,7 @@ public class ZipUtil {
     }
 
     public interface ZipEntryHandler {
-        void handleEntry(ZipEntry entry, InputStream stream) throws IOException;
+        void handleEntry(ZipEntry entry, InputStream stream);
     }
 
 }

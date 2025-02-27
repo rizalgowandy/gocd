@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.thoughtworks.go.server.service;
 
+import com.thoughtworks.go.config.CruiseConfig;
 import com.thoughtworks.go.config.validation.GoConfigValidity;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
@@ -33,7 +32,7 @@ public class AdminServiceTest {
     private AdminService adminService;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         goConfigService = mock(GoConfigService.class);
 
         adminService = new AdminService(goConfigService);
@@ -41,7 +40,7 @@ public class AdminServiceTest {
 
     @Test
     public void shouldGenerateConfigurationJson() {
-        GoConfigService.XmlPartialSaver fileSaver = mock(GoConfigService.XmlPartialSaver.class);
+        @SuppressWarnings("unchecked") GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = mock(GoConfigService.XmlPartialSaver.class);
         when(fileSaver.asXml()).thenReturn("xml content");
         when(fileSaver.getMd5()).thenReturn("md5 value");
         when(goConfigService.fileSaver(false)).thenReturn(fileSaver);
@@ -50,27 +49,27 @@ public class AdminServiceTest {
 
         final Map<String, Object> json = adminService.configurationJsonForSourceXml();
 
-        Map<String, String> config = (Map<String, String>) json.get("config");
-        assertThat(config, hasEntry("location", fileLocation));
-        assertThat(config, hasEntry("content", "xml content"));
-        assertThat(config, hasEntry("md5", "md5 value"));
+        @SuppressWarnings("unchecked") Map<String, String> config = (Map<String, String>) json.get("config");
+        assertThat(config).containsEntry("location", fileLocation);
+        assertThat(config).containsEntry("content", "xml content");
+        assertThat(config).containsEntry("md5", "md5 value");
     }
 
     @Test
     public void shouldUpdateConfig() {
-        Map<String, String>attributes = new HashMap<>();
+        Map<String, String> attributes = new HashMap<>();
         String content = "config_xml";
         attributes.put("content", content);
         String md5 = "config_md5";
         attributes.put("md5", md5);
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        GoConfigService.XmlPartialSaver fileSaver = mock(GoConfigService.XmlPartialSaver.class);
+        @SuppressWarnings("unchecked") GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = mock(GoConfigService.XmlPartialSaver.class);
         when(fileSaver.saveXml(content, md5)).thenReturn(GoConfigValidity.valid());
         when(goConfigService.fileSaver(false)).thenReturn(fileSaver);
 
         adminService.updateConfig(attributes, result);
 
-        assertThat(result.isSuccessful(), is(true));
+        assertThat(result.isSuccessful()).isTrue();
         verify(fileSaver).saveXml(content, md5);
         verify(goConfigService).fileSaver(false);
     }
@@ -78,23 +77,23 @@ public class AdminServiceTest {
 
     @Test
     public void shouldReturnInvalidIfConfigIsNotSaved() {
-        Map<String, String>attributes = new HashMap<>();
+        Map<String, String> attributes = new HashMap<>();
         String content = "invalid_config_xml";
         attributes.put("content", content);
         String md5 = "config_md5";
         attributes.put("md5", md5);
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
-        GoConfigService.XmlPartialSaver fileSaver = mock(GoConfigService.XmlPartialSaver.class);
+        @SuppressWarnings("unchecked") GoConfigService.XmlPartialSaver<CruiseConfig> fileSaver = mock(GoConfigService.XmlPartialSaver.class);
         GoConfigValidity validity = GoConfigValidity.invalid("Wrong config xml");
         when(fileSaver.saveXml(content, md5)).thenReturn(validity);
         when(goConfigService.fileSaver(false)).thenReturn(fileSaver);
 
         GoConfigValidity actual = adminService.updateConfig(attributes, result);
 
-        assertThat(result.isSuccessful(), is(false));
+        assertThat(result.isSuccessful()).isFalse();
         GoConfigValidity.InvalidGoConfig invalidGoConfig = (GoConfigValidity.InvalidGoConfig) actual;
-        assertThat(invalidGoConfig.isValid(), is(false));
-        assertThat(invalidGoConfig.errorMessage(), is("Wrong config xml"));
+        assertThat(invalidGoConfig.isValid()).isFalse();
+        assertThat(invalidGoConfig.errorMessage()).isEqualTo("Wrong config xml");
 
         verify(fileSaver).saveXml(content, md5);
         verify(goConfigService).fileSaver(false);

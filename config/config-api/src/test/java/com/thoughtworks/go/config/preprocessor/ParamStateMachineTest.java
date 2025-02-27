@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package com.thoughtworks.go.config.preprocessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ParamStateMachineTest {
@@ -27,21 +26,21 @@ public class ParamStateMachineTest {
     private ParamHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         handler = mock(ParamHandler.class);
     }
 
     @Test
-    public void shouldClearPatternWhenFound() throws Exception {
+    public void shouldClearPatternWhenFound() {
         ParamStateMachine stateMachine = new ParamStateMachine();
         stateMachine.process("#{pattern}", handler);
 
-        assertThat(ParamStateMachine.ReaderState.IN_PATTERN.pattern.length(), is(0));
+        assertThat(ParamStateMachine.ReaderState.IN_PATTERN.pattern.length()).isEqualTo(0);
         verify(handler).handlePatternFound(any(StringBuilder.class));
     }
 
     @Test
-    public void shouldClearPatternWhenParameterCannotBeResolved() throws Exception {
+    public void shouldClearPatternWhenParameterCannotBeResolved() {
         ParamStateMachine stateMachine = new ParamStateMachine();
         doThrow(new IllegalStateException()).when(handler).handlePatternFound(any(StringBuilder.class));
 
@@ -50,7 +49,7 @@ public class ParamStateMachineTest {
         } catch (Exception e) {
             //Ignore to assert on the pattern
         }
-        assertThat(ParamStateMachine.ReaderState.IN_PATTERN.pattern.length(), is(0));
+        assertThat(ParamStateMachine.ReaderState.IN_PATTERN.pattern.length()).isEqualTo(0);
         verify(handler).handlePatternFound(any(StringBuilder.class));
     }
 }

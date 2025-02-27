@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -60,11 +58,11 @@ public class PluggableTaskTest {
         PluggableTask task = new PluggableTask(pluginConfiguration, configuration);
 
         Map<String, Map<String, String>> configMap = task.configAsMap();
-        assertThat(configMap.keySet().size(), is(keys.size()));
-        assertThat(configMap.values().size(), is(values.size()));
-        assertThat(configMap.keySet().containsAll(keys), is(true));
+        assertThat(configMap.keySet().size()).isEqualTo(keys.size());
+        assertThat(configMap.values().size()).isEqualTo(values.size());
+        assertThat(configMap.keySet().containsAll(keys)).isTrue();
         for (int i = 0; i < keys.size(); i++) {
-            assertThat(configMap.get(keys.get(i)).get(PluggableTask.VALUE_KEY), is(values.get(i)));
+            assertThat(configMap.get(keys.get(i)).get(PluggableTask.VALUE_KEY)).isEqualTo(values.get(i));
         }
     }
 
@@ -94,18 +92,18 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void taskTypeShouldBeSanitizedToHaveNoSpecialCharacters() throws Exception {
-        assertThat(new PluggableTask(new PluginConfiguration("abc.def", "1"), new Configuration()).getTaskType(), is("pluggable_task_abc_def"));
-        assertThat(new PluggableTask(new PluginConfiguration("abc_def", "1"), new Configuration()).getTaskType(), is("pluggable_task_abc_def"));
-        assertThat(new PluggableTask(new PluginConfiguration("abcdef", "1"), new Configuration()).getTaskType(), is("pluggable_task_abcdef"));
-        assertThat(new PluggableTask(new PluginConfiguration("abc#def", "1"), new Configuration()).getTaskType(), is("pluggable_task_abc_def"));
-        assertThat(new PluggableTask(new PluginConfiguration("abc#__def", "1"), new Configuration()).getTaskType(), is("pluggable_task_abc___def"));
-        assertThat(new PluggableTask(new PluginConfiguration("Abc#dEF", "1"), new Configuration()).getTaskType(), is("pluggable_task_Abc_dEF"));
-        assertThat(new PluggableTask(new PluginConfiguration("1234567890#ABCDEF", "1"), new Configuration()).getTaskType(), is("pluggable_task_1234567890_ABCDEF"));
+    public void taskTypeShouldBeSanitizedToHaveNoSpecialCharacters() {
+        assertThat(new PluggableTask(new PluginConfiguration("abc.def", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_abc_def");
+        assertThat(new PluggableTask(new PluginConfiguration("abc_def", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_abc_def");
+        assertThat(new PluggableTask(new PluginConfiguration("abcdef", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_abcdef");
+        assertThat(new PluggableTask(new PluginConfiguration("abc#def", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_abc_def");
+        assertThat(new PluggableTask(new PluginConfiguration("abc#__def", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_abc___def");
+        assertThat(new PluggableTask(new PluginConfiguration("Abc#dEF", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_Abc_dEF");
+        assertThat(new PluggableTask(new PluginConfiguration("1234567890#ABCDEF", "1"), new Configuration()).getTaskType()).isEqualTo("pluggable_task_1234567890_ABCDEF");
     }
 
     @Test
-    public void shouldPopulatePropertiesForDisplay() throws Exception {
+    public void shouldPopulatePropertiesForDisplay() {
         Configuration configuration = new Configuration(
                 ConfigurationPropertyMother.create("KEY1", false, "value1"),
                 ConfigurationPropertyMother.create("Key2", false, "value2"),
@@ -115,7 +113,7 @@ public class PluggableTaskTest {
 
         List<TaskProperty> propertiesForDisplay = task.getPropertiesForDisplay();
 
-        assertThat(propertiesForDisplay.size(), is(3));
+        assertThat(propertiesForDisplay.size()).isEqualTo(3);
         assertProperty(propertiesForDisplay.get(0), "KEY1", "value1", "key1");
         assertProperty(propertiesForDisplay.get(1), "Key2", "value2", "key2");
         assertProperty(propertiesForDisplay.get(2), "key3", "****", "key3");
@@ -129,7 +127,7 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void shouldPopulatePropertiesForDisplayRetainingOrderAndDisplayNameIfConfigured() throws Exception {
+    public void shouldPopulatePropertiesForDisplayRetainingOrderAndDisplayNameIfConfigured() {
         Task taskDetails = mock(Task.class);
         TaskConfig taskConfig = new TaskConfig();
         addProperty(taskConfig, "KEY2", "Key 2", 1);
@@ -151,14 +149,14 @@ public class PluggableTaskTest {
 
         List<TaskProperty> propertiesForDisplay = task.getPropertiesForDisplay();
 
-        assertThat(propertiesForDisplay.size(), is(3));
+        assertThat(propertiesForDisplay.size()).isEqualTo(3);
         assertProperty(propertiesForDisplay.get(0), "Key 1", "value1", "key1");
         assertProperty(propertiesForDisplay.get(1), "Key 2", "value2", "key2");
         assertProperty(propertiesForDisplay.get(2), "Key 3", "****", "key3");
     }
 
     @Test
-    public void shouldGetOnlyConfiguredPropertiesIfACertainPropertyDefinedByPluginIsNotConfiguredByUser() throws Exception {
+    public void shouldGetOnlyConfiguredPropertiesIfACertainPropertyDefinedByPluginIsNotConfiguredByUser() {
         Task taskDetails = mock(Task.class);
         TaskConfig taskConfig = new TaskConfig();
         addProperty(taskConfig, "KEY2", "Key 2", 1);
@@ -179,7 +177,7 @@ public class PluggableTaskTest {
 
         List<TaskProperty> propertiesForDisplay = task.getPropertiesForDisplay();
 
-        assertThat(propertiesForDisplay.size(), is(2));
+        assertThat(propertiesForDisplay.size()).isEqualTo(2);
         assertProperty(propertiesForDisplay.get(0), "Key 1", "value1", "key1");
         assertProperty(propertiesForDisplay.get(1), "Key 2", "value2", "key2");
     }
@@ -191,7 +189,7 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void shouldPopulateItselfFromConfigAttributesMap() throws Exception {
+    public void shouldPopulateItselfFromConfigAttributesMap() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         Configuration configuration = new Configuration(ConfigurationPropertyMother.create("KEY1"), ConfigurationPropertyMother.create("Key2"));
         PluggableTaskConfigStore.store().setPreferenceFor("abc.def", taskPreference);
@@ -209,12 +207,12 @@ public class PluggableTaskTest {
 
         task.setTaskConfigAttributes(attributeMap);
 
-        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY), is("value1"));
-        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY), is("value2"));
+        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY)).isEqualTo("value1");
+        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY)).isEqualTo("value2");
     }
 
     @Test
-    public void shouldHandleSecureConfigurations() throws Exception {
+    public void shouldHandleSecureConfigurations() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         Configuration configuration = new Configuration();
         PluggableTaskConfigStore.store().setPreferenceFor("abc.def", taskPreference);
@@ -229,13 +227,13 @@ public class PluggableTaskTest {
 
         task.setTaskConfigAttributes(attributeMap);
 
-        assertThat(task.getConfiguration().size(), is(1));
+        assertThat(task.getConfiguration().size()).isEqualTo(1);
         assertTrue(task.getConfiguration().first().isSecure());
-        assertThat(task.getConfiguration().first().getValue(), is("value1"));
+        assertThat(task.getConfiguration().first().getValue()).isEqualTo("value1");
     }
 
     @Test
-    public void shouldNotOverwriteValuesIfTheyAreNotAvailableInConfigAttributesMap() throws Exception {
+    public void shouldNotOverwriteValuesIfTheyAreNotAvailableInConfigAttributesMap() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         Configuration configuration = new Configuration(ConfigurationPropertyMother.create("KEY1"), ConfigurationPropertyMother.create("Key2"));
         PluggableTaskConfigStore.store().setPreferenceFor("abc.def", taskPreference);
@@ -253,12 +251,12 @@ public class PluggableTaskTest {
 
         task.setTaskConfigAttributes(attributeMap);
 
-        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY), is("value1"));
-        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY), is(nullValue()));
+        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY)).isEqualTo("value1");
+        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY)).isNull();
     }
 
     @Test
-    public void shouldIgnoreKeysPresentInConfigAttributesMapButNotPresentInConfigStore() throws Exception {
+    public void shouldIgnoreKeysPresentInConfigAttributesMapButNotPresentInConfigStore() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         Configuration configuration = new Configuration(ConfigurationPropertyMother.create("KEY1"));
         PluggableTaskConfigStore.store().setPreferenceFor("abc.def", taskPreference);
@@ -274,12 +272,12 @@ public class PluggableTaskTest {
 
         task.setTaskConfigAttributes(attributeMap);
 
-        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY), is("value1"));
+        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY)).isEqualTo("value1");
         assertFalse(task.configAsMap().containsKey("Key2"));
     }
 
     @Test
-    public void shouldAddPropertyComingFromAttributesMapIfPresentInConfigStoreEvenIfItISNotPresentInCurrentConfiguration() throws Exception {
+    public void shouldAddPropertyComingFromAttributesMapIfPresentInConfigStoreEvenIfItISNotPresentInCurrentConfiguration() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         Configuration configuration = new Configuration(ConfigurationPropertyMother.create("KEY1"));
         PluggableTaskConfigStore.store().setPreferenceFor("abc.def", taskPreference);
@@ -297,8 +295,8 @@ public class PluggableTaskTest {
 
         task.setTaskConfigAttributes(attributeMap);
 
-        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY), is("value1"));
-        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY), is("value2"));
+        assertThat(task.configAsMap().get("KEY1").get(PluggableTask.VALUE_KEY)).isEqualTo("value1");
+        assertThat(task.configAsMap().get("Key2").get(PluggableTask.VALUE_KEY)).isEqualTo("value2");
     }
 
     @Test
@@ -319,7 +317,7 @@ public class PluggableTaskTest {
         PluggableTask pluggableTask = new PluggableTask(pluginConfiguration, configuration);
         pluggableTask.addConfigurations(configurationProperties);
 
-        assertThat(configuration.size(), is(2));
+        assertThat(configuration.size()).isEqualTo(2);
     }
 
     @Test
@@ -332,7 +330,7 @@ public class PluggableTaskTest {
         PluggableTask pluggableTask = new PluggableTask(pluginConfiguration, configuration);
         pluggableTask.addConfigurations(configurationProperties);
 
-        assertThat(configuration.size(), is(1));
+        assertThat(configuration.size()).isEqualTo(1);
     }
 
     @Test
@@ -343,7 +341,7 @@ public class PluggableTaskTest {
 
         pluggableTask.isValid();
 
-        assertThat(pluggableTask.errors().get("pluggable_task").get(0), is("Could not find plugin for given pluggable id:[does_not_exist]."));
+        assertThat(pluggableTask.errors().get("pluggable_task").get(0)).isEqualTo("Could not find plugin for given pluggable id:[does_not_exist].");
     }
 
     @Test
@@ -375,9 +373,9 @@ public class PluggableTaskTest {
 
         TaskConfig taskConfig = pluggableTask.toTaskConfig();
 
-        assertThat(taskConfig.size(), is(2));
-        assertThat(taskConfig.get("source").getValue(), is("src_dir"));
-        assertThat(taskConfig.get("destination").getValue(), is("des_dir"));
+        assertThat(taskConfig.size()).isEqualTo(2);
+        assertThat(taskConfig.get("source").getValue()).isEqualTo("src_dir");
+        assertThat(taskConfig.get("destination").getValue()).isEqualTo("des_dir");
     }
 
     @Test
@@ -404,7 +402,7 @@ public class PluggableTaskTest {
         when(pluggableTask.onCancelConfig.validateTree(null)).thenReturn(true);
 
         assertFalse(pluggableTask.validateTree(null));
-        assertThat(pluggableTask.errors().get("onCancelConfig").get(0), is("Cannot nest 'oncancel' within a cancel task"));
+        assertThat(pluggableTask.errors().get("onCancelConfig").get(0)).isEqualTo("Cannot nest 'oncancel' within a cancel task");
     }
 
     @Test
@@ -427,7 +425,7 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void postConstructShouldHandleSecureConfigurationForConfigurationProperties() throws Exception {
+    public void postConstructShouldHandleSecureConfigurationForConfigurationProperties() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         ConfigurationProperty configurationProperty = ConfigurationPropertyMother.create("KEY1");
         Configuration configuration = new Configuration(configurationProperty);
@@ -446,7 +444,7 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void postConstructShouldDoNothingForPluggableTaskWithoutCorrespondingPlugin() throws Exception {
+    public void postConstructShouldDoNothingForPluggableTaskWithoutCorrespondingPlugin() {
         ConfigurationProperty configurationProperty = ConfigurationPropertyMother.create("KEY1");
         Configuration configuration = new Configuration(configurationProperty);
 
@@ -459,7 +457,7 @@ public class PluggableTaskTest {
     }
 
     @Test
-    public void postConstructShouldDoNothingForAInvalidConfigurationProperty() throws Exception {
+    public void postConstructShouldDoNothingForAInvalidConfigurationProperty() {
         TaskPreference taskPreference = mock(TaskPreference.class);
         ConfigurationProperty configurationProperty = ConfigurationPropertyMother.create("KEY1");
         Configuration configuration = new Configuration(configurationProperty);
@@ -477,8 +475,8 @@ public class PluggableTaskTest {
     }
 
     private void assertProperty(TaskProperty taskProperty, String name, String value, String cssClass) {
-        assertThat(taskProperty.getName(), is(name));
-        assertThat(taskProperty.getValue(), is(value));
-        assertThat(taskProperty.getCssClass(), is(cssClass));
+        assertThat(taskProperty.getName()).isEqualTo(name);
+        assertThat(taskProperty.getValue()).isEqualTo(value);
+        assertThat(taskProperty.getCssClass()).isEqualTo(cssClass);
     }
 }

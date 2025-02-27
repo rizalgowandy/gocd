@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class CcTrayCache {
      * called only from that thread. So, not surrounding it with a synchronizedMap. Also, uses {@link LinkedHashMap}
      * to preserve insertion order.
      */
-    private LinkedHashMap<String, ProjectStatus> cache;
+    private Map<String, ProjectStatus> cache;
     private volatile List<ProjectStatus> orderedEntries;
 
     public CcTrayCache() {

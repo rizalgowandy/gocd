@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test
 
 import static com.thoughtworks.go.CurrentGoCDVersion.apiDocsUrl
 import static com.thoughtworks.go.api.base.JsonUtils.toObjectString
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 class PluginSettingsRepresenterTest {
@@ -53,7 +53,7 @@ class PluginSettingsRepresenterTest {
   }
 
   PluginSettings pluginSettings() {
-    ArrayList<ConfigurationProperty> configurationProperties = new ArrayList<>()
+    List<ConfigurationProperty> configurationProperties = new ArrayList<>()
     configurationProperties.add(new ConfigurationProperty(new ConfigurationKey("k1"), new ConfigurationValue("v1")))
     configurationProperties.add(new ConfigurationProperty(new ConfigurationKey("k2"), new EncryptedConfigurationValue(new GoCipher().encrypt("v2"))))
 
@@ -63,7 +63,7 @@ class PluginSettingsRepresenterTest {
   }
 
   PluginInfo pluginInfo() {
-    ArrayList<PluginConfiguration> pluginConfigurations = new ArrayList<>()
+    List<PluginConfiguration> pluginConfigurations = new ArrayList<>()
     pluginConfigurations.add(new PluginConfiguration("k1", new Metadata(true, false)))
     pluginConfigurations.add(new PluginConfiguration("k2", new Metadata(true, true)))
     return new ConfigRepoPluginInfo(null, null, new PluggableInstanceSettings(pluginConfigurations), new Capabilities())

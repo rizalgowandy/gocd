@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class ArtifactRequestProcessor implements GoPluginApiRequestProcessor {
     private ArtifactRequestProcessor(GoPublisher publisher, ProcessType processType, EnvironmentVariableContext environmentVariableContext) {
         CompositeConsumer errorStreamConsumer = new CompositeConsumer(CompositeConsumer.ERR,  publisher);
         CompositeConsumer outputStreamConsumer = new CompositeConsumer(CompositeConsumer.OUT,  publisher);
-        this.safeOutputStreamConsumer = new SafeOutputStreamConsumer(new ProcessOutputStreamConsumer(errorStreamConsumer, outputStreamConsumer));
+        this.safeOutputStreamConsumer = new SafeOutputStreamConsumer(new ProcessOutputStreamConsumer<>(errorStreamConsumer, outputStreamConsumer));
         safeOutputStreamConsumer.addSecrets(environmentVariableContext.secrets());
         this.processType = processType;
     }

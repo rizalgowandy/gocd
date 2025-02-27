@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import com.thoughtworks.go.presentation.UserSearchModel;
 import com.thoughtworks.go.presentation.UserSourceType;
 import com.thoughtworks.go.server.service.GoConfigService;
 import com.thoughtworks.go.server.service.result.HttpLocalizedOperationResult;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,8 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +57,7 @@ public class UserSearchServiceTest  {
     }
 
     @Test
-    public void shouldSearchUserUsingPlugins() throws Exception {
+    public void shouldSearchUserUsingPlugins() {
         final String searchTerm = "foo";
         List<String> pluginIds = List.of("plugin-id-1", "plugin-id-2", "plugin-id-3", "plugin-id-4");
 
@@ -76,39 +74,39 @@ public class UserSearchServiceTest  {
 
         List<UserSearchModel> models = userSearchService.search(searchTerm, new HttpLocalizedOperationResult());
 
-        assertThat(models, Matchers.containsInAnyOrder(
+        assertThat(models).contains(
                 new UserSearchModel(getUser(1), UserSourceType.PLUGIN),
                 new UserSearchModel(getUser(2), UserSourceType.PLUGIN),
                 new UserSearchModel(getUser(3), UserSourceType.PLUGIN),
                 new UserSearchModel(new com.thoughtworks.go.domain.User ("username-" + 4, "", ""), UserSourceType.PLUGIN)
-        ));
+        );
     }
 
     @Test
-    public void shouldReturnWarningMessageWhenSearchReturnsNoResults() throws Exception {
+    public void shouldReturnWarningMessageWhenSearchReturnsNoResults() {
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         userSearchService.search("foo", result);
-        assertThat(result.message(), is("No results found."));
+        assertThat(result.message()).isEqualTo("No results found.");
     }
 
     @Test
-    public void shouldNotInvokeSearchWhenUserSearchTextIsTooSmall() throws Exception {
+    public void shouldNotInvokeSearchWhenUserSearchTextIsTooSmall() {
         String smallSearchText = "f";
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         userSearchService.search(smallSearchText, result);
 
         verifyNoInteractions(authorizationExtension);
-        assertThat(result.message(), is("Please use a search string that has at least two (2) letters."));
+        assertThat(result.message()).isEqualTo("Please use a search string that has at least two (2) letters.");
     }
 
     @Test
-    public void shouldNotInvokeSearchWhenUserSearchTextIsTooSmallAfterTrimming() throws Exception {
+    public void shouldNotInvokeSearchWhenUserSearchTextIsTooSmallAfterTrimming() {
         String smallSearchText = "a ";
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
         userSearchService.search(smallSearchText, result);
 
         verifyNoInteractions(authorizationExtension);
-        assertThat(result.message(), is("Please use a search string that has at least two (2) letters."));
+        assertThat(result.message()).isEqualTo("Please use a search string that has at least two (2) letters.");
     }
 
     private com.thoughtworks.go.domain.User  getUser(Integer userId) {

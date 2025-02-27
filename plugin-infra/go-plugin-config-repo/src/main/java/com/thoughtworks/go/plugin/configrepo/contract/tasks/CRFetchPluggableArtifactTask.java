@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class CRFetchPluggableArtifactTask extends CRAbstractFetchTask {
 
     void validateKeyUniqueness(ErrorCollection errors, String location) {
         if (this.configuration != null) {
-            ArrayList<String> keys = new ArrayList<>();
+            List<String> keys = new ArrayList<>();
             for (CRConfigurationProperty property : this.configuration) {
                 String key = property.getKey();
                 if (keys.contains(key))

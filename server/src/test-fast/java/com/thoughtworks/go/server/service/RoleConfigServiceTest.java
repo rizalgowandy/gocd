@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class RoleConfigServiceTest {
@@ -44,7 +42,7 @@ public class RoleConfigServiceTest {
     private BasicCruiseConfig cruiseConfig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         configService = mock(GoConfigService.class);
         extension = mock(AuthorizationExtension.class);
         configurationValidator = mock(RoleConfigurationValidator.class);
@@ -57,7 +55,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void create_shouldAddARoleToConfig() throws Exception {
+    public void create_shouldAddARoleToConfig() {
         PluginRoleConfig role = new PluginRoleConfig();
         Username admin = new Username("admin");
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
@@ -68,7 +66,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void create_shouldValidatePluginRoleMetadata() throws Exception {
+    public void create_shouldValidatePluginRoleMetadata() {
         PluginRoleConfig role = new PluginRoleConfig("operate", "ldap");
 
         cruiseConfig.server().security().securityAuthConfigs().add(new SecurityAuthConfig("ldap", "plugin_id"));
@@ -79,7 +77,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void create_shouldIgnorePluginRoleMetadataValidationInAbsenceOfPlugin() throws Exception {
+    public void create_shouldIgnorePluginRoleMetadataValidationInAbsenceOfPlugin() {
         PluginRoleConfig role = new PluginRoleConfig("operate", "ldap");
 
         roleConfigService.create(null, role, null);
@@ -88,7 +86,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void create_shouldIgnoreValidationForGoCDRole() throws Exception {
+    public void create_shouldIgnoreValidationForGoCDRole() {
         RoleConfig role = new RoleConfig(new CaseInsensitiveString("operate"));
 
         roleConfigService.create(null, role, null);
@@ -97,7 +95,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void update_shouldUpdateAnExistingPluginRole() throws Exception {
+    public void update_shouldUpdateAnExistingPluginRole() {
         PluginRoleConfig role = new PluginRoleConfig();
         Username admin = new Username("admin");
         HttpLocalizedOperationResult result = new HttpLocalizedOperationResult();
@@ -108,7 +106,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void update_shouldValidatePluginRoleMetadata() throws Exception {
+    public void update_shouldValidatePluginRoleMetadata() {
         PluginRoleConfig role = new PluginRoleConfig("operate", "ldap");
 
         cruiseConfig.server().security().securityAuthConfigs().add(new SecurityAuthConfig("ldap", "plugin_id"));
@@ -119,7 +117,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void update_shouldIgnorePluginRoleMetadataValidationInAbsenceOfPlugin() throws Exception {
+    public void update_shouldIgnorePluginRoleMetadataValidationInAbsenceOfPlugin() {
         PluginRoleConfig role = new PluginRoleConfig("operate", "ldap");
 
         roleConfigService.update(null, "md5", role, null);
@@ -128,7 +126,7 @@ public class RoleConfigServiceTest {
     }
 
     @Test
-    public void update_shouldIgnoreValidationForGoCDRole() throws Exception {
+    public void update_shouldIgnoreValidationForGoCDRole() {
         RoleConfig role = new RoleConfig(new CaseInsensitiveString("operate"));
 
         roleConfigService.update(null, "md5", role, null);
@@ -166,8 +164,8 @@ public class RoleConfigServiceTest {
 
         roleConfigService.bulkUpdate(request, null, result);
 
-        assertThat(result.httpCode(), is(422));
-        assertThat(result.message(), containsString("some error"));
+        assertThat(result.httpCode()).isEqualTo(422);
+        assertThat(result.message()).contains("some error");
     }
 
     @Test
@@ -180,12 +178,12 @@ public class RoleConfigServiceTest {
 
         roleConfigService.bulkUpdate(request, null, result);
 
-        assertThat(result.httpCode(), is(500));
-        assertThat(result.message(), containsString("An error occurred while saving the role config. Please check the logs for more information."));
+        assertThat(result.httpCode()).isEqualTo(500);
+        assertThat(result.message()).contains("An error occurred while saving the role config. Please check the logs for more information.");
     }
 
     @Test
-    public void delete_shouldDeleteARole() throws Exception {
+    public void delete_shouldDeleteARole() {
         PluginRoleConfig role = new PluginRoleConfig("operate", "ldap");
         Username admin = new Username("admin");
 
@@ -220,16 +218,16 @@ public class RoleConfigServiceTest {
 
         when(configService.serverConfig()).thenReturn(serverConfig);
 
-        HashMap<Username, RolesConfig> userToRolesMap = roleConfigService.getRolesForUser(List.of(bob, john));
+        Map<Username, RolesConfig> userToRolesMap = roleConfigService.getRolesForUser(List.of(bob, john));
 
-        assertThat(userToRolesMap.size(), is(2));
+        assertThat(userToRolesMap.size()).isEqualTo(2);
 
-        assertThat(userToRolesMap.get(bob), hasItem(role1));
-        assertThat(userToRolesMap.get(bob), hasItem(role2));
-        assertThat(userToRolesMap.get(bob), not(hasItem(role3)));
+        assertThat(userToRolesMap.get(bob)).contains(role1);
+        assertThat(userToRolesMap.get(bob)).contains(role2);
+        assertThat(userToRolesMap.get(bob)).doesNotContain(role3);
 
-        assertThat(userToRolesMap.get(john), hasItem(role1));
-        assertThat(userToRolesMap.get(john), hasItem(role3));
-        assertThat(userToRolesMap.get(john), not(hasItem(role2)));
+        assertThat(userToRolesMap.get(john)).contains(role1);
+        assertThat(userToRolesMap.get(john)).contains(role3);
+        assertThat(userToRolesMap.get(john)).doesNotContain(role2);
     }
 }

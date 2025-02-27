@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import com.thoughtworks.go.server.domain.PipelineTimeline;
 import com.thoughtworks.go.server.persistence.MaterialRepository;
 import com.thoughtworks.go.server.transaction.TransactionTemplate;
 import com.thoughtworks.go.util.GoConfigFileHelper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,8 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
@@ -93,7 +91,7 @@ public class FanInPerformanceTest {
 
     @Test
     @Timeout(value = 4, unit = MINUTES)
-    public void shouldTestFanInForMesh() throws Exception {
+    public void shouldTestFanInForMesh() {
         int numberOfNodesPerLevel = 10;
         int numberOfLevels = 10;
         int numberOfInstancesForUpstream = 1;
@@ -116,9 +114,9 @@ public class FanInPerformanceTest {
         long start = System.currentTimeMillis();
         MaterialRevisions finalRevisions = getRevisionsBasedOnDependencies(currentConfig.name(), configHelper.currentConfig(), given);
         long timeTaken = (System.currentTimeMillis() - start) / 1000;
-        assertThat(String.format("Fan-in took %ds. Should have finished in 10s.", timeTaken), timeTaken, Matchers.lessThan(10L));
+        assertThat(timeTaken).isLessThan(10L);
 
-        assertThat(finalRevisions, is(given));
+        assertThat(finalRevisions).isEqualTo(given);
     }
 
     private MaterialRevisions getRevisionsBasedOnDependencies(CaseInsensitiveString pipeline, CruiseConfig cruiseConfig, MaterialRevisions given) {

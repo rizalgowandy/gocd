@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class PipelineSelectionsServiceTest {
     private UserDao userDao;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
         new SystemEnvironment().setProperty(SystemEnvironment.ENFORCE_SERVER_IMMUTABILITY, "N");
 
         goConfigDao = mock(GoConfigDao.class);
@@ -220,7 +220,7 @@ public class PipelineSelectionsServiceTest {
         return new IncludesFilter(DEFAULT_NAME, CaseInsensitiveString.list(pipelines), Collections.emptySet());
     }
 
-    private void expectLoad(final CruiseConfig result) throws Exception {
+    private void expectLoad(final CruiseConfig result) {
         when(goConfigDao.load()).thenReturn(result);
     }
 

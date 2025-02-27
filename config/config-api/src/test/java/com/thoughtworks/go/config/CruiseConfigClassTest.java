@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@ package com.thoughtworks.go.config;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CruiseConfigClassTest {
 
@@ -27,23 +26,23 @@ public class CruiseConfigClassTest {
     @Test
     public void shouldFindAllFields() {
         GoConfigClassWriter fooBarClass = new GoConfigClassWriter(FooBar.class, configCache, null);
-        assertThat(fooBarClass.getAllFields(new FooBar()).size(), is(3));
+        assertThat(fooBarClass.getAllFields(new FooBar()).size()).isEqualTo(3);
     }
 
     @Test
     public void shouldFindAllFieldsInBaseClass() {
         GoConfigClassWriter fooBarClass = new GoConfigClassWriter(DerivedFooBar.class, configCache, null);
-        assertThat(fooBarClass.getAllFields(new DerivedFooBar()).size(), is(4));
+        assertThat(fooBarClass.getAllFields(new DerivedFooBar()).size()).isEqualTo(4);
     }
 
 }
 
 class FooBar {
-    @SuppressWarnings({"PMD.UnusedPrivateField", "unused"}) private String value;
-    @SuppressWarnings({"PMD.UnusedPrivateField", "unused"}) private String data;
-    @SuppressWarnings({"PMD.UnusedPrivateField", "unused"}) protected String moreData;
+    @SuppressWarnings("unused") private String value;
+    @SuppressWarnings("unused") private String data;
+    @SuppressWarnings("unused") protected String moreData;
 }
 
 class DerivedFooBar extends FooBar {
-    @SuppressWarnings({"PMD.UnusedPrivateField", "unused"}) protected String derivedClassData;
+    @SuppressWarnings("unused") protected String derivedClassData;
 }

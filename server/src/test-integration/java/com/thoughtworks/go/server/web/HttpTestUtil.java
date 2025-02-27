@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,10 +72,10 @@ public class HttpTestUtil {
     }
 
     public interface ContextCustomizer {
-        void customize(WebAppContext ctx) throws Exception;
+        void customize(WebAppContext ctx);
     }
 
-    public HttpTestUtil(final ContextCustomizer customizer) throws Exception {
+    public HttpTestUtil(final ContextCustomizer customizer) {
         server = new Server();
         WebAppContext ctx = new WebAppContext();
         SessionHandler sh = new SessionHandler();

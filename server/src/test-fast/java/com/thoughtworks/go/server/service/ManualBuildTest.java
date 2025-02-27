@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ManualBuildTest {
     private MaterialRevisions materialRevisions;
@@ -42,14 +41,14 @@ public class ManualBuildTest {
     }
 
     @Test
-    public void shouldPopulateProducedBuildCauseApproverForOnModificationBuildCause() throws Exception {
+    public void shouldPopulateProducedBuildCauseApproverForOnModificationBuildCause() {
         BuildCause buildCause = manualBuild.onModifications(materialRevisions, false, null);
-        assertThat(buildCause.getApprover(), is("cruise-user"));
+        assertThat(buildCause.getApprover()).isEqualTo("cruise-user");
     }
 
     @Test
-    public void shouldPopulateProducedBuildCauseApproverForEmptyModificationBuildCause() throws Exception {
+    public void shouldPopulateProducedBuildCauseApproverForEmptyModificationBuildCause() {
         BuildCause buildCause = manualBuild.onEmptyModifications(null, materialRevisions);
-        assertThat(buildCause.getApprover(), is("cruise-user"));
+        assertThat(buildCause.getApprover()).isEqualTo("cruise-user");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,35 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PackageMetadataStoreTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         RepositoryMetadataStoreHelper.clear();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RepositoryMetadataStoreHelper.clear();
     }
 
     @Test
-    public void shouldPopulateDataCorrectly() throws Exception {
+    public void shouldPopulateDataCorrectly() {
         PackageConfigurations packageConfigurations = new PackageConfigurations();
         PackageMetadataStore.getInstance().addMetadataFor("plugin-id", packageConfigurations);
 
-        assertThat(PackageMetadataStore.getInstance().getMetadata("plugin-id"), is(packageConfigurations));
+        assertThat(PackageMetadataStore.getInstance().getMetadata("plugin-id")).isEqualTo(packageConfigurations);
     }
 
     @Test
-    public void shouldBeAbleToCheckIfPluginExists() throws Exception {
+    public void shouldBeAbleToCheckIfPluginExists() {
         PackageMetadataStore metadataStore = PackageMetadataStore.getInstance();
 
         PackageConfigurations packageConfigurations = new PackageConfigurations();
         metadataStore.addMetadataFor("plugin-id", packageConfigurations);
 
-        assertThat(metadataStore.hasPlugin("plugin-id"), is(true));
-        assertThat(metadataStore.hasPlugin("some-plugin-which-does-not-exist"), is(false));
+        assertThat(metadataStore.hasPlugin("plugin-id")).isEqualTo(true);
+        assertThat(metadataStore.hasPlugin("some-plugin-which-does-not-exist")).isEqualTo(false);
     }
 }

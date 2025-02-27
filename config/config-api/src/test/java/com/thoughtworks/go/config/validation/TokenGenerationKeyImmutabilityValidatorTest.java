@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import com.thoughtworks.go.util.SystemEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +32,7 @@ public class TokenGenerationKeyImmutabilityValidatorTest {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final SystemEnvironment systemEnvironment = mock(SystemEnvironment.class);
         when(systemEnvironment.enforceServerImmutability()).thenReturn(true);
 
@@ -46,7 +45,7 @@ public class TokenGenerationKeyImmutabilityValidatorTest {
 
         tokenGenerationKeyImmutabilityValidator.validate(cruiseConfig);
 
-        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey(), is(cruiseConfig.server().getTokenGenerationKey()));
+        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey()).isEqualTo(cruiseConfig.server().getTokenGenerationKey());
     }
 
     @Test
@@ -54,7 +53,7 @@ public class TokenGenerationKeyImmutabilityValidatorTest {
         final BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
 
         tokenGenerationKeyImmutabilityValidator.validate(cruiseConfig);
-        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey(), is(cruiseConfig.server().getTokenGenerationKey()));
+        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey()).isEqualTo(cruiseConfig.server().getTokenGenerationKey());
         assertThatThrownBy(() -> tokenGenerationKeyImmutabilityValidator.validate(GoConfigMother.defaultCruiseConfig()))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("The value of 'tokenGenerationKey' cannot be modified while the server is online. If you really want to make this change, you may do so while the server is offline. Please note: updating 'tokenGenerationKey' will invalidate all registration tokens issued to the agents so far.");
@@ -65,11 +64,11 @@ public class TokenGenerationKeyImmutabilityValidatorTest {
         final BasicCruiseConfig cruiseConfig = GoConfigMother.defaultCruiseConfig();
 
         tokenGenerationKeyImmutabilityValidator.validate(cruiseConfig);
-        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey(), is(cruiseConfig.server().getTokenGenerationKey()));
+        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey()).isEqualTo(cruiseConfig.server().getTokenGenerationKey());
 
         cruiseConfig.server().useSecurity(new SecurityConfig());
 
         tokenGenerationKeyImmutabilityValidator.validate(cruiseConfig);
-        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey(), is(cruiseConfig.server().getTokenGenerationKey()));
+        assertThat(tokenGenerationKeyImmutabilityValidator.getInitialTokenGenerationKey()).isEqualTo(cruiseConfig.server().getTokenGenerationKey());
     }
 }

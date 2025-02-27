@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class GoConfigDao {
     }
 
     public ConfigSaveState updateConfig(UpdateConfigCommand command) {
-        ConfigSaveState configSaveState = null;
+        ConfigSaveState configSaveState;
         LOGGER.info("Config update request by {} is in queue - {}", SessionUtils.currentUsername().getUsername(), command);
         synchronized (GoConfigWriteLock.class) {
             try {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@ package com.thoughtworks.go.config;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeleteTemplateCommandTest {
 
     @Test
-    public void shouldRemoveATemplateWithTheGivenName() throws Exception {
+    public void shouldRemoveATemplateWithTheGivenName() {
         DeleteTemplateCommand command = new DeleteTemplateCommand("template", "md5");
         CruiseConfig config = new BasicCruiseConfig();
         config.addTemplate(new PipelineTemplateConfig(new CaseInsensitiveString("template")));
         command.update(config);
-        assertThat(config.getTemplates().isEmpty(), is(true));
+        assertThat(config.getTemplates().isEmpty()).isTrue();
     }
 }

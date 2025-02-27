@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -65,7 +64,7 @@ public class AnalyticsPluginAssetsServiceTest {
     private AnalyticsMetadataStore metadataStore;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         assetsService = new AnalyticsPluginAssetsService(extension, analyticsMetadataLoader, systemEnvironment);
         assetsService.setServletContext(servletContext);
         metadataStore = AnalyticsMetadataStore.instance();
@@ -213,7 +212,7 @@ public class AnalyticsPluginAssetsServiceTest {
 
         assetsService.onPluginMetadataCreate(PLUGIN_ID);
 
-        assertThat(analyticsPluginInfo.getStaticAssetsPath(), is(assetsService.assetPathFor(PLUGIN_ID)));
+        assertThat(analyticsPluginInfo.getStaticAssetsPath()).isEqualTo(assetsService.assetPathFor(PLUGIN_ID));
     }
 
     @Test

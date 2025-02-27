@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class AbstractTfsCommandTest {
@@ -48,7 +47,7 @@ public class AbstractTfsCommandTest {
     @BeforeEach
     public void setUp() {
         tfsCommand = tfsCommandFor(null, url, domain, user, password, workspace, projectPath);
-        assertThat(workDir.exists(), is(true));
+        assertThat(workDir.exists()).isTrue();
     }
 
     private AbstractTfsCommand tfsCommandFor(final String materialFingerprint, final UrlArgument urlArgument,
@@ -56,7 +55,7 @@ public class AbstractTfsCommandTest {
                                              final String workspace, final String projectPath) {
         return spy(new AbstractTfsCommand(materialFingerprint, urlArgument, domain, user, password,
                 workspace, projectPath) {
-            @Override protected void unMap(File workDir) throws IOException {
+            @Override protected void unMap(File workDir) {
             }
 
             @Override protected List<Modification> history(String beforeRevision, long revsToLoad) {
@@ -84,13 +83,13 @@ public class AbstractTfsCommandTest {
     }
 
     @Test
-    public void testLatestModification() throws Exception {
+    public void testLatestModification() {
         tfsCommand.latestModification(workDir);
         verify(tfsCommand, times(1)).history(null, 1);
     }
 
     @Test
-    public void testModificationsSince() throws Exception {
+    public void testModificationsSince() {
         List<Modification> modifications = new ArrayList<>();
         modifications.add(new Modification(user, "comment latest", "email", new Date(), "10"));
         modifications.add(new Modification(user, "comment latest", "email", new Date(), "9"));
@@ -100,16 +99,16 @@ public class AbstractTfsCommandTest {
         when(tfsCommand.history("10", 3)).thenReturn(modifications);
         List<Modification> actual = tfsCommand.modificationsSince(workDir, new StringRevision("7"));
 
-        assertThat(actual.containsAll(modifications), is(true));
+        assertThat(actual.containsAll(modifications)).isTrue();
     }
 
     @Test
-    public void testCheckConnection() throws Exception {
+    public void testCheckConnection() {
         tfsCommand.checkConnection();
     }
 
     @Test
-    public void shouldNotFailToCheckConnectionForUrlWithURLEncodedSpaceInIt() throws Exception {
+    public void shouldNotFailToCheckConnectionForUrlWithURLEncodedSpaceInIt() {
         tfsCommand = tfsCommandFor(null, new UrlArgument("abc%20def"), domain, user, password, workspace, projectPath);
         tfsCommand.checkConnection();
     }

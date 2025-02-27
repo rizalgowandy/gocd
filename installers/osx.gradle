@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import com.thoughtworks.go.build.*
 import org.apache.commons.codec.digest.DigestUtils
 
 private File destFile(String url) {
-  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(new URL(url).path).name}")
+  new File(gradle.gradleUserHomeDir, "download-cache/${DigestUtils.md5Hex(url)}/${new File(URI.create(url).toURL().path).name}")
 }
 
 task downloadMacJreX64Checksum(type: DownloadFile) {
@@ -50,12 +50,12 @@ def configureMacZip(Zip zipTask, InstallerType installerType, Zip genericZipTask
   DownloadFile downloadTask = arch == Architecture.aarch64 ? downloadMacJreArm64 : downloadMacJreX64
 
   zipTask.with {
-    group project.name
-    description "Build the ${installerType.baseName} osx (zip) installer"
+    group = project.name
+    description = "Build the ${installerType.baseName} osx (zip) installer"
 
     dependsOn downloadTask
     dependsOn genericZipTask
-    destinationDirectory = file("${project.buildDir.path}/${project.base.distsDirName}/osx")
+    destinationDirectory = project.base.distsDirectory.dir("osx")
     archiveBaseName = installerType.baseName
     archiveClassifier = arch == Architecture.aarch64 ? 'osx-aarch64' : 'osx'
 

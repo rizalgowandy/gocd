@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,18 +158,18 @@ public class HgMaterial extends ScmMaterial implements PasswordAwareMaterial {
     }
 
     @TestOnly
-    public void add(File baseDir, ProcessOutputStreamConsumer outputStreamConsumer, File file) throws Exception {
+    public void add(File baseDir, ProcessOutputStreamConsumer<?, ?> outputStreamConsumer, File file) throws Exception {
         hg(baseDir, outputStreamConsumer).add(outputStreamConsumer, file);
     }
 
     @TestOnly
-    public void commit(File baseDir, ProcessOutputStreamConsumer consumer, String comment, String username)
+    public void commit(File baseDir, ProcessOutputStreamConsumer<?, ?> consumer, String comment, String username)
             throws Exception {
         hg(baseDir, consumer).commit(consumer, comment, username);
     }
 
     @TestOnly
-    public void push(File baseDir, ProcessOutputStreamConsumer consumer) throws Exception {
+    public void push(File baseDir, ProcessOutputStreamConsumer<?, ?> consumer) throws Exception {
         hg(baseDir, consumer).push(consumer);
     }
 
@@ -294,11 +294,7 @@ public class HgMaterial extends ScmMaterial implements PasswordAwareMaterial {
             return false;
         }
 
-        if (branch != null ? !branch.equals(that.branch) : that.branch != null) {
-            return false;
-        }
-
-        return true;
+        return branch != null ? branch.equals(that.branch) : that.branch == null;
     }
 
     @Override

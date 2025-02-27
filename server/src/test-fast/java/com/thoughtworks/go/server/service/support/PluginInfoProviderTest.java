@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +46,7 @@ public class PluginInfoProviderTest {
     private PluginManager pluginManager;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         pluginInfoProvider = new PluginInfoProvider(pluginInfoFinder, pluginManager);
     }
 
@@ -77,7 +76,7 @@ public class PluginInfoProviderTest {
 
         expectedJson.put("plugins", List.of(passwordFilePluginJson, ldapPluginJson));
 
-        assertThat(json, is(expectedJson));
+        assertThat(json).isEqualTo(expectedJson);
     }
 
     private GoPluginDescriptor passwordFilePluginDescriptor() {

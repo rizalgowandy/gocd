@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public class LogFixture implements Closeable {
         }
 
         List<String> getFormattedEvents() {
-            ArrayList<String> strings = new ArrayList<>();
+            List<String> strings = new ArrayList<>();
             for (ILoggingEvent event : events) {
                 strings.add(new String(encoder.encode(event)));
             }
@@ -122,7 +122,7 @@ public class LogFixture implements Closeable {
         }
 
         List<String> getRawMessages() {
-            ArrayList<String> strings = new ArrayList<>();
+            List<String> strings = new ArrayList<>();
             for (ILoggingEvent event : events) {
                 strings.add(event.getFormattedMessage());
             }

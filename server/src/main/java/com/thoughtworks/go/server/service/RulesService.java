@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class RulesService {
                 String secretConfigId = secretParam.getSecretConfigId();
                 SecretConfig secretConfig = goConfigService.getSecretConfigById(secretConfigId);
                 if (secretConfig == null) {
-                    addError(pipelinesWithErrors, pipelineName, format("Pipeline '%s' is referring to none-existent secret config '%s'.", pipelineName, secretConfigId));
+                    addError(pipelinesWithErrors, pipelineName, format("Pipeline '%s' is referring to non-existent secret config '%s'.", pipelineName, secretConfigId));
                 } else if (!secretConfig.canRefer(group.getClass(), group.getGroup())) {
                     addError(pipelinesWithErrors, pipelineName, format("Pipeline '%s' does not have permission to refer to secrets using secret config '%s'", pipelineName, secretConfigId));
                 }
@@ -78,7 +78,7 @@ public class RulesService {
         if (!pipelinesWithErrors.isEmpty()) {
             LOGGER.debug("[Material Update] Failure: {}", errorString(pipelinesWithErrors));
         }
-        if (pipelines.size() == pipelinesWithErrors.size()) {
+        if (!pipelines.isEmpty() && pipelines.size() == pipelinesWithErrors.size()) {
             throw new RulesViolationException(errorString(pipelinesWithErrors));
         }
 
@@ -189,7 +189,7 @@ public class RulesService {
                 .forEach((secretConfigId, secretParam) -> {
                     SecretConfig secretConfig = goConfigService.getSecretConfigById(secretConfigId);
                     if (secretConfig == null) {
-                        addError(pipelinesWithErrors, new CaseInsensitiveString(entityName), format("%s '%s' is referring to none-existent secret config '%s'.", entityNameOrErrorMessagePrefix, entityName, secretConfigId));
+                        addError(pipelinesWithErrors, new CaseInsensitiveString(entityName), format("%s '%s' is referring to non-existent secret config '%s'.", entityNameOrErrorMessagePrefix, entityName, secretConfigId));
                     } else if (!secretConfig.canRefer(entityClass, entityName)) {
                         addError(pipelinesWithErrors, new CaseInsensitiveString(entityName), format("%s '%s' does not have permission to refer to secrets using secret config '%s'.", entityNameOrErrorMessagePrefix, entityName, secretConfigId));
                     }

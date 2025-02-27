@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -53,6 +53,7 @@ public class AgentBootstrapperTest {
     }
 
     @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void shouldNotDieWhenCreationOfLauncherRaisesException() throws InterruptedException {
         final Semaphore waitForLauncherCreation = new Semaphore(1);
         waitForLauncherCreation.acquire();
@@ -60,7 +61,7 @@ public class AgentBootstrapperTest {
         final AgentBootstrapper bootstrapper = new AgentBootstrapper() {
             @Override
             void waitForRelaunchTime() {
-                assertThat(waitTimeBeforeRelaunch, is(0));
+                assertThat(waitTimeBeforeRelaunch).isEqualTo(0);
                 reLaunchWaitIsCalled[0] = true;
                 super.waitForRelaunchTime();
             }
@@ -103,12 +104,12 @@ public class AgentBootstrapperTest {
         } catch (Exception e) {
             fail("should not have propagated exception thrown while creating launcher");
         }
-        assertThat(reLaunchWaitIsCalled[0], is(true));
+        assertThat(reLaunchWaitIsCalled[0]).isTrue();
     }
 
 
     @Test
-    @Timeout(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void shouldNotRelaunchAgentLauncherWhenItReturnsAnIrrecoverableCode() {
         final boolean[] destroyCalled = new boolean[1];
         final AgentBootstrapper bootstrapper = new AgentBootstrapper(){
@@ -136,10 +137,11 @@ public class AgentBootstrapperTest {
         } catch (Exception e) {
             fail("should not have propagated exception thrown while invoking the launcher");
         }
-        assertThat(destroyCalled[0], is(true));
+        assertThat(destroyCalled[0]).isTrue();
     }
 
     @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void shouldNotDieWhenInvocationOfLauncherRaisesException_butCreationOfLauncherWentThrough() throws InterruptedException {
         final Semaphore waitForLauncherInvocation = new Semaphore(1);
         waitForLauncherInvocation.acquire();
@@ -187,9 +189,10 @@ public class AgentBootstrapperTest {
     }
 
     @Test
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
     public void shouldRetainStateAcrossLauncherInvocations() throws Exception {
 
-        final Map expectedContext = new HashMap();
+        final Map<String, String> expectedContext = new HashMap<>();
         AgentBootstrapper agentBootstrapper = new AgentBootstrapper() {
             @Override
             AgentLauncherCreator getLauncherCreator() {
@@ -202,22 +205,19 @@ public class AgentBootstrapperTest {
                             @Override
                             public int launch(AgentLaunchDescriptor descriptor) {
 
-                                Map descriptorContext = descriptor.context();
+                                Map<String, String> descriptorContext = descriptor.context();
                                 incrementCount(descriptorContext);
-                                incrementCount(expectedContext);
-                                Integer expectedCount = (Integer) expectedContext.get(COUNT);
-                                assertThat(descriptorContext.get(COUNT), is(expectedCount));
+                                int expectedCount = incrementCount(expectedContext);
+                                assertThat(descriptorContext.get(COUNT)).asInt().isEqualTo(expectedCount);
                                 if (expectedCount > 3) {
                                     ((AgentBootstrapper) descriptor.getBootstrapper()).stopLooping();
                                 }
                                 return 0;
                             }
 
-                            private void incrementCount(Map map) {
-                                Integer currentInvocationCount = map.containsKey(COUNT) ? (Integer) map.get(COUNT) : 0;
-                                map.put(COUNT, currentInvocationCount + 1);
+                            private int incrementCount(Map<String, String> map) {
+                                return Integer.parseInt(map.compute(COUNT, (k, v) -> v == null ? "1" : Integer.toString(Integer.parseInt(v) + 1)));
                             }
-
                         };
                     }
 

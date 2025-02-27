@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Thoughtworks, Inc.
+ * Copyright Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(ClearSingleton.class)
 @ExtendWith(SpringExtension.class)
@@ -68,7 +67,7 @@ public class PipelineHistoryControllerIntegrationTest {
     private PipelineWithMultipleStages fixture;
     private HttpServletResponse response;
     private HttpServletRequest request;
-    private static GoConfigFileHelper configHelper = new GoConfigFileHelper();
+    private static final GoConfigFileHelper configHelper = new GoConfigFileHelper();
 
     @BeforeEach
     public void setUp(@TempDir Path tempDir) throws Exception {
@@ -91,76 +90,77 @@ public class PipelineHistoryControllerIntegrationTest {
     }
 
     @Test
-    public void shouldHaveGroupsInJson() throws Exception {
+    public void shouldHaveGroupsInJson() {
         fixture.createPipelineWithFirstStagePassedAndSecondStageHasNotStarted();
-        Map jsonMap = requestPipelineHistoryPage();
-        List groups = (List) jsonMap.get("groups");
-        assertThat(groups.size(), is(1));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        List<?> groups = (List<?>) jsonMap.get("groups");
+        assertThat(groups.size()).isEqualTo(1);
     }
 
     @Test
-    public void canForceShouldBeFalseForUnauthorizedAccess() throws Exception {
+    public void canForceShouldBeFalseForUnauthorizedAccess() {
         configHelper.addSecurityWithAdminConfig();
         fixture.configStageAsManualApprovalWithApprovedUsers(fixture.devStage, "user");
 
         fixture.createPipelineWithFirstStagePassedAndSecondStageHasNotStarted();
 
-        Map jsonMap = requestPipelineHistoryPage();
-        assertThat(getItemInJson(jsonMap, "canForce"), is("false"));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        assertThat(getItemInJson(jsonMap, "canForce")).isEqualTo("false");
     }
 
     @Test
-    public void canForceShouldBeTrueForAuthorizedUser() throws Exception {
+    public void canForceShouldBeTrueForAuthorizedUser() {
         configHelper.addSecurityWithAdminConfig();
         fixture.configStageAsManualApprovalWithApprovedUsers(fixture.devStage, "userA");
 
         SessionUtilsHelper.loginAs("userA");
-        Map jsonMap = requestPipelineHistoryPage();
-        assertThat(getItemInJson(jsonMap, "canForce"), is("true"));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        assertThat(getItemInJson(jsonMap, "canForce")).isEqualTo("true");
     }
 
     @Test
-    public void canPauseShouldBeFalseForUnauthorizedAccess() throws Exception {
+    public void canPauseShouldBeFalseForUnauthorizedAccess() {
         configHelper.addSecurityWithAdminConfig();
         configHelper.setOperatePermissionForGroup("defaultGroup", "jez");
 
-        Map jsonMap = requestPipelineHistoryPage();
-        assertThat(getItemInJson(jsonMap, "canPause"), is("false"));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        assertThat(getItemInJson(jsonMap, "canPause")).isEqualTo("false");
     }
 
     @Test
-    public void canPauseShouldBeTrueForAuthorizedAccess() throws Exception {
+    public void canPauseShouldBeTrueForAuthorizedAccess() {
         configHelper.addSecurityWithAdminConfig();
         configHelper.setOperatePermissionForGroup("defaultGroup", CaseInsensitiveString.str(Username.ANONYMOUS.getUsername()));
 
-        Map jsonMap = requestPipelineHistoryPage();
-        assertThat(getItemInJson(jsonMap, "canPause"), is("true"));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        assertThat(getItemInJson(jsonMap, "canPause")).isEqualTo("true");
     }
 
     @Test
     public void hasModificationShouldBeTrueIfThereIsBuildCauseInBuffer() throws Exception {
         fixture.createNewCheckin();
         scheduleHelper.autoSchedulePipelinesWithRealMaterials(fixture.pipelineName);
-        Map jsonMap = requestPipelineHistoryPage();
-        assertThat(getItemInJson(jsonMap, "showForceBuildButton"), is("true"));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        assertThat(getItemInJson(jsonMap, "showForceBuildButton")).isEqualTo("true");
     }
 
     @Test
     public void shouldCreateGroupIfPipelineHasModificationEvenNoPipelineHistory() throws Exception {
         fixture.createNewCheckin();
         scheduleHelper.autoSchedulePipelinesWithRealMaterials(fixture.pipelineName);
-        Map jsonMap = requestPipelineHistoryPage();
-        List groups = (List) jsonMap.get("groups");
-        assertThat("Should create group for the coming pipeline", groups.size(), is(1));
+        Map<String, Object> jsonMap = requestPipelineHistoryPage();
+        List<?> groups = (List<?>) jsonMap.get("groups");
+        assertThat(groups.size()).isEqualTo(1);
     }
 
-    private String getItemInJson(Map jsonMap, String key) {
+    private String getItemInJson(Map<String, Object> jsonMap, String key) {
         return (String) jsonMap.get(key);
     }
 
-    private Map requestPipelineHistoryPage() throws Exception {
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> requestPipelineHistoryPage() {
         ModelAndView modelAndView = controller.list(fixture.pipelineName, 10, 0, null, response, request);
-        return (Map) modelAndView.getModel().get("json");
+        return (Map<String, Object>) modelAndView.getModel().get("json");
     }
 
 }
